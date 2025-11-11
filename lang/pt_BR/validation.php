@@ -44,7 +44,7 @@ return [
     ],
     'boolean'                => 'O campo :attribute deve conter o valor verdadeiro ou falso.',
     'can'                    => 'O campo :attribute contém um valor não autorizado.',
-    'confirmed'              => 'A confirmação para o campo :attribute não coincide.',
+    'confirmed'              => 'A confirmação não coincide com o valor do campo :attribute.',
     'contains'               => 'O campo :attribute não possui um valor obrigatório.',
     'current_password'       => 'A senha está incorreta.',
     'date'                   => 'O campo :attribute não contém uma data válida.',
