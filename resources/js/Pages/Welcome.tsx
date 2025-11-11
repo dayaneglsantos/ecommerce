@@ -1,10 +1,27 @@
 import ApplicationLogo from "@/Components/ApplicationLogo";
+import Modal from "@/Components/Modal";
 import TextInput from "@/Components/TextInput";
 import { Head, Link } from "@inertiajs/react";
+import { useState } from "react";
 import { GoSearch } from "react-icons/go";
 import { PiShoppingCartSimple } from "react-icons/pi";
 
-export default function Welcome({ auth, laravelVersion, phpVersion }) {
+interface WelcomeProps {
+    auth: {
+        user: {
+            name: string;
+        } | null;
+    };
+    laravelVersion: string;
+    phpVersion: string;
+}
+
+export default function Welcome({
+    auth,
+    laravelVersion,
+    phpVersion,
+}: WelcomeProps) {
+    const [showModal, setShowModal] = useState(false);
     return (
         <>
             <Head title="Home" />
@@ -36,7 +53,10 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                         >
                                             Cadastrar
                                         </Link>
-                                        <span className="w-10 h-10 flex items-center justify-center rounded-full bg-primaryLight cursor-pointer">
+                                        <span
+                                            className="w-10 h-10 flex items-center justify-center rounded-full bg-primaryLight cursor-pointer"
+                                            onClick={() => setShowModal(true)}
+                                        >
                                             <PiShoppingCartSimple className="text-xl" />
                                         </span>
                                     </div>
