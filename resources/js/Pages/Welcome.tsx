@@ -1,4 +1,5 @@
 import ApplicationLogo from "@/Components/ApplicationLogo";
+import Cart from "@/Components/Cart";
 import Modal from "@/Components/Modal";
 import TextInput from "@/Components/TextInput";
 import { Head, Link } from "@inertiajs/react";
@@ -21,21 +22,21 @@ export default function Welcome({
     laravelVersion,
     phpVersion,
 }: WelcomeProps) {
-    const [showModal, setShowModal] = useState(false);
+    const [showCart, setShowCart] = useState(false);
     return (
         <>
             <Head title="Home" />
             <div className="bg-neutral text-black">
                 <div className="relative flex min-h-screen flex-col items-center justify-center  selection:text-white">
-                    <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-                        <header className="flex items-center gap-2 py-10">
+                    <div className="relative w-full px-6">
+                        <header className="flex items-start gap-2 py-10">
                             <ApplicationLogo className="h-20 w-20 fill-current text-gray-500" />
 
                             <nav className="flex flex-1 justify-end gap-3">
                                 {auth.user ? (
                                     <Link
                                         href={route("dashboard")}
-                                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none"
+                                        className="text-black transition hover:scale-105 hover:border-b-primary hover:border-b"
                                     >
                                         Dashboard
                                     </Link>
@@ -43,19 +44,19 @@ export default function Welcome({
                                     <div className="flex items-center gap-3">
                                         <Link
                                             href={route("login")}
-                                            className="flex items-center gap-1 rounded-md p-2 text-black ring-1 ring-primary  transition hover:text-black/70 focus:outline-none"
+                                            className="text-black transition hover:scale-105 hover:border-b-primary hover:border-b"
                                         >
                                             Entrar
                                         </Link>
                                         <Link
                                             href={route("register")}
-                                            className="rounded-md p-2 text-black ring-1 ring-primary  transition hover:text-black/70 focus:outline-none"
+                                            className=" text-black transition hover:scale-105 hover:border-b-primary hover:border-b"
                                         >
                                             Cadastrar
                                         </Link>
                                         <span
-                                            className="w-10 h-10 flex items-center justify-center rounded-full bg-primaryLight cursor-pointer"
-                                            onClick={() => setShowModal(true)}
+                                            className="w-10 h-10 flex items-center justify-center rounded-full bg-primaryLight cursor-pointer ml-4"
+                                            onClick={() => setShowCart(true)}
                                         >
                                             <PiShoppingCartSimple className="text-xl" />
                                         </span>
@@ -65,8 +66,8 @@ export default function Welcome({
                         </header>
 
                         <main className="mt-6">
-                            <div className="flex items-center justify-between">
-                                <nav>
+                            <div className="block md:flex items-center justify-between ">
+                                <nav className="mb-2">
                                     <span className="p-2 cursor-pointer">
                                         Calçados
                                     </span>
@@ -81,7 +82,7 @@ export default function Welcome({
                                     <TextInput
                                         type="text"
                                         placeholder="O que você está procurando?"
-                                        className="w-[300px] rounded-md border-primaryLight shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 px-3 py-2"
+                                        className="w-[300px]"
                                         icon={<GoSearch />}
                                     />
                                 </div>
@@ -117,6 +118,7 @@ export default function Welcome({
                     </div>
                 </div>
             </div>
+            <Cart open={showCart} close={() => setShowCart(false)} />
         </>
     );
 }
