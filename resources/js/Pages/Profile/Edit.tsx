@@ -1,10 +1,15 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import DeleteUserForm from './Partials/DeleteUserForm';
-import UpdatePasswordForm from './Partials/UpdatePasswordForm';
-import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
+import { Head } from "@inertiajs/react";
+import DeleteUserForm from "./Partials/DeleteUserForm";
+import UpdatePasswordForm from "./Partials/UpdatePasswordForm";
+import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm";
+import AuthenticatedLayout from "../../Layouts/AuthenticatedLayout";
 
-export default function Edit({ mustVerifyEmail, status }) {
+interface EditProps {
+    mustVerifyEmail: boolean;
+    status: string | null;
+}
+
+export default function Edit({ mustVerifyEmail, status }: EditProps) {
     return (
         <AuthenticatedLayout
             header={
