@@ -31,8 +31,8 @@ class UserFactory extends Factory
       'remember_token' => Str::random(10),
       'birthdate' => fake()->date(),
       'cpf' => fake()->unique()->numerify('###########'),
-      'phone' => fake()->numerify('(##) #####-####'),
-      'sex' => fake()->randomElement(['M', 'F']),
+      'phone_number' => fake()->numerify('(##) #####-####'),
+      'gender' => fake()->randomElement(['M', 'F']),
       'profile_image' => fake()->imageUrl(),
     ];
   }

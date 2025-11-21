@@ -21,7 +21,7 @@ class ProfileController extends Controller
     $user = $request->user()->load('addresses');
     return Inertia::render('Profile/Edit', [
       'user' => $user,
-      'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+      'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail, // Verifica se o objeto do usuário implementa a interface MustVerifyEmail
       'status' => session('status'),
     ]);
   }
@@ -31,6 +31,7 @@ class ProfileController extends Controller
    */
   public function update(ProfileUpdateRequest $request): RedirectResponse
   {
+    dd($request->validated());
     $request->user()->fill($request->validated());
 
     if ($request->user()->isDirty('email')) {

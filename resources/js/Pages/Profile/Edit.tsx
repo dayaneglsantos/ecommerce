@@ -28,15 +28,15 @@ export default function Edit({ mustVerifyEmail, status, user }: EditProps) {
             <UpdateProfileInformationForm
               mustVerifyEmail={mustVerifyEmail}
               status={status}
-              className="max-w-xl"
+              user={user}
             />
           </div>
 
           <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-            <UpdatePasswordForm className="max-w-xl" />
+            <UpdateAddress status={status} user={user} />
           </div>
           <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-            <UpdateAddress status={status} user={user} />
+            <UpdatePasswordForm className="max-w-xl" />
           </div>
 
           <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">

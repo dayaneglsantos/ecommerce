@@ -17,8 +17,6 @@ export default function UpdateAddress({
   className = '',
   user,
 }: UpdateProfileInformationProps) {
-  console.log(user);
-
   const { data, setData, patch, errors, processing, recentlySuccessful } =
     useForm({
       // zip_code: user.zip_code,
