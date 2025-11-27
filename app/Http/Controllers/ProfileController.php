@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileImageUpdateRequest;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,16 +33,67 @@ class ProfileController extends Controller
    */
   public function update(ProfileUpdateRequest $request): RedirectResponse
   {
-    dd($request->validated());
-    $request->user()->fill($request->validated());
 
-    if ($request->user()->isDirty('email')) {
-      $request->user()->email_verified_at = null;
+    try {
+      $validatedData = $request->validated();
+      $user = $request->user();
+
+      if ($user->isDirty('email')) {
+        $user->email_verified_at = null;
+      }
+      $user->fill($validatedData);
+      $user->save();
+
+      return Redirect::route('profile.edit')->with('success', 'Perfil atualizado!');
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return Redirect::route('profile.edit')->with('error', 'Erro ao atualizar o perfil!');
     }
+  }
 
-    $request->user()->save();
+  /**
+   * Update the user's avatar.
+   */
+  public function updateProfileImage(ProfileImageUpdateRequest $request): RedirectResponse
+  {
+    try {
+      if ($request->hasFile('profile_image')) {
+        $user = $request->user();
 
-    return Redirect::route('profile.edit');
+        if ($user->profile_image) {
+          Storage::disk('public')->delete($user->profile_image);
+        }
+
+        $path = $request->file('profile_image')->store('profile-images', 'public');
+
+        $user->profile_image = $path; // salva o caminho da imagem no campo profile_image
+        $user->save();
+      }
+
+      return Redirect::route('profile.edit')->with('success', 'Imagem atualizada!');
+    } catch (\Exception $e) {
+      return Redirect::route('profile.edit')->with('error', 'Erro ao atualizar a imagem!');
+    }
+  }
+
+
+  /**
+   * Delete user avatar
+   */
+  public function destroyImage(ProfileImageUpdateRequest $request): RedirectResponse
+  {
+    $user = $request->user();
+    try {
+      if ($user->profile_image) {
+        Storage::disk('public')->delete($user->profile_image);
+        $user->profile_image = null;
+        $user->save();
+        return Redirect::route('profile.edit')->with('success', 'Imagem removida!');
+      }
+      return Redirect::route('profile.edit')->with('info', 'Nenhuma imagem para remover!');
+    } catch (\Exception $e) {
+      return Redirect::route('profile.edit')->with('error', 'Erro ao remover a imagem!');
+    }
   }
 
   /**

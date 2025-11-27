@@ -9,6 +9,7 @@ interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   icon?: React.ReactNode;
   mask?: any;
   tooltip?: string;
+  value?: string;
 }
 
 export default forwardRef<HTMLInputElement | null, TextInputProps>(
@@ -20,6 +21,7 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
       icon = null,
       mask,
       tooltip,
+      value,
       ...props
     }: TextInputProps,
     ref: React.ForwardedRef<HTMLInputElement | null>
@@ -53,13 +55,17 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
               'w-full px-4 py-2 bg-transparent border-none focus:ring-0 focus:border-0 outline-none ' +
               (icon ? 'pr-10' : '')
             }
-            onChange={onChange}
+            onAccept={(value: string) => {
+              onChange?.({ target: { value } } as any);
+            }}
+            value={value}
           />
         ) : (
           <input
             {...props}
             type={type}
             ref={localRef}
+            value={value}
             className={
               'w-full px-4 py-2 bg-transparent border-none focus:ring-0 focus:border-0 outline-none ' +
               (icon ? 'pr-10' : '')

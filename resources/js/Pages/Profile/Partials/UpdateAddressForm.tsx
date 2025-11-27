@@ -45,7 +45,7 @@ export default function UpdateAddress({
 
       <form onSubmit={submit}>
         <div className="mt-6 grid grid-cols-5 gap-4 ">
-          <div className="col-span-1">
+          <div className="col-span-2 md:col-span-1">
             <InputLabel htmlFor="zip_code" value="CEP" />
 
             <TextInput
@@ -60,7 +60,7 @@ export default function UpdateAddress({
 
             {/* <InputError className="mt-2" message={errors.zip_code} /> */}
           </div>
-          <div className="col-span-2">
+          <div className="col-span-3 md:col-span-2">
             <InputLabel htmlFor="state" value="Estado" />
 
             <TextInput
@@ -75,7 +75,7 @@ export default function UpdateAddress({
             {/* <InputError className="mt-2" message={errors.state} /> */}
           </div>
 
-          <div className="col-span-2">
+          <div className="col-span-5 md:col-span-2">
             <InputLabel htmlFor="city" value="Cidade" />
 
             <TextInput
@@ -89,7 +89,7 @@ export default function UpdateAddress({
 
             {/* <InputError className="mt-2" message={errors.email} /> */}
           </div>
-          <div className="col-span-2">
+          <div className="col-span-5 md:col-span-2">
             <InputLabel htmlFor="street" value="Logradouro" />
 
             <TextInput
@@ -103,7 +103,7 @@ export default function UpdateAddress({
 
             {/* <InputError className="mt-2" message={errors.street} /> */}
           </div>
-          <div className="col-span-1">
+          <div className="col-span-2 md:col-span-1">
             <InputLabel htmlFor="number" value="Número" />
 
             <TextInput
@@ -117,7 +117,7 @@ export default function UpdateAddress({
 
             {/* <InputError className="mt-2" message={errors.number} /> */}
           </div>
-          <div className="col-span-2">
+          <div className="col-span-3 md:col-span-2">
             <InputLabel htmlFor="complement" value="Complemento" />
 
             <TextInput

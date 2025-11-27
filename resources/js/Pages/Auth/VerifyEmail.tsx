@@ -13,7 +13,7 @@ export default function VerifyEmail({ status }: { status: string | null }) {
 
   return (
     <GuestLayout>
-      <Head title="Email Verification" />
+      <Head title="Verificação de Email" />
 
       <div className="mb-4 text-sm text-gray-600">
         Obrigado por se registrar! Antes de começar, verifique seu endereço de
@@ -35,12 +35,12 @@ export default function VerifyEmail({ status }: { status: string | null }) {
           </PrimaryButton>
 
           <Link
-            href={route('logout')}
-            method="post"
+            href={route('dashboard')}
+            method="get"
             as="button"
             className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
-            Sair
+            Ignorar
           </Link>
         </div>
       </form>

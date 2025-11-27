@@ -8,9 +8,9 @@ export interface UserType {
   email_verified_at: string | null;
   gender: 'F' | 'M';
   password: string;
-  birthdate: string;
+  birthdate: string | null;
   phone_number: string;
-  profile_image: string | null;
+  profile_image?: string | null;
   profile: string;
   remember_token: string | null;
   address: AddressType;
