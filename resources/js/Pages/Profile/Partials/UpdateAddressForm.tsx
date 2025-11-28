@@ -4,7 +4,9 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
+import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { GoSearch } from 'react-icons/go';
+import { Tooltip } from 'react-tooltip';
 
 interface UpdateProfileInformationProps {
   status: string | null;
@@ -17,20 +19,20 @@ export default function UpdateAddress({
   className = '',
   user,
 }: UpdateProfileInformationProps) {
-  const { data, setData, patch, errors, processing, recentlySuccessful } =
-    useForm({
-      // zip_code: user.zip_code,
-      // state: user.state,
-      // city: user.city,
-      // street: user.street,
-      // number: user.number,
-      // complement: user.complement,
-    });
+  const { data, setData, post, processing } = useForm({
+    zip_code: user.zip_code,
+    state: user.state,
+    city: user.city,
+    street: user.street,
+    number: user.number,
+    complement: user.complement,
+  });
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(data);
 
-    patch(route('profile.update'));
+    post(route('profile.updateAddress'));
   };
 
   return (
@@ -44,8 +46,14 @@ export default function UpdateAddress({
       </header>
 
       <form onSubmit={submit}>
-        <div className="mt-6 grid grid-cols-5 gap-4 ">
-          <div className="col-span-2 md:col-span-1">
+        <div className="mt-6 grid grid-cols-5 gap-4 shadow rounded-2xl p-4 pt-8 -mx-4 relative">
+          <div className="absolute top-3 right-3 flex gap-2">
+            <Tooltip id="edit" place="top" content="Editar" />
+            <Tooltip id="delete" place="top" content="Excluir" />
+            <FaPencilAlt data-tooltip-id="edit" className="cursor-pointer" />
+            <FaTrashAlt data-tooltip-id="delete" className="cursor-pointer" />
+          </div>
+          <div className="col-span-2 md:col-span-1 ">
             <InputLabel htmlFor="zip_code" value="CEP" />
 
             <TextInput
@@ -131,20 +139,9 @@ export default function UpdateAddress({
 
             {/* <InputError className="mt-2" message={errors.complement} /> */}
           </div>
-        </div>
-
-        <div className="flex items-center gap-4 mt-3">
-          <PrimaryButton disabled={processing}>Salvar</PrimaryButton>
-
-          <Transition
-            show={recentlySuccessful}
-            enter="transition ease-in-out"
-            enterFrom="opacity-0"
-            leave="transition ease-in-out"
-            leaveTo="opacity-0"
-          >
-            <p className="text-sm text-gray-600">Salvo</p>
-          </Transition>
+          <div className="flex items-center gap-4 mt-3">
+            <PrimaryButton disabled={processing}>Salvar</PrimaryButton>
+          </div>
         </div>
       </form>
     </section>

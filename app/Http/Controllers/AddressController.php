@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddressUpdateRequest;
 use App\Models\Address;
 use Illuminate\Http\Request;
+use LaravelLang\Publisher\Console\Add;
 
 class AddressController extends Controller
 {
@@ -50,9 +52,23 @@ class AddressController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, Address $address)
+  public function update(AddressUpdateRequest $request, Address $address)
   {
-    //
+    dd($address);
+    try {
+      $user = $request->user();
+      $validatedData = $request->validated();
+
+      $user->address()->updateOrCreate(
+        ['user_id' => $user->id],
+        $validatedData
+      );
+
+      return redirect()->back()->with('success', 'Endereço salvo com sucesso!');
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return redirect()->back()->with('error', 'Erro ao salvar o endereço!');
+    }
   }
 
   /**

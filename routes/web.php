@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,7 @@ Route::middleware('auth')->group(function () {
   Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
   Route::post('/profile/image', [ProfileController::class, 'updateProfileImage'])->name('profile.updateProfileImage');
   Route::delete('/profile/image', [ProfileController::class, 'destroyImage'])->name('profile.destroyImage');
+  Route::post('/profile/address', [AddressController::class, 'update'])->name('profile.updateAddress');
   Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
