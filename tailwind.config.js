@@ -24,6 +24,9 @@ export default {
         secondaryLight: '#a1e0f0',
         neutral: '#fffbfa',
       },
+      boxShadow: {
+        full: '0 0 20px rgba(0, 0, 0, 0.1)',
+      },
     },
   },
 

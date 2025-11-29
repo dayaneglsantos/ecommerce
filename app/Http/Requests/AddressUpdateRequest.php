@@ -18,7 +18,7 @@ class AddressUpdateRequest extends FormRequest
       'state' => ['required', 'string', 'max:255'],
       'city' => ['required', 'string', 'max:255'],
       'street' => ['required', 'string', 'max:255'],
-      'number' => ['required', 'numeric', 'max:50'],
+      'number' => ['required', 'numeric'],
       'complement' => ['nullable', 'string', 'max:255'],
     ];
   }

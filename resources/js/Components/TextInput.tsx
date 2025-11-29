@@ -10,6 +10,7 @@ interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   mask?: any;
   tooltip?: string;
   value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default forwardRef<HTMLInputElement | null, TextInputProps>(
@@ -22,12 +23,12 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
       mask,
       tooltip,
       value,
+      onChange,
       ...props
     }: TextInputProps,
     ref: React.ForwardedRef<HTMLInputElement | null>
   ) {
     const localRef = useRef<HTMLInputElement>(null);
-    const onChange = props.onChange;
 
     useImperativeHandle(ref, () => localRef.current as HTMLInputElement, [
       localRef,
@@ -48,6 +49,8 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
       >
         {mask ? (
           <IMaskInput
+            {...props}
+            disabled={props.disabled}
             mask={mask}
             type={type}
             ref={localRef}
@@ -63,6 +66,7 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
         ) : (
           <input
             {...props}
+            onChange={onChange}
             type={type}
             ref={localRef}
             value={value}

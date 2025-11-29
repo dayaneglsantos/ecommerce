@@ -2,8 +2,10 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
+import { AddressType } from '@/Types/AddressType';
 import { Transition } from '@headlessui/react';
-import { Link, useForm, usePage } from '@inertiajs/react';
+import { Link, router, useForm, usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { GoSearch } from 'react-icons/go';
 import { Tooltip } from 'react-tooltip';
@@ -19,21 +21,64 @@ export default function UpdateAddress({
   className = '',
   user,
 }: UpdateProfileInformationProps) {
-  const { data, setData, post, processing } = useForm({
-    zip_code: user.zip_code,
-    state: user.state,
-    city: user.city,
-    street: user.street,
-    number: user.number,
-    complement: user.complement,
-  });
+  const [userAddresses, setUserAddresses] = useState<AddressType[]>([]);
+  const [editingAddressId, setEditingAddressId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (user.addresses.length === 0) {
+      setUserAddresses([
+        {
+          id: 0,
+          zip_code: '',
+          state: '',
+          city: '',
+          street: '',
+          number: '',
+          complement: '',
+        },
+      ]);
+      setEditingAddressId(0);
+    } else {
+      setUserAddresses(user.addresses);
+    }
+  }, [user]);
+
+  const { data, setData, errors, post, processing, reset, wasSuccessful } =
+    useForm({
+      id: 0,
+      zip_code: '',
+      state: '',
+      city: '',
+      street: '',
+      number: '',
+      complement: '',
+    });
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(data);
 
-    post(route('profile.updateAddress'));
+    post(route('profile.updateAddress'), {
+      preserveScroll: true,
+      onSuccess: () => {
+        setEditingAddressId(null);
+      },
+    });
   };
+
+  const handleDeleteAddress = (addressId: number) => {
+    const filteredAddresses = userAddresses.filter(
+      (address) => address.id !== addressId
+    );
+    setUserAddresses(filteredAddresses);
+    setEditingAddressId(null);
+
+    router.delete(route('profile.destroyAddress', addressId), {
+      preserveScroll: true,
+    });
+  };
+
+  const newAddressButtonDisabled =
+    user.addresses.length === 0 || editingAddressId !== null;
 
   return (
     <section className={className}>
@@ -45,104 +90,247 @@ export default function UpdateAddress({
         </p>
       </header>
 
-      <form onSubmit={submit}>
-        <div className="mt-6 grid grid-cols-5 gap-4 shadow rounded-2xl p-4 pt-8 -mx-4 relative">
-          <div className="absolute top-3 right-3 flex gap-2">
-            <Tooltip id="edit" place="top" content="Editar" />
-            <Tooltip id="delete" place="top" content="Excluir" />
-            <FaPencilAlt data-tooltip-id="edit" className="cursor-pointer" />
-            <FaTrashAlt data-tooltip-id="delete" className="cursor-pointer" />
+      <form onSubmit={submit} autoComplete="off">
+        {userAddresses.map((address: AddressType, index: number) => (
+          <div className="mt-6 grid grid-cols-5 gap-4 shadow-full rounded-2xl p-4 pt-14 -mx-4 relative">
+            <div className="absolute top-4 right-4 flex gap-2">
+              <button
+                type="button"
+                disabled={
+                  editingAddressId !== address.id && editingAddressId !== null
+                }
+                onClick={() => {
+                  setEditingAddressId(address.id);
+                  setData({
+                    id: address.id,
+                    zip_code: address.zip_code,
+                    state: address.state,
+                    city: address.city,
+                    street: address.street,
+                    number: address.number,
+                    complement: address.complement || '',
+                  });
+                }}
+              >
+                <FaPencilAlt
+                  data-tooltip-id="edit"
+                  className={`cursor-pointer ${
+                    editingAddressId === address.id || editingAddressId === null
+                      ? 'text-gray-500'
+                      : 'text-gray-200'
+                  } outline-none`}
+                />
+                <Tooltip
+                  id="edit"
+                  place="top"
+                  content="Editar"
+                  className="!p-2 !text-[12px]"
+                />
+              </button>
+              <button
+                type="button"
+                disabled={
+                  editingAddressId !== address.id && editingAddressId !== null
+                }
+                onClick={() => {
+                  editingAddressId
+                    ? setUserAddresses(user.addresses)
+                    : handleDeleteAddress(address.id);
+                }}
+              >
+                <FaTrashAlt
+                  data-tooltip-id="delete"
+                  className={`cursor-pointer ${
+                    editingAddressId === address.id || editingAddressId === null
+                      ? 'text-gray-500'
+                      : 'text-gray-200'
+                  } outline-none`}
+                />
+                <Tooltip
+                  id="delete"
+                  place="top"
+                  content="Excluir"
+                  className="!p-2 !text-[12px]"
+                />
+              </button>
+            </div>
+            <div className="absolute top-4 left-4 border border-primary p-1 text-[12px] rounded-full px-2 text-primaryDark bg-gray-50">
+              {/* Ajustar regra */}
+              <span>{true ? 'Endereço Padrão' : 'Definir como padrão'}</span>
+            </div>
+            <div className="col-span-2 md:col-span-1 ">
+              <InputLabel htmlFor="zip_code" value="CEP" />
+
+              <TextInput
+                mask={'00.000-000'}
+                id="zip_code"
+                className="mt-1 block w-full"
+                value={
+                  editingAddressId === address.id
+                    ? data.zip_code
+                    : address.zip_code
+                }
+                onChange={(e) => {
+                  if (editingAddressId === null) return;
+                  setData('zip_code', e.target.value.replace(/\D/g, ''));
+                }}
+                required
+                icon={<GoSearch />}
+                disabled={
+                  editingAddressId === null || editingAddressId !== address.id
+                }
+              />
+
+              <InputError className="mt-2" message={errors.zip_code} />
+            </div>
+            <div className="col-span-3 md:col-span-2">
+              <InputLabel htmlFor="state" value="Estado" />
+
+              <TextInput
+                id="state"
+                className="mt-1 block w-full"
+                value={
+                  editingAddressId === address.id ? data.state : address.state
+                }
+                onChange={(e) => {
+                  setData('state', e.target.value);
+                }}
+                required
+                disabled={
+                  editingAddressId === null || editingAddressId !== address.id
+                }
+              />
+
+              <InputError className="mt-2" message={errors.state} />
+            </div>
+
+            <div className="col-span-5 md:col-span-2">
+              <InputLabel htmlFor="city" value="Cidade" />
+
+              <TextInput
+                id="city"
+                type="text"
+                className="mt-1 block w-full"
+                value={
+                  editingAddressId === address.id ? data.city : address.city
+                }
+                onChange={(e) => setData('city', e.target.value)}
+                required
+                disabled={
+                  editingAddressId === null || editingAddressId !== address.id
+                }
+              />
+
+              <InputError className="mt-2" message={errors.city} />
+            </div>
+            <div className="col-span-5 md:col-span-2">
+              <InputLabel htmlFor="street" value="Logradouro" />
+
+              <TextInput
+                id="street"
+                type="text"
+                className="mt-1 block w-full"
+                value={
+                  editingAddressId === address.id ? data.street : address.street
+                }
+                onChange={(e) => setData('street', e.target.value)}
+                required
+                disabled={
+                  editingAddressId === null || editingAddressId !== address.id
+                }
+              />
+
+              <InputError className="mt-2" message={errors.street} />
+            </div>
+            <div className="col-span-2 md:col-span-1">
+              <InputLabel htmlFor="number" value="Número" />
+
+              <TextInput
+                id="number"
+                type="text"
+                className="mt-1 block w-full"
+                value={
+                  editingAddressId === address.id ? data.number : address.number
+                }
+                onChange={(e) => setData('number', e.target.value)}
+                required
+                disabled={
+                  editingAddressId === null || editingAddressId !== address.id
+                }
+              />
+
+              <InputError className="mt-2" message={errors.number} />
+            </div>
+            <div className="col-span-3 md:col-span-2">
+              <InputLabel htmlFor="complement" value="Complemento" />
+
+              <TextInput
+                id="complement"
+                type="text"
+                className="mt-1 block w-full"
+                value={
+                  editingAddressId === address.id
+                    ? data.complement
+                    : address.complement || ''
+                }
+                onChange={(e) => setData('complement', e.target.value)}
+                disabled={
+                  editingAddressId === null || editingAddressId !== address.id
+                }
+              />
+
+              <InputError className="mt-2" message={errors.complement} />
+            </div>
+            <div className="flex items-center gap-4 mt-3">
+              {editingAddressId === address.id && (
+                <PrimaryButton
+                  disabled={processing}
+                  outline
+                  onClick={() => {
+                    setEditingAddressId(null);
+                    reset();
+                    if (editingAddressId === 0) {
+                      setUserAddresses(
+                        userAddresses.filter((addr) => addr.id !== address.id)
+                      );
+                    }
+                  }}
+                >
+                  Cancelar
+                </PrimaryButton>
+              )}
+              {editingAddressId === address.id && (
+                <PrimaryButton disabled={processing}>Salvar</PrimaryButton>
+              )}
+            </div>
           </div>
-          <div className="col-span-2 md:col-span-1 ">
-            <InputLabel htmlFor="zip_code" value="CEP" />
-
-            <TextInput
-              id="zip_code"
-              className="mt-1 block w-full"
-              // value={data.zip_code}
-              // onChange={(e) => setData('zip_code', e.target.value)}
-              required
-              isFocused
-              icon={<GoSearch />}
-            />
-
-            {/* <InputError className="mt-2" message={errors.zip_code} /> */}
-          </div>
-          <div className="col-span-3 md:col-span-2">
-            <InputLabel htmlFor="state" value="Estado" />
-
-            <TextInput
-              id="state"
-              className="mt-1 block w-full"
-              // value={data.state}
-              // onChange={(e) => setData('state', e.target.value)}
-              required
-              isFocused
-            />
-
-            {/* <InputError className="mt-2" message={errors.state} /> */}
-          </div>
-
-          <div className="col-span-5 md:col-span-2">
-            <InputLabel htmlFor="city" value="Cidade" />
-
-            <TextInput
-              id="city"
-              type="text"
-              className="mt-1 block w-full"
-              // value={data.city}
-              // onChange={(e) => setData('city', e.target.value)}
-              required
-            />
-
-            {/* <InputError className="mt-2" message={errors.email} /> */}
-          </div>
-          <div className="col-span-5 md:col-span-2">
-            <InputLabel htmlFor="street" value="Logradouro" />
-
-            <TextInput
-              id="street"
-              type="text"
-              className="mt-1 block w-full"
-              // value={data.street}
-              // onChange={(e) => setData('street', e.target.value)}
-              required
-            />
-
-            {/* <InputError className="mt-2" message={errors.street} /> */}
-          </div>
-          <div className="col-span-2 md:col-span-1">
-            <InputLabel htmlFor="number" value="Número" />
-
-            <TextInput
-              id="number"
-              type="text"
-              className="mt-1 block w-full"
-              // value={data.number}
-              // onChange={(e) => setData('number', e.target.value)}
-              required
-            />
-
-            {/* <InputError className="mt-2" message={errors.number} /> */}
-          </div>
-          <div className="col-span-3 md:col-span-2">
-            <InputLabel htmlFor="complement" value="Complemento" />
-
-            <TextInput
-              id="complement"
-              type="text"
-              className="mt-1 block w-full"
-              // value={data.complement}
-              // onChange={(e) => setData('complement', e.target.value)}
-              required
-            />
-
-            {/* <InputError className="mt-2" message={errors.complement} /> */}
-          </div>
-          <div className="flex items-center gap-4 mt-3">
-            <PrimaryButton disabled={processing}>Salvar</PrimaryButton>
-          </div>
-        </div>
+        ))}
+        <button
+          type="button"
+          className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold ${
+            newAddressButtonDisabled
+              ? 'opacity-50'
+              : 'cursor-pointer hover:bg-gray-100'
+          }`}
+          disabled={newAddressButtonDisabled}
+          onClick={() => {
+            setUserAddresses([
+              ...userAddresses,
+              {
+                id: 0,
+                zip_code: '',
+                state: '',
+                city: '',
+                street: '',
+                number: '',
+                complement: '',
+              },
+            ]);
+            setEditingAddressId(0);
+          }}
+        >
+          Adicionar novo endereço
+        </button>
       </form>
     </section>
   );

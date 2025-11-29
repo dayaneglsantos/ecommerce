@@ -54,13 +54,12 @@ class AddressController extends Controller
    */
   public function update(AddressUpdateRequest $request, Address $address)
   {
-    dd($address);
     try {
       $user = $request->user();
       $validatedData = $request->validated();
 
-      $user->address()->updateOrCreate(
-        ['user_id' => $user->id],
+      $user->addresses()->updateOrCreate(
+        ['id' => $request->id], // condição para encontrar o endereço
         $validatedData
       );
 
@@ -74,8 +73,13 @@ class AddressController extends Controller
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Address $address)
+  public function destroyAddress(Request $request, Address $address)
   {
-    //
+    try {
+      $address->delete();
+      return redirect()->back()->with('success', 'Endereço deletado com sucesso!');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao deletar o endereço!');
+    }
   }
 }
