@@ -4,6 +4,7 @@ import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import UpdateAddress from './Partials/UpdateAddressForm';
+import UpdateCards from './Partials/UpdateCardsForm';
 
 interface EditProps {
   mustVerifyEmail: boolean;
@@ -35,6 +36,10 @@ export default function Edit({ mustVerifyEmail, status, user }: EditProps) {
           <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
             <UpdateAddress status={status} user={user} />
           </div>
+          <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+            <UpdateCards status={status} user={user} />
+          </div>
+
           <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
             <UpdatePasswordForm className="max-w-xl" />
           </div>
