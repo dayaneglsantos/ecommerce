@@ -24,6 +24,7 @@ class AddressFactory extends Factory
       'street' => fake()->streetName(),
       'number' => fake()->numberBetween(1, 1000),
       'complement' => fake()->optional()->secondaryAddress(),
+      'default' => false,
       'user_id' => User::factory(),
     ];
   }

@@ -14,6 +14,10 @@ class Address extends Model
     'updated_at',
   ];
 
+  protected $casts = [
+    'default' => 'boolean', // Garante que 0/1 seja sempre true/false em PHP
+  ];
+
   use HasFactory; // Permite o uso de factories para o modelo Address
 
   protected $fillable = [
@@ -24,6 +28,7 @@ class Address extends Model
     'number',
     'complement',
     'user_id',
+    'default',
   ];
 
   public function user()

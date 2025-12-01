@@ -3,8 +3,8 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
-import { Toaster } from 'react-hot-toast';
+import { useEffect, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface AuthenticatedLayoutProps {
   header?: React.ReactNode;
@@ -19,6 +19,17 @@ export default function AuthenticatedLayout({
 
   const [showingNavigationDropdown, setShowingNavigationDropdown] =
     useState(false);
+
+  const { alert } = usePage().props as any;
+
+  useEffect(() => {
+    if (alert?.success) {
+      toast.success(alert.success);
+    }
+    if (alert?.error) {
+      toast.error(alert.error);
+    }
+  }, [alert]);
 
   return (
     <div className="min-h-screen bg-neutral">

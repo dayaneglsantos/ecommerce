@@ -33,7 +33,6 @@ export default function UpdateProfileInformation({
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
     null
   );
-  const { alert } = usePage().props as any;
 
   const [birthDate, setBirthDate] = useState(
     (user.birthdate && dayjs(user.birthdate).format('DD/MM/YYYY')) || null
@@ -110,15 +109,6 @@ export default function UpdateProfileInformation({
       setProfileImagePreview(`storage/${user.profile_image}`);
     }
   }, [user.profile_image]);
-
-  useEffect(() => {
-    if (alert?.success) {
-      toast.success(alert.success);
-    }
-    if (alert?.error) {
-      toast.error(alert.error);
-    }
-  }, [alert]);
 
   return (
     <section className={className}>

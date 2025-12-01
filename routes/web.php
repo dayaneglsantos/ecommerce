@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
   Route::delete('/profile/image', [ProfileController::class, 'destroyImage'])->name('profile.destroyImage');
   Route::post('/profile/address', [AddressController::class, 'update'])->name('profile.updateAddress');
   Route::delete('/profile/address/{address}', [AddressController::class, 'destroyAddress'])->name('profile.destroyAddress');
+  Route::patch('/profile/address/{address}', [AddressController::class, 'default'])->name('profile.defaultAddress');
   Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AddressUpdateRequest;
 use App\Models\Address;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use LaravelLang\Publisher\Console\Add;
 
 class AddressController extends Controller
@@ -67,6 +68,28 @@ class AddressController extends Controller
     } catch (\Exception $e) {
       dd($e->getMessage());
       return redirect()->back()->with('error', 'Erro ao salvar o endereço!');
+    }
+  }
+
+  /**
+   * Set the specified address as default.
+   */
+  public function default(Request $request, Address $address)
+  {
+    try {
+      $user = $request->user();
+      // Remover o antigo endereço padrão
+      $user->addresses()->update(['default' => false]);
+
+      // Definir o novo endereço padrão
+      $address->default = true;
+      $address->save();
+
+
+      return Redirect::back()->with('success', 'Endereço definido como padrão!');
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return Redirect::back()->with('error', 'Erro ao definir o endereço como padrão!');
     }
   }
 

@@ -3,7 +3,6 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { AddressType } from '@/Types/AddressType';
-import { Transition } from '@headlessui/react';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
@@ -21,7 +20,9 @@ export default function UpdateAddress({
   className = '',
   user,
 }: UpdateProfileInformationProps) {
-  const [userAddresses, setUserAddresses] = useState<AddressType[]>([]);
+  const [userAddresses, setUserAddresses] = useState<AddressType[]>(
+    user.addresses
+  );
   const [editingAddressId, setEditingAddressId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -35,13 +36,15 @@ export default function UpdateAddress({
           street: '',
           number: '',
           complement: '',
+          default: false,
         },
       ]);
+      setData('default', true);
       setEditingAddressId(0);
     } else {
       setUserAddresses(user.addresses);
     }
-  }, [user]);
+  }, [user.addresses]);
 
   const { data, setData, errors, post, processing, reset, wasSuccessful } =
     useForm({
@@ -52,6 +55,7 @@ export default function UpdateAddress({
       street: '',
       number: '',
       complement: '',
+      default: false,
     });
 
   const submit = (e: React.FormEvent) => {
@@ -61,6 +65,7 @@ export default function UpdateAddress({
       preserveScroll: true,
       onSuccess: () => {
         setEditingAddressId(null);
+        reset();
       },
     });
   };
@@ -74,7 +79,14 @@ export default function UpdateAddress({
 
     router.delete(route('profile.destroyAddress', addressId), {
       preserveScroll: true,
+      onSuccess: () => {
+        reset();
+      },
     });
+  };
+
+  const handleDefaultAddress = (addressId: number) => {
+    router.patch(route('profile.defaultAddress', addressId));
   };
 
   const newAddressButtonDisabled =
@@ -92,7 +104,10 @@ export default function UpdateAddress({
 
       <form onSubmit={submit} autoComplete="off">
         {userAddresses.map((address: AddressType, index: number) => (
-          <div className="mt-6 grid grid-cols-5 gap-4 shadow-full rounded-2xl p-4 pt-14 -mx-4 relative">
+          <div
+            className="mt-6 grid grid-cols-5 gap-4 shadow-full rounded-2xl p-4 pt-14 -mx-4 relative"
+            key={index}
+          >
             <div className="absolute top-4 right-4 flex gap-2">
               <button
                 type="button"
@@ -100,6 +115,7 @@ export default function UpdateAddress({
                   editingAddressId !== address.id && editingAddressId !== null
                 }
                 onClick={() => {
+                  if (editingAddressId === address.id) return;
                   setEditingAddressId(address.id);
                   setData({
                     id: address.id,
@@ -115,7 +131,7 @@ export default function UpdateAddress({
                 <FaPencilAlt
                   data-tooltip-id="edit"
                   className={`cursor-pointer ${
-                    editingAddressId === address.id || editingAddressId === null
+                    editingAddressId === null
                       ? 'text-gray-500'
                       : 'text-gray-200'
                   } outline-none`}
@@ -133,6 +149,7 @@ export default function UpdateAddress({
                   editingAddressId !== address.id && editingAddressId !== null
                 }
                 onClick={() => {
+                  if (editingAddressId === address.id) return;
                   editingAddressId
                     ? setUserAddresses(user.addresses)
                     : handleDeleteAddress(address.id);
@@ -141,7 +158,7 @@ export default function UpdateAddress({
                 <FaTrashAlt
                   data-tooltip-id="delete"
                   className={`cursor-pointer ${
-                    editingAddressId === address.id || editingAddressId === null
+                    editingAddressId === null
                       ? 'text-gray-500'
                       : 'text-gray-200'
                   } outline-none`}
@@ -154,10 +171,32 @@ export default function UpdateAddress({
                 />
               </button>
             </div>
-            <div className="absolute top-4 left-4 border border-primary p-1 text-[12px] rounded-full px-2 text-primaryDark bg-gray-50">
-              {/* Ajustar regra */}
-              <span>{true ? 'Endereço Padrão' : 'Definir como padrão'}</span>
-            </div>
+            {editingAddressId !== address.id && (
+              <div
+                className={`absolute top-4 left-4 border border-primary p-1 text-[12px] rounded-full px-2 text-primaryDark  ${
+                  address.default ? 'bg-gray-200' : 'bg-gray-50 '
+                }`}
+              >
+                <button
+                  type="button"
+                  disabled={address.default && editingAddressId === null}
+                  onClick={() => {
+                    if (editingAddressId === address.id) {
+                      setData('default', !data.default);
+                      const updatedAddresses = userAddresses.map((addr) => ({
+                        ...addr,
+                        default: !addr.default,
+                      }));
+                      setUserAddresses(updatedAddresses);
+                    } else {
+                      handleDefaultAddress(address.id);
+                    }
+                  }}
+                >
+                  {address.default ? 'Endereço Padrão' : 'Definir como padrão'}
+                </button>
+              </div>
+            )}
             <div className="col-span-2 md:col-span-1 ">
               <InputLabel htmlFor="zip_code" value="CEP" />
 
@@ -324,6 +363,7 @@ export default function UpdateAddress({
                 street: '',
                 number: '',
                 complement: '',
+                default: false,
               },
             ]);
             setEditingAddressId(0);

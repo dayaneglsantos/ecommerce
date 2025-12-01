@@ -20,6 +20,7 @@ class AddressUpdateRequest extends FormRequest
       'street' => ['required', 'string', 'max:255'],
       'number' => ['required', 'numeric'],
       'complement' => ['nullable', 'string', 'max:255'],
+      'default' => ['required', 'boolean'],
     ];
   }
 }

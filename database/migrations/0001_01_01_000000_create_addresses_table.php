@@ -19,10 +19,10 @@ return new class extends Migration
       $table->string('street');
       $table->integer('number');
       $table->string('complement')->nullable();
+      $table->boolean('default')->default(false);
       $table->timestamps();
     });
   }
-
   /**
    * Reverse the migrations.
    */
