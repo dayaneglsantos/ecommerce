@@ -20,7 +20,7 @@ class ProfileController extends Controller
    */
   public function edit(Request $request): Response
   {
-    $user = $request->user()->load('addresses');
+    $user = $request->user()->load(['addresses', 'cards']);
     return Inertia::render('Profile/Edit', [
       'user' => $user,
       'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail, // Verifica se o objeto do usuário implementa a interface MustVerifyEmail

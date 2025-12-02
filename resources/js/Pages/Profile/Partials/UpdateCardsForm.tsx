@@ -4,6 +4,9 @@ import { loadStripe } from '@stripe/stripe-js';
 import creditCard from '@/assets/credit_card.png';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { router } from '@inertiajs/react';
+import Card from '@/Components/Card';
+import { FaTrashAlt } from 'react-icons/fa';
+import { Tooltip } from 'react-tooltip';
 
 interface UpdateProfileInformationProps {
   status: string | null;
@@ -25,11 +28,15 @@ export default function UpdateCards({
   const [numbererror, setNumberError] = useState<string | null>(null);
   const [expiryerror, setExpiryError] = useState<string | null>(null);
   const [cvcerror, setCvcError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(
+    user.cards.length === 0 ? true : false
+  );
 
   const stripeKey = import.meta.env.VITE_STRIPE_KEY;
   const stripePromise = loadStripe(stripeKey);
 
   useEffect(() => {
+    if (!isEditing) return;
     stripePromise.then((stripe) => {
       if (!stripe) return;
       setStrapi(stripe);
@@ -52,13 +59,46 @@ export default function UpdateCards({
         setExpiryError(event.error ? event.error.message : null);
       });
     });
-  }, []);
+  }, [isEditing]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Lógica para enviar os dados do cartão para o backend
+
     if (!strapi || !elements) return;
+
+    const cardElement = elements.getElement('cardNumber');
+
+    const { paymentMethod, error } = await strapi.createPaymentMethod({
+      type: 'card',
+      card: cardElement,
+    });
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    if (paymentMethod) {
+      elements.getElement('cardNumber').clear();
+      elements.getElement('cardExpiry').clear();
+      elements.getElement('cardCvc').clear();
+    }
+
+    // Enviar para o backend via Inertia
+    router.post(
+      route('payment-methods.store'),
+      {
+        payment_method: paymentMethod.id,
+      },
+      { preserveScroll: true }
+    );
   };
+
+  const handleDeteteCard = (cardId: string) => {
+    router.delete(route('cards.destroy', cardId));
+  };
+
+  console.log(user.cards);
 
   return (
     <section className={className}>
@@ -71,32 +111,86 @@ export default function UpdateCards({
         </div>
       </header>
 
-      <form onSubmit={submit} autoComplete="off">
-        <div className="grid grid-cols-6 gap-4 mb-3">
-          <div className="col-span-3">
-            <div
-              ref={cardNumberRef}
-              className=" p-3 border border-gray-300 rounded-md shadow-sm mt-3"
-            ></div>
-            {numbererror && <div className="text-red-500">{numbererror}</div>}
+      <div className="grid grid-cols-4 gap-4">
+        {user.cards.length > 0 &&
+          user.cards.map((card: any) => (
+            <Card className="relative pt-12 mt-6 col-span-2 w-full">
+              <div
+                className={`absolute top-4 left-4 border border-primary p-1 text-[12px] rounded-full px-2 text-primaryDark  ${
+                  card.is_default ? 'bg-gray-200' : 'bg-gray-50 '
+                }`}
+              >
+                <button type="button" onClick={() => {}}>
+                  {card.is_default ? 'Cartão Padrão' : 'Definir como padrão'}
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  handleDeteteCard(card.id);
+                }}
+              >
+                <FaTrashAlt
+                  data-tooltip-id="delete"
+                  className={`cursor-pointer text-gray-500 outline-none absolute top-4 right-4 hover:text-red-600`}
+                />
+                <Tooltip
+                  id="delete"
+                  place="top"
+                  content="Excluir"
+                  className="!p-2 !text-[12px]"
+                />
+              </button>
+              <p>
+                Últimos quatro dígitos: <strong>{card.last_four}</strong>
+              </p>
+              <p>
+                Expira no mês: <strong>{card.expiration_month}</strong>
+              </p>
+            </Card>
+          ))}
+      </div>
+      {isEditing && (
+        <form onSubmit={submit} autoComplete="off">
+          <div className="grid grid-cols-6 gap-4 mb-3">
+            <div className="col-span-3">
+              <div
+                ref={cardNumberRef}
+                className=" p-3 border border-gray-300 rounded-md shadow-sm mt-3"
+              ></div>
+              {numbererror && <div className="text-red-500">{numbererror}</div>}
+            </div>
+            <div className="col-span-2">
+              <div
+                ref={cardExpiryRef}
+                className=" p-3 border border-gray-300 rounded-md shadow-sm mt-3"
+              ></div>
+              {expiryerror && <div className="text-red-500">{expiryerror}</div>}
+            </div>
+            <div className="col-span-1">
+              <div
+                ref={cardCvcRef}
+                className=" p-3 border border-gray-300 rounded-md shadow-sm mt-3"
+              ></div>
+              {cvcerror && <div className="text-red-500">{cvcerror}</div>}
+            </div>
           </div>
-          <div className="col-span-2">
-            <div
-              ref={cardExpiryRef}
-              className=" p-3 border border-gray-300 rounded-md shadow-sm mt-3"
-            ></div>
-            {expiryerror && <div className="text-red-500">{expiryerror}</div>}
-          </div>
-          <div className="col-span-1">
-            <div
-              ref={cardCvcRef}
-              className=" p-3 border border-gray-300 rounded-md shadow-sm mt-3"
-            ></div>
-            {cvcerror && <div className="text-red-500">{cvcerror}</div>}
-          </div>
-        </div>
-        <PrimaryButton>Salvar</PrimaryButton>
-      </form>
+          <PrimaryButton type="submit">Salvar</PrimaryButton>
+        </form>
+      )}
+
+      <button
+        type="button"
+        className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold ${
+          isEditing ? 'opacity-50' : 'cursor-pointer hover:bg-gray-100'
+        }`}
+        disabled={isEditing}
+        onClick={() => {
+          setIsEditing(true);
+        }}
+      >
+        Adicionar novo cartão
+      </button>
     </section>
   );
 }

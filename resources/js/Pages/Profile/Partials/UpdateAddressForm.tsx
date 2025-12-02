@@ -159,7 +159,7 @@ export default function UpdateAddress({
                   data-tooltip-id="delete"
                   className={`cursor-pointer ${
                     editingAddressId === null
-                      ? 'text-gray-500'
+                      ? 'text-gray-500 hover:text-red-600'
                       : 'text-gray-200'
                   } outline-none`}
                 />

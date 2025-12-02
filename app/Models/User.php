@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Address;
+use App\Models\Card;
 use Laravel\Cashier\Billable;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -60,5 +61,9 @@ class User extends Authenticatable implements MustVerifyEmail
   public function addresses()
   {
     return $this->hasMany(Address::class);
+  }
+  public function cards()
+  {
+    return $this->hasMany(Card::class);
   }
 }
