@@ -1,3 +1,4 @@
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -24,6 +25,10 @@ export default function UpdateAddress({
     user.addresses
   );
   const [editingAddressId, setEditingAddressId] = useState<number | null>(null);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     if (user.addresses.length === 0) {
@@ -152,7 +157,8 @@ export default function UpdateAddress({
                   if (editingAddressId === address.id) return;
                   editingAddressId
                     ? setUserAddresses(user.addresses)
-                    : handleDeleteAddress(address.id);
+                    : setOpenConfirmDialog(true);
+                  setSelectedAddressId(address.id);
                 }}
               >
                 <FaTrashAlt
@@ -372,6 +378,17 @@ export default function UpdateAddress({
           Adicionar novo endereço
         </button>
       </form>
+      <ConfirmDialog
+        open={openConfirmDialog}
+        onClose={() => setOpenConfirmDialog(false)}
+        onAccept={() => {
+          selectedAddressId && handleDeleteAddress(selectedAddressId);
+          setSelectedAddressId(null);
+          setOpenConfirmDialog(false);
+        }}
+        title="Tem certesa que deseja excluir este endereço?"
+        description="Esta ação não pode ser desfeita."
+      />
     </section>
   );
 }

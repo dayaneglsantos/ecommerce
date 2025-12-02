@@ -7,6 +7,7 @@ import { router } from '@inertiajs/react';
 import Card from '@/Components/Card';
 import { FaTrashAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
 interface UpdateProfileInformationProps {
   status: string | null;
@@ -31,6 +32,8 @@ export default function UpdateCards({
   const [isEditing, setIsEditing] = useState(
     user.cards.length === 0 ? true : false
   );
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   const stripeKey = import.meta.env.VITE_STRIPE_KEY;
   const stripePromise = loadStripe(stripeKey);
@@ -98,8 +101,6 @@ export default function UpdateCards({
     router.delete(route('cards.destroy', cardId));
   };
 
-  console.log(user.cards);
-
   return (
     <section className={className}>
       <header className="flex items-center gap-6">
@@ -127,7 +128,8 @@ export default function UpdateCards({
               <button
                 type="button"
                 onClick={() => {
-                  handleDeteteCard(card.id);
+                  setSelectedCardId(card.id);
+                  setOpenConfirmDialog(true);
                 }}
               >
                 <FaTrashAlt
@@ -191,6 +193,17 @@ export default function UpdateCards({
       >
         Adicionar novo cartão
       </button>
+      <ConfirmDialog
+        open={openConfirmDialog}
+        title="Tem certeza que deseja remover este cartão?"
+        onAccept={() => {
+          selectedCardId && handleDeteteCard(selectedCardId);
+        }}
+        onClose={() => {
+          setOpenConfirmDialog(false);
+          setSelectedCardId(null);
+        }}
+      />
     </section>
   );
 }
