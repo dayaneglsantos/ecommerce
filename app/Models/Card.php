@@ -27,6 +27,7 @@ class Card extends Model
     'last_four',
     'brand',
     'expiration_month',
+    'expiration_year',
     'is_default',
   ];
 

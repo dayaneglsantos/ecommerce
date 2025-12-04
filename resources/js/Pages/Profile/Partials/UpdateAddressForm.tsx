@@ -51,28 +51,38 @@ export default function UpdateAddress({
     }
   }, [user.addresses]);
 
-  const { data, setData, errors, post, processing, reset, wasSuccessful } =
-    useForm({
-      id: 0,
-      zip_code: '',
-      state: '',
-      city: '',
-      street: '',
-      number: '',
-      complement: '',
-      default: false,
-    });
+  const { data, setData, errors, post, patch, processing, reset } = useForm({
+    zip_code: '',
+    state: '',
+    city: '',
+    street: '',
+    number: '',
+    complement: '',
+    default: false,
+  });
+
+  console.log(editingAddressId);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    post(route('profile.updateAddress'), {
-      preserveScroll: true,
-      onSuccess: () => {
-        setEditingAddressId(null);
-        reset();
-      },
-    });
+    if (editingAddressId === 0) {
+      post(route('address.create'), {
+        preserveScroll: true,
+        onSuccess: () => {
+          setEditingAddressId(null);
+          reset();
+        },
+      });
+    } else {
+      patch(route('address.update', editingAddressId?.toString()), {
+        preserveScroll: true,
+        onSuccess: () => {
+          setEditingAddressId(null);
+          reset();
+        },
+      });
+    }
   };
 
   const handleDeleteAddress = (addressId: number) => {
@@ -82,7 +92,7 @@ export default function UpdateAddress({
     setUserAddresses(filteredAddresses);
     setEditingAddressId(null);
 
-    router.delete(route('profile.destroyAddress', addressId), {
+    router.delete(route('address.destroy', addressId), {
       preserveScroll: true,
       onSuccess: () => {
         reset();
@@ -91,7 +101,7 @@ export default function UpdateAddress({
   };
 
   const handleDefaultAddress = (addressId: number) => {
-    router.patch(route('profile.defaultAddress', addressId));
+    router.patch(route('address.default', addressId));
   };
 
   const newAddressButtonDisabled =
@@ -123,7 +133,6 @@ export default function UpdateAddress({
                   if (editingAddressId === address.id) return;
                   setEditingAddressId(address.id);
                   setData({
-                    id: address.id,
                     zip_code: address.zip_code,
                     state: address.state,
                     city: address.city,
@@ -380,7 +389,10 @@ export default function UpdateAddress({
       </form>
       <ConfirmDialog
         open={openConfirmDialog}
-        onClose={() => setOpenConfirmDialog(false)}
+        onClose={() => {
+          setOpenConfirmDialog(false);
+          setSelectedAddressId(null);
+        }}
         onAccept={() => {
           selectedAddressId && handleDeleteAddress(selectedAddressId);
           setSelectedAddressId(null);

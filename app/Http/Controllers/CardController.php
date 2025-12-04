@@ -41,6 +41,7 @@ class CardController extends Controller
         'last_four' => $card->last4,
         'brand' => $card->brand,
         'expiration_month' => $card->exp_month,
+        'expiration_year' => $card->exp_year,
         'is_default' => $isDefault
       ]);
 
@@ -80,6 +81,28 @@ class CardController extends Controller
       return back()->with('success', 'Cartão removido com sucesso!');
     } catch (\Exception $e) {
       return back()->withErrors(['error' => 'Erro ao remover o cartão: ']);
+    }
+  }
+  public function setDefault(Card $card, Request $request)
+  {
+    try {
+      $user = $request->user();
+
+      // Garantir que o cartão pertence ao usuário logado
+      if ($card->user_id !== $user->id) {
+        abort(403, 'Ação não permitida.');
+      }
+
+      // Definir todos os cartões como não padrão
+      $user->cards()->update(['is_default' => false]);
+
+      // Definir o cartão selecionado como padrão
+      $card->update(['is_default' => true]);
+
+      return back()->with('success', 'Cartão padrão atualizado com sucesso!');
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return back()->withErrors(['error' => 'Erro ao definir o cartão padrão: ']);
     }
   }
 }

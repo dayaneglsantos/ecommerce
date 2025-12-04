@@ -29,9 +29,19 @@ class AddressController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request)
+  public function store(AddressUpdateRequest $request)
   {
-    //
+    try {
+      $user = $request->user();
+      $validated = $request->validated();
+
+      $user->addresses()->create($validated);
+
+      return redirect()->back()->with('success', 'Endereço salvo com sucesso!');
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return redirect()->back()->with('error', 'Erro ao salvar o endereço!');
+    }
   }
 
   /**
@@ -55,14 +65,10 @@ class AddressController extends Controller
    */
   public function update(AddressUpdateRequest $request, Address $address)
   {
+    dd(Address::find(11));
     try {
-      $user = $request->user();
-      $validatedData = $request->validated();
-
-      $user->addresses()->updateOrCreate(
-        ['id' => $request->id], // condição para encontrar o endereço
-        $validatedData
-      );
+      $validated = $request->validated();
+      $address->update($validated);
 
       return redirect()->back()->with('success', 'Endereço salvo com sucesso!');
     } catch (\Exception $e) {
@@ -96,7 +102,7 @@ class AddressController extends Controller
   /**
    * Remove the specified resource from storage.
    */
-  public function destroyAddress(Request $request, Address $address)
+  public function destroy(Request $request, Address $address)
   {
     try {
       $address->delete();

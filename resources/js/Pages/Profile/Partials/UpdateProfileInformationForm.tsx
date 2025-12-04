@@ -87,7 +87,7 @@ export default function UpdateProfileInformation({
     reader.readAsDataURL(file);
 
     router.post(
-      route('profile.updateProfileImage'),
+      route('profile.updateImage'),
       {
         profile_image: file,
       },

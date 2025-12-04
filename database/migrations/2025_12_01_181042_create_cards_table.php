@@ -18,6 +18,7 @@ return new class extends Migration
       $table->string('last_four', 4); // Últimos 4 dígitos do cartão
       $table->string('brand'); // bandeira do cartão (Visa, MasterCard, etc.)
       $table->string('expiration_month', 2); // Mês de expiração do cartão
+      $table->string('expiration_year', 4); // Ano de expiração do cartão
       $table->boolean('is_default')->default(false); // Indica se é o cartão padrão
       $table->timestamps();
     });

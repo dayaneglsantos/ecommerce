@@ -26,13 +26,13 @@ export default function ConfirmDialog({
       <p className="text-gray-700 my-3">{description}</p>
       <div className="flex gap-4 justify-end">
         <PrimaryButton
-          className="bg-green-600 hover:bg-green-700"
+          className="!bg-green-600 hover:!bg-green-700"
           onClick={onAccept}
         >
           {acceptButtonText}
         </PrimaryButton>
         <PrimaryButton
-          className="bg-red-500 hover:bg-red-600"
+          className="!bg-red-500 hover:!bg-red-600"
           onClick={onClose}
         >
           {cancelButtonText}
