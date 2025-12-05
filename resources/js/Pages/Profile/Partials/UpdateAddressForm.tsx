@@ -6,6 +6,7 @@ import TextInput from '@/Components/TextInput';
 import { AddressType } from '@/Types/AddressType';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { GoSearch } from 'react-icons/go';
 import { Tooltip } from 'react-tooltip';
@@ -30,6 +31,7 @@ export default function UpdateAddress({
     null
   );
 
+  // ----------- Carregar endereços do usuário --------------
   useEffect(() => {
     if (user.addresses.length === 0) {
       setUserAddresses([
@@ -51,6 +53,7 @@ export default function UpdateAddress({
     }
   }, [user.addresses]);
 
+  // ----------- Formulário --------------
   const { data, setData, errors, post, patch, processing, reset } = useForm({
     zip_code: '',
     state: '',
@@ -61,8 +64,7 @@ export default function UpdateAddress({
     default: false,
   });
 
-  console.log(editingAddressId);
-
+  // ----------- Cadastro e Edição de endereço --------------
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -75,7 +77,7 @@ export default function UpdateAddress({
         },
       });
     } else {
-      patch(route('address.update', editingAddressId?.toString()), {
+      patch(route('address.update', editingAddressId!), {
         preserveScroll: true,
         onSuccess: () => {
           setEditingAddressId(null);
@@ -85,6 +87,7 @@ export default function UpdateAddress({
     }
   };
 
+  // ----------- Exclusão de endereço --------------
   const handleDeleteAddress = (addressId: number) => {
     const filteredAddresses = userAddresses.filter(
       (address) => address.id !== addressId
@@ -100,12 +103,59 @@ export default function UpdateAddress({
     });
   };
 
+  // ----------- Definir endereço padrão --------------
   const handleDefaultAddress = (addressId: number) => {
     router.patch(route('address.default', addressId));
   };
 
+  // ----------- Desabilitar botão adicionar novo endereço --------------
   const newAddressButtonDisabled =
     user.addresses.length === 0 || editingAddressId !== null;
+
+  // ----------- Atualizar campo default do form ao editar endereço --------------
+  useEffect(() => {
+    if (editingAddressId !== null) {
+      setData(
+        'default',
+        userAddresses.find((addr) => addr.id === editingAddressId)?.default ||
+          false
+      );
+    }
+  }, [editingAddressId]);
+
+  // ----------- Buscar CEP --------------
+  const searchCep = async () => {
+    const toastId = toast.loading('Buscando CEP...');
+    try {
+      const response = await fetch(
+        `https://viacep.com.br/ws/${data.zip_code}/json/`
+      );
+      const addressData = await response.json();
+
+      if (addressData.erro) {
+        toast.error(
+          'Ops...CEP não encontrado. Mas você pode seguir o preenchimento manualmente!',
+          {
+            id: toastId,
+          }
+        );
+        return;
+      }
+      toast.dismiss(toastId);
+      setData('state', addressData.uf);
+      setData('city', addressData.localidade);
+      setData('street', addressData.logradouro);
+      setData('number', '');
+      setData('complement', '');
+    } catch (error) {
+      toast.error(
+        'Ops...Erro ao buscar CEP. Mas você pode seguir o preenchimento manualmente.',
+        {
+          id: toastId,
+        }
+      );
+    }
+  };
 
   return (
     <section className={className}>
@@ -229,7 +279,17 @@ export default function UpdateAddress({
                   setData('zip_code', e.target.value.replace(/\D/g, ''));
                 }}
                 required
-                icon={<GoSearch />}
+                icon={
+                  <GoSearch
+                    onClick={() => {
+                      if (editingAddressId === null) return;
+                      searchCep();
+                    }}
+                    className={`${
+                      editingAddressId !== null ? 'cursor-pointer' : ''
+                    }`}
+                  />
+                }
                 disabled={
                   editingAddressId === null || editingAddressId !== address.id
                 }
