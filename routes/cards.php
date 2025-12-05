@@ -3,7 +3,6 @@
 use App\Http\Controllers\CardController;
 use Illuminate\Support\Facades\Route;
 
-// Todas as rotas aqui recebem middleware 'auth' e prefix 'profile' e namespacing 'profile.'
 Route::middleware('auth')
   ->prefix('cards')
   ->name('cards.')
