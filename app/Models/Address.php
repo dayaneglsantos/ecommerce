@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Address extends Model
 {
+  use HasFactory; // Permite o uso de factories para o modelo Address
 
   protected $hidden = [
     'user_id',
@@ -18,7 +19,6 @@ class Address extends Model
     'default' => 'boolean', // Garante que 0/1 seja sempre true/false em PHP
   ];
 
-  use HasFactory; // Permite o uso de factories para o modelo Address
 
   protected $fillable = [
     'zip_code',
