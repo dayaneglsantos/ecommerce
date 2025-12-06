@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Database\Seeders\UserSeeder;
 use Database\Seeders\BrandSeeder;
-use Database\Seeders\AddressSeeder;
+use Database\Seeders\CommentSeeder;
 use Database\Seeders\CategorySeeder;
 use Illuminate\Database\Seeder;
 
@@ -17,6 +17,9 @@ class DatabaseSeeder extends Seeder
       BrandSeeder::class,
       CategorySeeder::class,
       ProductSeeder::class,
+      CommentSeeder::class,
+      ProductReviewSeeder::class,
+      FavoriteSeeder::class,
     ]);
   }
 }

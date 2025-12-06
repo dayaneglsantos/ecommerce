@@ -43,4 +43,9 @@ class Product extends Model
   {
     return $this->belongsTo(ProductVariation::class, 'default_variation_id');
   }
+
+  public function reviews()
+  {
+    return $this->hasMany(ProductReview::class, 'product_id');
+  }
 }
