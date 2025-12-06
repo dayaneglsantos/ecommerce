@@ -60,8 +60,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
   public function addresses()
   {
-    return $this->hasMany(Address::class);
+    return $this->morphMany(Address::class, 'addressable'); // Definindo o relacionamento polimórfico
   }
+
   public function cards()
   {
     return $this->hasMany(Card::class);

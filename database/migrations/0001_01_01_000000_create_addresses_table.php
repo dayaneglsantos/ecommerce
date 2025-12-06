@@ -20,6 +20,7 @@ return new class extends Migration
       $table->integer('number');
       $table->string('complement')->nullable();
       $table->boolean('default')->default(false);
+      $table->morphs('addressable'); // Cria os campos addressable_id e addressable_type. Morphs permite relacionar o endereço a múltiplos modelos.
       $table->timestamps();
     });
   }

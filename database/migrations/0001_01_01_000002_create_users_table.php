@@ -24,6 +24,8 @@ return new class extends Migration
       $table->string('profile_image')->nullable();
       $table->enum('profile', ['admin', 'customer'])->default('customer');
       $table->rememberToken();
+      $table->unsignedBigInteger('address_id')->nullable();
+      $table->foreign('address_id')->references('id')->on('addresses');
       $table->timestamps();
     });
 

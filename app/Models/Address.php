@@ -27,12 +27,17 @@ class Address extends Model
     'street',
     'number',
     'complement',
-    'user_id',
     'default',
   ];
 
   public function user()
   {
     return $this->belongsTo(User::class);
+  }
+
+  public function addressable()
+  {
+    // morphTo diz ao Eloquent para olhar para addressable_id e addressable_type para descobrir a qual modelo este endereço pertence
+    return $this->morphTo();
   }
 }

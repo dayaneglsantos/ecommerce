@@ -25,7 +25,8 @@ class AddressFactory extends Factory
       'number' => fake()->numberBetween(1, 1000),
       'complement' => fake()->optional()->secondaryAddress(),
       'default' => false,
-      'user_id' => User::factory(),
+      'addressable_id' => null,
+      'addressable_type' => null,
     ];
   }
 }

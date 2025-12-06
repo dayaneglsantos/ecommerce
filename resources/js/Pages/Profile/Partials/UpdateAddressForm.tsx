@@ -69,7 +69,7 @@ export default function UpdateAddress({
     e.preventDefault();
 
     if (editingAddressId === 0) {
-      post(route('address.create'), {
+      post(route('address.createUserAddress', user.id), {
         preserveScroll: true,
         onSuccess: () => {
           setEditingAddressId(null);
