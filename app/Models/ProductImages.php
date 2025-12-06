@@ -15,8 +15,12 @@ class ProductImages extends Model
     'is_primary',
   ];
 
-  public function product()
+  protected $casts = [
+    'is_primary' => 'boolean',
+  ];
+
+  public function productVariation()
   {
-    return $this->belongsTo(Product::class);
+    return $this->belongsTo(ProductVariation::class, 'product_variation_id');
   }
 }

@@ -24,13 +24,23 @@ class ProductVariation extends Model
     'supplier_id',
   ];
 
+  protected $casts = [
+    // Informar ao Laravel que este campo JSON deve ser tratado como um array PHP.
+    'technical_specifications' => 'array',
+  ];
+
   public function product()
   {
-    return $this->belongsTo(Product::class);
+    return $this->belongsTo(Product::class, 'product_id');
   }
 
   public function images()
   {
-    return $this->hasMany(ProductImages::class);
+    return $this->hasMany(ProductImages::class, 'product_variation_id');
+  }
+
+  public function supplier()
+  {
+    return $this->hasOne(Supplier::class);
   }
 }

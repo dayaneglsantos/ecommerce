@@ -19,7 +19,6 @@ class ProductVariationFactory extends Factory
   public function definition(): array
   {
     return [
-      'product_id' => Product::factory(),
       'color' => fake()->safeColorName(),
       'color_code' => fake()->hexColor(),
       'size' => fake()->randomElement(['S', 'M', 'L', 'XL', 'XXL']),
@@ -33,7 +32,6 @@ class ProductVariationFactory extends Factory
         'dimensions' => fake()->randomFloat(2, 5.0, 50.0) . ' x ' . fake()->randomFloat(2, 5.0, 50.0) . ' x ' . fake()->randomFloat(2, 1.0, 30.0) . ' cm',
         'material' => fake()->randomElement(['Cotton', 'Polyester', 'Leather', 'Wool']),
       ],
-      'supplier_id' => Supplier::factory(),
     ];
   }
 }
