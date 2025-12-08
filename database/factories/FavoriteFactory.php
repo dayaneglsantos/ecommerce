@@ -20,7 +20,7 @@ class FavoriteFactory extends Factory
   {
     return [
       'user_id' => User::factory(),
-      'product_variant_id' => ProductVariation::factory(),
+      'product_variation_id' => ProductVariation::factory(),
     ];
   }
 }

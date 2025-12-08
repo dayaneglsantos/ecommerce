@@ -13,8 +13,7 @@ return new class extends Migration
   {
     Schema::create('product_variations', function (Blueprint $table) {
       $table->id();
-      $table->unsignedBigInteger('product_id');
-      $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+      $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
       $table->string('color')->nullable();
       $table->string('color_code')->nullable();
       $table->string('size')->nullable();
@@ -24,8 +23,7 @@ return new class extends Migration
       $table->integer('pix_discount_percent')->default(0);
       $table->string('sku')->unique();
       $table->json('technical_specifications')->nullable();
-      $table->unsignedBigInteger('supplier_id')->nullable();
-      $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
+      $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('set null');
       $table->timestamps();
     });
   }

@@ -12,8 +12,7 @@ return new class extends Migration
   public function up(): void
   {
     Schema::table('products', function (Blueprint $table) {
-      $table->unsignedBigInteger('default_variation_id')->nullable();
-      $table->foreign('default_variation_id')->references('id')->on('product_variations')->onDelete('set null');
+      $table->foreignId('default_variation_id')->nullable()->constrained('product_variations')->onDelete('set null');
     });
   }
 

@@ -14,12 +14,9 @@ return new class extends Migration
     Schema::create('comments', function (Blueprint $table) {
       $table->id();
       $table->text('content');
-      $table->unsignedBigInteger('user_id');
-      $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); // Excluir comentários se o usuário for excluído
-      $table->unsignedBigInteger('product_id');
-      $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade'); // Excluir comentários se o produto for excluído
-      $table->unsignedBigInteger('parent_id')->nullable();
-      $table->foreign('parent_id')->references('id')->on('comments')->onDelete('cascade'); // Excluir respostas se o comentário pai for excluído
+      $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Excluir comentários se o usuário for excluído
+      $table->foreignId('product_id')->constrained()->onDelete('cascade'); // Excluir comentários se o produto for excluído
+      $table->foreignId('parent_id')->nullable()->constrained('comments')->onDelete('cascade'); // Excluir respostas se o comentário pai for excluído
       $table->timestamps();
     });
   }

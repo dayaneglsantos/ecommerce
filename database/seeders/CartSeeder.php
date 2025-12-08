@@ -2,12 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Favorite;
+use App\Models\Cart;
 use App\Models\ProductVariation;
 use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class FavoriteSeeder extends Seeder
+class CartSeeder extends Seeder
 {
   /**
    * Run the database seeds.
@@ -15,13 +16,13 @@ class FavoriteSeeder extends Seeder
   public function run(): void
   {
     $users = User::all();
-    $products = ProductVariation::all();
+    $productVariations = ProductVariation::all();
 
-    Favorite::factory(10)
-      ->state(function () use ($users, $products) {
+    Cart::factory(5)
+      ->state(function () use ($users, $productVariations) {
         return [
           'user_id' => $users->random()->id,
-          'product_variation_id' => $products->random()->id,
+          'product_variation_id' => $productVariations->random()->id,
         ];
       })
       ->create();

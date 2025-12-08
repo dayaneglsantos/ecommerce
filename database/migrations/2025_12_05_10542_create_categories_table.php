@@ -17,8 +17,7 @@ return new class extends Migration
       $table->string('slug')->unique();
       $table->boolean('status')->default(true);
       $table->text('description')->nullable();
-      $table->unsignedBigInteger('parent_id')->nullable();
-      $table->foreign('parent_id')->references('id')->on('categories')->onDelete('cascade');
+      $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('cascade');
       $table->timestamps();
     });
   }
