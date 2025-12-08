@@ -1,13 +1,12 @@
 <?php
 
-use App\Http\Controllers\CardController;
-use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('auth')
-  ->prefix('products')
+  ->prefix('produtos')
   ->name('products.')
   ->group(function () {
-    Route::get('/', [ProductsController::class, 'edit'])->name('edit');
+    Route::get('/', [ProductController::class, 'create'])->name('create');
   });

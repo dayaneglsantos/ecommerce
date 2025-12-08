@@ -30,8 +30,8 @@ export default function AdminNavbar() {
                 Início
               </NavLink>
               <NavLink
-              // href={route('dashboard')}
-              // active={route().current('dashboard')}
+                href={route('products.create')}
+                active={route().current('products.create')}
               >
                 Produtos
               </NavLink>

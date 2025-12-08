@@ -24,3 +24,4 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/profile.php';
 require __DIR__ . '/address.php';
 require __DIR__ . '/cards.php';
+require __DIR__ . '/products.php';

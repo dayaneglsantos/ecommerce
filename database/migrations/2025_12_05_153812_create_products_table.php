@@ -15,8 +15,8 @@ return new class extends Migration
       $table->id();
       $table->string('name');
       $table->string('slug')->unique();
-      $table->text('description')->nullable();
-      $table->text('full_description')->nullable();
+      $table->text('description')->nullable(); // Descrição breve do produto para mostrar em listas, cards, etc.
+      $table->text('full_description')->nullable(); // Detalhes completos do produto
       $table->foreignId('brand_id')->nullable()->constrained('brands')->onDelete('set null');
       $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
       $table->timestamps();
