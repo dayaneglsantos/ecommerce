@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
       CommentSeeder::class,
       ProductReviewSeeder::class,
       FavoriteSeeder::class,
+      CouponSeeder::class,
+      UsedCouponSeeder::class,
     ]);
   }
 }
