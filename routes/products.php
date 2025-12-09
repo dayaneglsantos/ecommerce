@@ -8,5 +8,6 @@ Route::middleware('auth')
   ->prefix('produtos')
   ->name('products.')
   ->group(function () {
-    Route::get('/', [ProductController::class, 'create'])->name('create');
+    Route::get('/', [ProductController::class, 'index'])->name('index');
+    Route::get('/novo', [ProductController::class, 'create'])->name('create');
   });
