@@ -5,16 +5,16 @@ import {
   ListboxOptions,
   Portal,
 } from '@headlessui/react';
-import { ChangeEvent, useState } from 'react';
+import { FaCaretDown } from 'react-icons/fa6';
 import { IoMdCheckmark } from 'react-icons/io';
 
 interface SelectInputProps {
-  options: { value: string; label: string }[];
-  id: string;
+  options: { value: string | number; label: string }[];
   name?: string;
   value: any;
   multiple?: boolean;
   onChange?: (value: any) => void;
+  placeholder?: string;
 }
 
 export default function SelectInput({
@@ -22,22 +22,31 @@ export default function SelectInput({
   value,
   multiple = false,
   onChange,
+  placeholder = 'Selecione...',
   ...props
 }: SelectInputProps) {
   const getSelectedOptions = () => {
     if (value.length === 0) {
-      return 'Selecione...';
+      return <span className="text-gray-400">{placeholder}</span>;
     }
     if (multiple) {
       const selectedLabels = options
         .filter((option) => value.includes(option.value))
         .map((option) => option.label);
-      return selectedLabels.join(', ');
+      return (
+        <div className="flex gap-1 overflow-x-hidden">
+          {selectedLabels.map((item) => (
+            <span key={item} className="px-1  bg-gray-200 rounded-md">
+              {item}
+            </span>
+          ))}
+        </div>
+      );
     } else {
       const selectedLabel = options.find(
         (option) => option.value === value
       )?.label;
-      return selectedLabel;
+      return <span>{selectedLabel}</span>;
     }
   };
 
@@ -46,10 +55,11 @@ export default function SelectInput({
       <Listbox multiple={multiple} onChange={onChange}>
         <ListboxButton
           className={
-            'w-full p-2 flex items-center bg-white border border-gray-300 rounded-md shadow-sm focus-within:border-primaryLight focus-within:ring-1 focus-within:ring-primaryLight outline-none'
+            'w-full p-2 flex items-center justify-between bg-white border border-gray-300 rounded-md shadow-sm focus-within:border-primaryLight focus-within:ring-1 focus-within:ring-primaryLight outline-none'
           }
         >
-          <span>{getSelectedOptions()}</span>
+          {getSelectedOptions()}
+          <FaCaretDown className="text-gray-400" />
         </ListboxButton>
         {options.length > 0 && (
           <ListboxOptions

@@ -13,6 +13,9 @@ class Product extends Model
   protected $hidden = [
     'created_at',
     'updated_at',
+    'default_variation_id',
+    'brand_id',
+    'category_id',
   ];
 
   protected $fillable = [
@@ -23,6 +26,8 @@ class Product extends Model
     'brand_id',
     'category_id',
   ];
+
+  protected $with = ['brand', 'category'];
 
   public function brand()
   {

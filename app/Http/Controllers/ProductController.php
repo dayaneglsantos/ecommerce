@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductVariation;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,7 +16,15 @@ class ProductController extends Controller
    */
   public function index()
   {
-    return Inertia::render('Products/index');
+    $productVariations = ProductVariation::all();
+    $brands = Brand::all();
+    $categories = Category::all();
+
+    return Inertia::render('Products/index', [
+      'productVariations' => $productVariations,
+      'brands' => $brands,
+      'categories' => $categories,
+    ]);
   }
 
   /**
@@ -26,7 +35,7 @@ class ProductController extends Controller
     $brands = Brand::all();
     $categories = Category::all();
 
-    return Inertia::render('Products/ProductForm', [
+    return Inertia::render('Products/index', [
       'brands' => $brands,
       'categories' => $categories,
     ]);

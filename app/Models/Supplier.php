@@ -19,13 +19,13 @@ class Supplier extends Model
     'notes'
   ];
 
-  public function products()
-  {
-    return $this->hasMany(ProductVariation::class);
-  }
-
   public function addresses()
   {
     return $this->morphMany(Address::class, 'addressable'); // Definindo o relacionamento polimórfico
+  }
+
+  public function productVariations()
+  {
+    return $this->hasMany(ProductVariation::class, 'supplier_id');
   }
 }

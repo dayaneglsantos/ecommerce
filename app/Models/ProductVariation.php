@@ -10,6 +10,13 @@ class ProductVariation extends Model
   /** @use HasFactory<\Database\Factories\ProductVariationFactory> */
   use HasFactory;
 
+  protected $hidden = [
+    'product_id',
+    'supplier_id',
+    'created_at',
+    'updated_at',
+  ];
+
   protected $fillable = [
     'product_id',
     'color',
@@ -25,9 +32,12 @@ class ProductVariation extends Model
   ];
 
   protected $casts = [
-    // Informar ao Laravel que este campo JSON deve ser tratado como um array PHP.
-    'technical_specifications' => 'array',
+    'technical_specifications' => 'array',  // Informar ao Laravel que este campo JSON deve ser tratado como um array PHP.
+    'old_price' => 'float',
+    'price' => 'float',
   ];
+
+  protected $with = ['images', 'supplier', 'product'];
 
   public function product()
   {
@@ -41,6 +51,6 @@ class ProductVariation extends Model
 
   public function supplier()
   {
-    return $this->hasOne(Supplier::class);
+    return $this->belongsTo(Supplier::class);
   }
 }
