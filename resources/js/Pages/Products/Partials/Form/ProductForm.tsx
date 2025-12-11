@@ -1,3 +1,4 @@
+import Card from '@/Components/Card';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import SelectInput from '@/Components/SelectInput';
@@ -65,104 +66,106 @@ export default function ProductForm({ brands, categories }: any) {
     value: category.id,
   }));
   return (
-    <form onSubmit={createProduct}>
-      <div>
-        <InputLabel htmlFor="name" value="Nome do Produto" className="mt-4" />
-        <TextInput
-          id="name"
-          name="name"
-          type="text"
-          className="mt-1 block w-full"
-          onChange={(e) => setData('name', e.target.value)}
-        />
-        <InputError className="mt-2" message={errors.name} />
-      </div>
-      <div>
-        <InputLabel
-          htmlFor="slug"
-          value="Slug do Produto"
-          className="mt-4"
-          icon={<IoMdInformationCircle />}
-          iconText="Texto amigável para URL"
-        />
-        <TextInput
-          id="slug"
-          name="slug"
-          type="text"
-          className="mt-1 block w-full"
-          onChange={(e) => setData('slug', e.target.value)}
-        />
-        <InputError className="mt-2" message={errors.slug} />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-1">
-          <InputLabel htmlFor="brand" value="Marca" className="mt-4" />
-          <SelectInput
-            options={brandsOptions}
-            value={data.brand_id}
-            onChange={(e) => {
-              setData('brand_id', e);
+    <Card className="w-full">
+      <form onSubmit={createProduct}>
+        <div>
+          <InputLabel htmlFor="name" value="Nome do Produto" className="mt-4" />
+          <TextInput
+            id="name"
+            name="name"
+            type="text"
+            className="mt-1 block w-full"
+            onChange={(e) => setData('name', e.target.value)}
+          />
+          <InputError className="mt-2" message={errors.name} />
+        </div>
+        <div>
+          <InputLabel
+            htmlFor="slug"
+            value="Slug do Produto"
+            className="mt-4"
+            icon={<IoMdInformationCircle />}
+            iconText="Texto amigável para URL"
+          />
+          <TextInput
+            id="slug"
+            name="slug"
+            type="text"
+            className="mt-1 block w-full"
+            onChange={(e) => setData('slug', e.target.value)}
+          />
+          <InputError className="mt-2" message={errors.slug} />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="col-span-1">
+            <InputLabel htmlFor="brand" value="Marca" className="mt-4" />
+            <SelectInput
+              options={brandsOptions}
+              value={data.brand_id}
+              onChange={(e) => {
+                setData('brand_id', e);
+              }}
+            />
+            <InputError className="mt-2" message={errors.brand_id} />
+          </div>
+          <div className="col-span-1">
+            <InputLabel htmlFor="category" value="Categoria" className="mt-4" />
+            <SelectInput
+              options={categoriesOptions}
+              value={data.category_id}
+              onChange={(e) => setData('category_id', e)}
+            />
+            <InputError className="mt-2" message={errors.category_id} />
+          </div>
+        </div>
+        <div>
+          <InputLabel
+            htmlFor="description"
+            value="Descrição Resumida"
+            className="mt-4"
+            icon={<IoMdInformationCircle />}
+            iconText="Descrição apresentada em listas e resumos."
+          />
+          <TextInput
+            id="description"
+            name="description"
+            type="text"
+            className="mt-1 block w-full"
+            onChange={(e) => setData('description', e.target.value)}
+          />
+          <InputError className="mt-2" message={errors.description} />
+        </div>
+        <div className="mt-3">
+          <InputLabel
+            htmlFor="full_description"
+            value="Descrição Completa"
+            className="mt-4"
+          />
+          <Editor
+            id="full_description"
+            apiKey={import.meta.env.VITE_TINY_API_KEY}
+            onEditorChange={(content) => {
+              setData('full_description', content);
+            }}
+            value={data.full_description}
+            init={{
+              height: 400,
+              branding: false,
+              placeholder: 'Descrição do produto...',
+              menubar: false,
+              language: 'pt-BR',
+              elementpath: false,
+              plugins: ['link', 'lists', 'table', 'paste', 'image', 'media'],
+              toolbar:
+                'undo redo | blocks | styleselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media',
+              file_picker_types: 'image media',
+              file_picker_callback: (cb: any, value: any, meta: any) =>
+                handleFilePicker(cb, value, meta),
             }}
           />
-          <InputError className="mt-2" message={errors.brand_id} />
+          <InputError className="mt-2" message={errors.full_description} />
         </div>
-        <div className="col-span-1">
-          <InputLabel htmlFor="category" value="Categoria" className="mt-4" />
-          <SelectInput
-            options={categoriesOptions}
-            value={data.category_id}
-            onChange={(e) => setData('category_id', e)}
-          />
-          <InputError className="mt-2" message={errors.category_id} />
-        </div>
-      </div>
-      <div>
-        <InputLabel
-          htmlFor="description"
-          value="Descrição Resumida"
-          className="mt-4"
-          icon={<IoMdInformationCircle />}
-          iconText="Descrição apresentada em listas e resumos."
-        />
-        <TextInput
-          id="description"
-          name="description"
-          type="text"
-          className="mt-1 block w-full"
-          onChange={(e) => setData('description', e.target.value)}
-        />
-        <InputError className="mt-2" message={errors.description} />
-      </div>
-      <div className="mt-3">
-        <InputLabel
-          htmlFor="full_description"
-          value="Descrição Completa"
-          className="mt-4"
-        />
-        <Editor
-          id="full_description"
-          apiKey={import.meta.env.VITE_TINY_API_KEY}
-          onEditorChange={(content) => {
-            setData('full_description', content);
-          }}
-          value={data.full_description}
-          init={{
-            height: 400,
-            branding: false,
-            placeholder: 'Descrição do produto...',
-            menubar: false,
-            language: 'pt-BR',
-            elementpath: false,
-            plugins: ['link', 'lists', 'table', 'paste', 'image', 'media'],
-            toolbar:
-              'undo redo | blocks | styleselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media',
-            file_picker_types: 'image media',
-            file_picker_callback: (cb: any, value: any, meta: any) =>
-              handleFilePicker(cb, value, meta),
-          }}
-        />
-        <InputError className="mt-2" message={errors.full_description} />
-      </div>
-    </form>
+      </form>
+    </Card>
   );
 }
