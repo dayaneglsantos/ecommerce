@@ -4,9 +4,10 @@ import BrandType from '@/Types/BrandType';
 import CategoryType from '@/Types/CategoryType';
 import ProductType from '@/Types/ProductType';
 import { Head } from '@inertiajs/react';
-import ProductForm from './Partials/ProductForm';
+import ProductForm from './Partials/ProductFormPage';
 import ProductsList from './Partials/ProductsList';
 import ProductVariationType from '@/Types/ProductVariationType';
+import ProductFormPage from './Partials/ProductFormPage';
 
 interface ProductsPageProps {
   products: ProductType[];
@@ -49,7 +50,7 @@ export default function ProductsPage({
             />
           )}
           {currentTab === 'products.create' && (
-            <ProductForm brands={brands} categories={categories} />
+            <ProductFormPage brands={brands} categories={categories} />
           )}
           {currentTab === 'products.edit' && (
             <ProductForm brands={brands} categories={categories} />
