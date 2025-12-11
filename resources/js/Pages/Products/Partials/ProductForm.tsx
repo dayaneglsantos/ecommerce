@@ -1,3 +1,4 @@
+import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
@@ -7,17 +8,23 @@ import { Editor } from '@tinymce/tinymce-react';
 import { IoMdInformationCircle } from 'react-icons/io';
 
 export default function ProductForm({ brands, categories }: any) {
-  const { data, setData, reset, post } = useForm({
+  const { data, setData, reset, post, errors } = useForm({
     name: '',
     full_description: '',
-    brand: '',
-    category: [] as string[],
+    brand_id: '',
+    category_id: '',
     slug: '',
     description: '',
   });
 
-  const createProduct = () => {
-    console.log('Criar produto');
+  console.log(errors);
+  console.log(data);
+
+  const createProduct = (e: React.FormEvent) => {
+    e.preventDefault();
+    post(route('products.store'), {
+      onSuccess: () => reset(),
+    });
   };
 
   const handleFilePicker = (cb: any, value: any, meta: any) => {
@@ -52,19 +59,19 @@ export default function ProductForm({ brands, categories }: any) {
     input.click();
   };
 
-  const brandsOptions = brands.map((brand: any) => ({
+  const brandsOptions = brands?.map((brand: any) => ({
     label: brand.name,
     value: brand.id,
   }));
 
-  const categoriesOptions = categories.map((category: any) => ({
+  const categoriesOptions = categories?.map((category: any) => ({
     label: category.name,
     value: category.id,
   }));
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-      <form>
+      <form onSubmit={createProduct}>
         <div>
           <InputLabel htmlFor="name" value="Nome do Produto" className="mt-4" />
           <TextInput
@@ -72,7 +79,9 @@ export default function ProductForm({ brands, categories }: any) {
             name="name"
             type="text"
             className="mt-1 block w-full"
+            onChange={(e) => setData('name', e.target.value)}
           />
+          <InputError className="mt-2" message={errors.name} />
         </div>
         <div>
           <InputLabel
@@ -87,29 +96,30 @@ export default function ProductForm({ brands, categories }: any) {
             name="slug"
             type="text"
             className="mt-1 block w-full"
+            onChange={(e) => setData('slug', e.target.value)}
           />
+          <InputError className="mt-2" message={errors.slug} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-1">
             <InputLabel htmlFor="brand" value="Marca" className="mt-4" />
             <SelectInput
-              id="brand"
               options={brandsOptions}
-              value={data.brand}
+              value={data.brand_id}
               onChange={(e) => {
-                setData('brand', e);
+                setData('brand_id', e);
               }}
             />
+            <InputError className="mt-2" message={errors.brand_id} />
           </div>
           <div className="col-span-1">
             <InputLabel htmlFor="category" value="Categoria" className="mt-4" />
             <SelectInput
-              id="category"
               options={categoriesOptions}
-              value={data.category}
-              onChange={(e) => setData('category', e)}
-              multiple
+              value={data.category_id}
+              onChange={(e) => setData('category_id', e)}
             />
+            <InputError className="mt-2" message={errors.category_id} />
           </div>
         </div>
         <div>
@@ -125,7 +135,9 @@ export default function ProductForm({ brands, categories }: any) {
             name="description"
             type="text"
             className="mt-1 block w-full"
+            onChange={(e) => setData('description', e.target.value)}
           />
+          <InputError className="mt-2" message={errors.description} />
         </div>
         <div className="mt-3">
           <InputLabel
@@ -155,10 +167,15 @@ export default function ProductForm({ brands, categories }: any) {
                 handleFilePicker(cb, value, meta),
             }}
           />
+          <InputError className="mt-2" message={errors.full_description} />
         </div>
         <div className="flex gap-3 mt-5 justify-end">
-          <PrimaryButton outline>Salvar</PrimaryButton>
-          <PrimaryButton>Salvar e criar variação deste produto</PrimaryButton>
+          <PrimaryButton outline type="submit">
+            Salvar
+          </PrimaryButton>
+          <PrimaryButton type="button">
+            Salvar e criar variação deste produto
+          </PrimaryButton>
         </div>
       </form>
     </div>

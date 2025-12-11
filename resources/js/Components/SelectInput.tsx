@@ -7,14 +7,15 @@ import {
 } from '@headlessui/react';
 import { FaCaretDown } from 'react-icons/fa6';
 import { IoMdCheckmark } from 'react-icons/io';
+import { IoClose } from 'react-icons/io5';
 
 interface SelectInputProps {
   options: { value: string | number; label: string }[];
-  name?: string;
   value: any;
   multiple?: boolean;
   onChange?: (value: any) => void;
   placeholder?: string;
+  resetSelected?: () => void;
 }
 
 export default function SelectInput({
@@ -23,20 +24,26 @@ export default function SelectInput({
   multiple = false,
   onChange,
   placeholder = 'Selecione...',
-  ...props
+  resetSelected,
 }: SelectInputProps) {
+  const selectedLabels =
+    Array.isArray(value) &&
+    options
+      .filter((option) => value.includes(option.value))
+      .map((option) => option.label);
+
   const getSelectedOptions = () => {
     if (value.length === 0) {
       return <span className="text-gray-400">{placeholder}</span>;
     }
-    if (multiple) {
-      const selectedLabels = options
-        .filter((option) => value.includes(option.value))
-        .map((option) => option.label);
+    if (multiple && selectedLabels) {
       return (
-        <div className="flex gap-1 overflow-x-hidden">
+        <div className="flex gap-1 overflow-x-hidden whitespace-nowrap">
           {selectedLabels.map((item) => (
-            <span key={item} className="px-1  bg-gray-200 rounded-md">
+            <span
+              key={item}
+              className="px-1  bg-gray-200 rounded-md whitespace-nowrap max-w-[150px] overflow-hidden text-ellipsis shrink-0"
+            >
               {item}
             </span>
           ))}
@@ -52,14 +59,25 @@ export default function SelectInput({
 
   return (
     <div className="relative w-full">
-      <Listbox multiple={multiple} onChange={onChange}>
+      <Listbox multiple={multiple} onChange={onChange} value={value}>
         <ListboxButton
           className={
-            'w-full p-2 flex items-center justify-between bg-white border border-gray-300 rounded-md shadow-sm focus-within:border-primaryLight focus-within:ring-1 focus-within:ring-primaryLight outline-none'
+            'w-full p-2 flex items-center justify-between bg-white border border-gray-300 rounded-md shadow-sm focus-within:border-primaryLight focus-within:ring-1 focus-within:ring-primaryLight outline-none '
           }
         >
           {getSelectedOptions()}
-          <FaCaretDown className="text-gray-400" />
+          <div className="flex items-center gap-2">
+            {multiple && value.length > 0 && (
+              <IoClose
+                className="hover:bg-gray-100 text-gray-400 p-1 rounded-full text-2xl ml-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  resetSelected && resetSelected();
+                }}
+              />
+            )}
+            <FaCaretDown className="text-gray-400" />
+          </div>
         </ListboxButton>
         {options.length > 0 && (
           <ListboxOptions

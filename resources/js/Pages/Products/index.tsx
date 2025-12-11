@@ -12,17 +12,14 @@ interface ProductsPageProps {
   products: ProductType[];
   brands: BrandType[];
   categories: CategoryType[];
-  productVariations: ProductVariationType[];
 }
 
 export default function ProductsPage({
   products,
   brands,
   categories,
-  productVariations,
 }: ProductsPageProps) {
   const currentTab = route().current();
-  console.log(currentTab);
 
   return (
     <AuthenticatedLayout>
@@ -46,12 +43,15 @@ export default function ProductsPage({
         <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
           {currentTab === 'products.index' && (
             <ProductsList
-              productVariations={productVariations}
+              products={products}
               brands={brands}
               categories={categories}
             />
           )}
           {currentTab === 'products.create' && (
+            <ProductForm brands={brands} categories={categories} />
+          )}
+          {currentTab === 'products.edit' && (
             <ProductForm brands={brands} categories={categories} />
           )}
         </div>

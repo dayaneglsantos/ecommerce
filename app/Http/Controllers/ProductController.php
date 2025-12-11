@@ -2,34 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductVariation;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ProductController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   */
+  // Listagem de Produtos
   public function index()
   {
-    $productVariations = ProductVariation::all();
+    $products = Product::all()->load('defaultVariation');
     $brands = Brand::all();
     $categories = Category::all();
 
     return Inertia::render('Products/index', [
-      'productVariations' => $productVariations,
+      'products' => ProductResource::collection($products),
       'brands' => $brands,
-      'categories' => $categories,
+      'categories' => CategoryResource::collection($categories),
     ]);
   }
 
-  /**
-   * Show the form for creating a new resource.
-   */
+  // Formulário de Criação de Produto
   public function create()
   {
     $brands = Brand::all();
@@ -41,12 +39,18 @@ class ProductController extends Controller
     ]);
   }
 
-  /**
-   * Store a newly created resource in storage.
-   */
-  public function store(Request $request)
+  // Criação de Produto
+  public function store(ProductRequest $request)
   {
-    //
+    try {
+      $validatedData = $request->validated();
+
+      $product = Product::create($validatedData);
+
+      return redirect()->route('products.index')->with('success', 'Produto criado com sucesso!');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao criar o produto: ' . $e->getMessage());
+    }
   }
 
   /**
@@ -57,12 +61,16 @@ class ProductController extends Controller
     //
   }
 
-  /**
-   * Show the form for editing the specified resource.
-   */
-  public function edit(Product $products)
+  // Formulário de Edição de Produto
+  public function edit(Product $product)
   {
-    //
+    $brands = Brand::all();
+    $categories = Category::all();
+
+    return Inertia::render('Products/index', [
+      'brands' => $brands,
+      'categories' => $categories,
+    ]);
   }
 
   /**

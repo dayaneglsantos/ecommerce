@@ -269,7 +269,6 @@ export default function UpdateProfileInformation({
             <InputLabel htmlFor="gender" value="Gênero" />
 
             <SelectInput
-              id="gender"
               value={data.gender}
               onChange={(e) => {
                 setData('gender', e.target.value as 'M' | 'F');

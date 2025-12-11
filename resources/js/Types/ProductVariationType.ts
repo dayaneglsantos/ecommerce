@@ -5,15 +5,13 @@ export default interface ProductVariationType {
   id: number;
   product: ProductType;
   color: string;
-  color_code: string;
+  colorCode: string;
   size: string;
-  old_price: number | null;
+  oldPrice: number | null;
   price: number;
-  stock_quantity: number;
-  pix_discount_percent: number | null;
+  stockQuantity: number;
+  pixDiscountPercent: number | null;
   sku: string;
-  technical_specifications: JSON | null;
+  technicalSpecifications: JSON | null;
   supplier: SupplierType | null;
-  created_at: string;
-  updated_at: string;
 }

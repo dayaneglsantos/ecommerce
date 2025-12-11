@@ -10,4 +10,6 @@ Route::middleware('auth')
   ->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('index');
     Route::get('/novo', [ProductController::class, 'create'])->name('create');
+    Route::post('/', [ProductController::class, 'store'])->name('store');
+    Route::patch('/{product}', [ProductController::class, 'update'])->name('update');
   });

@@ -2,24 +2,27 @@
 
 namespace App\Providers;
 
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Nette\Utils\Json;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
+  /**
+   * Register any application services.
+   */
+  public function register(): void
+  {
+    //
+  }
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        Vite::prefetch(concurrency: 3);
-    }
+  /**
+   * Bootstrap any application services.
+   */
+  public function boot(): void
+  {
+    Vite::prefetch(concurrency: 3);
+    JsonResource::withoutWrapping(); // Desabilita o "data" no retorno dos Resources
+  }
 }
