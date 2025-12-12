@@ -3,21 +3,57 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
+import ProductVariationType from '@/Types/ProductVariationType';
 import SupplierType from '@/Types/SupplierType';
 import { useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
+
+interface ProductVariationFormProps {
+  suppliers: SupplierType[];
+  variation?: ProductVariationType;
+  newForm?: boolean;
+  removeNewForm?: () => void;
+}
 
 export default function ProductVariationForm({
   suppliers,
-}: {
-  suppliers: SupplierType[];
-}) {
+  variation,
+  newForm,
+  removeNewForm,
+}: ProductVariationFormProps) {
   const [specificationName, setSpecificationName] = useState('');
   const [specificationDescription, setSpecificationDescription] = useState('');
 
+  useEffect(() => {
+    if (variation) {
+      setData('color', variation.color);
+      setData('color_code', variation.colorCode);
+      setData('size', variation.size);
+      setData('price', variation.price.toString());
+      setData(
+        'old_price',
+        variation.oldPrice ? variation.oldPrice.toString() : ''
+      );
+      setData('stock_quantity', variation.stockQuantity.toString());
+      setData('sku', variation.sku);
+      setData(
+        'technical_specifications',
+        variation.technicalSpecifications
+          ? JSON.parse(variation.technicalSpecifications as unknown as string)
+          : {}
+      );
+      setData('supplier_id', variation.supplier?.id.toString() || '');
+      setData(
+        'pix_discount_percent',
+        variation.pixDiscountPercent
+          ? variation.pixDiscountPercent.toString()
+          : ''
+      );
+    }
+  }, [variation]);
+
   const { data, setData, reset, post, errors } = useForm({
-    product_id: '',
     color: '',
     color_code: '',
     size: '',
@@ -26,7 +62,7 @@ export default function ProductVariationForm({
     stock_quantity: '',
     technical_specifications: {},
     sku: '',
-    supplier_id: [],
+    supplier_id: '',
     pix_discount_percent: '',
   });
 
@@ -63,6 +99,7 @@ export default function ProductVariationForm({
             <TextInput
               id="color"
               type="text"
+              value={data.color}
               className="mt-1 block w-full"
               onChange={(e) => setData('color', e.target.value)}
             />
@@ -79,17 +116,25 @@ export default function ProductVariationForm({
             <TextInput
               id="color_code"
               type="text"
+              value={data.color_code}
               className="mt-1 block w-full"
               onChange={(e) => setData('color_code', e.target.value)}
             />
             {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
           </div>
           <div className="col-span-3">
-            <InputLabel htmlFor="size" value="Tamanho" className="mt-4" />
+            <InputLabel
+              htmlFor="size"
+              value="Tamanho"
+              className="mt-4"
+              icon={<IoMdInformationCircle />}
+              iconText="De acordo com o tipo do produto. Ex: P, M, G... ou 35, 36 ,37..."
+            />
             <TextInput
               id="size"
               type="text"
               className="mt-1 block w-full"
+              value={data.size}
               onChange={(e) => setData('size', e.target.value)}
             />
             {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
@@ -105,6 +150,7 @@ export default function ProductVariationForm({
             <TextInput
               id="sku"
               type="text"
+              value={data.sku}
               className="mt-1 block w-full"
               onChange={(e) => setData('sku', e.target.value)}
             />
@@ -133,6 +179,7 @@ export default function ProductVariationForm({
             <TextInput
               id="stock_quantity"
               type="text"
+              value={data.stock_quantity}
               className="mt-1 block w-full"
               onChange={(e) => setData('stock_quantity', e.target.value)}
             />
@@ -143,6 +190,7 @@ export default function ProductVariationForm({
             <TextInput
               id="price"
               type="text"
+              value={data.price}
               className="mt-1 block w-full"
               onChange={(e) => setData('price', e.target.value)}
             />
@@ -218,7 +266,12 @@ export default function ProductVariationForm({
             )}
           </div>
         )}
-        <div className="flex justify-end my-3 mt-6">
+        <div className="flex justify-end my-3 mt-6 gap-3">
+          {newForm && (
+            <PrimaryButton outline onClick={removeNewForm}>
+              Cancelar
+            </PrimaryButton>
+          )}
           <PrimaryButton>Salvar Variação</PrimaryButton>
         </div>
       </form>

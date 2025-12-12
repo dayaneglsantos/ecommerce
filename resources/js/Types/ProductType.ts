@@ -11,4 +11,5 @@ export default interface ProductType {
   brand: BrandType;
   category: CategoryType;
   defaultVariation: ProductVariationType;
+  variations: ProductVariationType[];
 }
