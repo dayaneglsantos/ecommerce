@@ -1,6 +1,7 @@
 import Card from '@/Components/Card';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
+import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
@@ -66,7 +67,8 @@ export default function ProductForm({ brands, categories }: any) {
     value: category.id,
   }));
   return (
-    <Card className="w-full">
+    <Card className="w-full mb-3">
+      <h3 className="font-bold text-lg text-primaryDark">Produto Principal</h3>
       <form onSubmit={createProduct}>
         <div>
           <InputLabel htmlFor="name" value="Nome do Produto" className="mt-4" />
@@ -164,6 +166,9 @@ export default function ProductForm({ brands, categories }: any) {
             }}
           />
           <InputError className="mt-2" message={errors.full_description} />
+        </div>
+        <div className="flex justify-end my-3 mt-6">
+          <PrimaryButton>Salvar</PrimaryButton>
         </div>
       </form>
     </Card>

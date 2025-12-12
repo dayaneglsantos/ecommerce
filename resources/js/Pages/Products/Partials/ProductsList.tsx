@@ -8,18 +8,12 @@ import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { SlOptionsVertical } from 'react-icons/sl';
 
-interface ProductsListProps {
-  products: ProductType[];
-  brands: BrandType[];
-  categories: CategoryType[];
-}
-
-export default function ProductsList({
-  products,
-  brands,
-  categories,
-}: ProductsListProps) {
+export default function ProductsList() {
   const currentUser = usePage().props.auth.user as UserType;
+  const products = usePage().props.products as ProductType[];
+  const brands = usePage().props.brands as BrandType[];
+  const categories = usePage().props.categories as CategoryType[];
+
   const isAdmin = currentUser?.profile === 'admin';
   const [filters, setFilters] = useState({
     brand: [],

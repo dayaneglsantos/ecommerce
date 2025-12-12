@@ -71,7 +71,7 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
             ref={localRef}
             value={value}
             className={
-              'w-full px-4 py-2 bg-transparent border-none focus:ring-0 focus:border-0 outline-none ' +
+              'w-full px-4 py-2 bg-transparent border-none focus:ring-0 focus:border-0 outline-none' +
               (icon ? 'pr-10' : '')
             }
           />

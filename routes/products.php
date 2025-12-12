@@ -11,5 +11,6 @@ Route::middleware('auth')
     Route::get('/', [ProductController::class, 'index'])->name('index');
     Route::get('/novo', [ProductController::class, 'create'])->name('create');
     Route::post('/', [ProductController::class, 'store'])->name('store');
+    Route::get('/{product}', [ProductController::class, 'edit'])->name('edit');
     Route::patch('/{product}', [ProductController::class, 'update'])->name('update');
   });

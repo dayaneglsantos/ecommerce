@@ -8,18 +8,9 @@ import ProductForm from './Partials/ProductFormPage';
 import ProductsList from './Partials/ProductsList';
 import ProductVariationType from '@/Types/ProductVariationType';
 import ProductFormPage from './Partials/ProductFormPage';
+import SupplierType from '@/Types/SupplierType';
 
-interface ProductsPageProps {
-  products: ProductType[];
-  brands: BrandType[];
-  categories: CategoryType[];
-}
-
-export default function ProductsPage({
-  products,
-  brands,
-  categories,
-}: ProductsPageProps) {
+export default function ProductsPage() {
   const currentTab = route().current();
 
   return (
@@ -42,19 +33,11 @@ export default function ProductsPage({
       </div>
       <div className="py-8">
         <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-          {currentTab === 'products.index' && (
-            <ProductsList
-              products={products}
-              brands={brands}
-              categories={categories}
-            />
-          )}
-          {currentTab === 'products.create' && (
-            <ProductFormPage brands={brands} categories={categories} />
-          )}
-          {currentTab === 'products.edit' && (
-            <ProductForm brands={brands} categories={categories} />
-          )}
+          {/* Listagem de produtos */}
+          {currentTab === 'products.index' && <ProductsList />}
+          {/* Criação e edição de produtos */}
+          {(currentTab === 'products.create' ||
+            currentTab === 'products.edit') && <ProductFormPage />}
         </div>
       </div>
     </AuthenticatedLayout>
