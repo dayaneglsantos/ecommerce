@@ -52,7 +52,7 @@ class ProductController extends Controller
 
       return redirect()->route('products.index')->with('success', 'Produto criado com sucesso!');
     } catch (\Exception $e) {
-      return redirect()->back()->with('error', 'Erro ao criar o produto: ' . $e->getMessage());
+      return redirect()->route('products.index')->with('error', 'Erro ao criar o produto.');
     }
   }
 
@@ -82,9 +82,16 @@ class ProductController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, Product $products)
+  public function update(ProductRequest $request, Product $product)
   {
-    //
+    try {
+      $validatedData = $request->validated();
+      $product->update($validatedData);
+
+      return redirect()->route('products.index')->with('success', 'Produto atualizado com sucesso!');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao atualizar o produto.');
+    }
   }
 
   /**

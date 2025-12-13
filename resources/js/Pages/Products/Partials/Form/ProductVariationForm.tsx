@@ -1,4 +1,5 @@
 import Card from '@/Components/Card';
+import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
@@ -8,6 +9,7 @@ import SupplierType from '@/Types/SupplierType';
 import { useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
+import { transform } from 'typescript';
 
 interface ProductVariationFormProps {
   suppliers: SupplierType[];
@@ -25,46 +27,39 @@ export default function ProductVariationForm({
   const [specificationName, setSpecificationName] = useState('');
   const [specificationDescription, setSpecificationDescription] = useState('');
 
-  useEffect(() => {
-    if (variation) {
-      setData('color', variation.color);
-      setData('color_code', variation.colorCode);
-      setData('size', variation.size);
-      setData('price', variation.price.toString());
-      setData(
-        'old_price',
-        variation.oldPrice ? variation.oldPrice.toString() : ''
-      );
-      setData('stock_quantity', variation.stockQuantity.toString());
-      setData('sku', variation.sku);
-      setData(
-        'technical_specifications',
-        variation.technicalSpecifications
-          ? JSON.parse(variation.technicalSpecifications as unknown as string)
-          : {}
-      );
-      setData('supplier_id', variation.supplier?.id.toString() || '');
-      setData(
-        'pix_discount_percent',
-        variation.pixDiscountPercent
-          ? variation.pixDiscountPercent.toString()
-          : ''
-      );
-    }
-  }, [variation]);
-
-  const { data, setData, reset, post, errors } = useForm({
-    color: '',
-    color_code: '',
-    size: '',
-    price: '',
-    old_price: '',
-    stock_quantity: '',
-    technical_specifications: {},
-    sku: '',
-    supplier_id: '',
-    pix_discount_percent: '',
+  const { data, setData, reset, post, errors, patch } = useForm({
+    color: variation?.color || '',
+    color_code: variation?.colorCode || '',
+    size: variation?.size || '',
+    price: variation?.price.toString() || '',
+    old_price: variation?.oldPrice || '',
+    stock_quantity: variation?.stockQuantity.toString() || '',
+    technical_specifications: variation?.technicalSpecifications || {},
+    sku: variation?.sku || '',
+    supplier_id: variation?.supplier?.id || '',
+    pix_discount_percent: variation?.pixDiscountPercent?.toString() || '',
   });
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (variation) {
+      patch(route('productVariation.update', variation.id), {
+        preserveScroll: true,
+        onSuccess: () => reset(),
+      });
+    } else {
+      post(route('productVariation.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+          if (newForm && removeNewForm) {
+            removeNewForm();
+            reset();
+          }
+        },
+      });
+    }
+  };
 
   const suppliersOptions = suppliers?.map((supplier) => ({
     value: supplier.id,
@@ -85,14 +80,15 @@ export default function ProductVariationForm({
   const specificationsSize = Object.entries(
     data.technical_specifications
   ).length;
-  console.log(data);
+
+  console.log(variation);
 
   return (
     <Card className="w-full">
       <h3 className="font-bold text-lg text-primaryDark">
         Variação do Produto
       </h3>
-      <form>
+      <form onSubmit={submit}>
         <div className="grid grid-cols-6 gap-3">
           <div className="col-span-3">
             <InputLabel htmlFor="color" value="Cor" className="mt-4" />
@@ -103,7 +99,7 @@ export default function ProductVariationForm({
               className="mt-1 block w-full"
               onChange={(e) => setData('color', e.target.value)}
             />
-            {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
+            <InputError className="mt-2" message={errors.color} />
           </div>
           <div className="col-span-3">
             <InputLabel
@@ -120,7 +116,7 @@ export default function ProductVariationForm({
               className="mt-1 block w-full"
               onChange={(e) => setData('color_code', e.target.value)}
             />
-            {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
+            <InputError className="mt-2" message={errors.color_code} />
           </div>
           <div className="col-span-3">
             <InputLabel
@@ -137,7 +133,7 @@ export default function ProductVariationForm({
               value={data.size}
               onChange={(e) => setData('size', e.target.value)}
             />
-            {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
+            <InputError className="mt-2" message={errors.size} />
           </div>
           <div className="col-span-3">
             <InputLabel
@@ -154,7 +150,7 @@ export default function ProductVariationForm({
               className="mt-1 block w-full"
               onChange={(e) => setData('sku', e.target.value)}
             />
-            {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
+            <InputError className="mt-2" message={errors.sku} />
           </div>
           <div className="col-span-3">
             <InputLabel
@@ -168,7 +164,7 @@ export default function ProductVariationForm({
               onChange={(e) => setData('supplier_id', e)}
               placeholder="Selecione um fornecedor"
             />
-            {/* <InputError className="mt-2" message={errors.supplier_id} /> */}
+            <InputError className="mt-2" message={errors.supplier_id} />
           </div>
           <div className="col-span-3">
             <InputLabel
@@ -183,7 +179,7 @@ export default function ProductVariationForm({
               className="mt-1 block w-full"
               onChange={(e) => setData('stock_quantity', e.target.value)}
             />
-            {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
+            <InputError className="mt-2" message={errors.stock_quantity} />
           </div>
           <div className="col-span-3">
             <InputLabel htmlFor="price" value="Preço" className="mt-4" />
@@ -194,7 +190,7 @@ export default function ProductVariationForm({
               className="mt-1 block w-full"
               onChange={(e) => setData('price', e.target.value)}
             />
-            {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
+            <InputError className="mt-2" message={errors.price} />
           </div>
           <div className="col-span-3">
             <InputLabel
@@ -217,7 +213,10 @@ export default function ProductVariationForm({
                 setData('pix_discount_percent', e.target.value);
               }}
             />
-            {/* <InputError className="mt-2" message={errors.pix_discount_percent} /> */}
+            <InputError
+              className="mt-2"
+              message={errors.pix_discount_percent}
+            />
           </div>
         </div>
         <h4 className="font-bold mt-5">Espeficicações técnicas</h4>
@@ -268,11 +267,11 @@ export default function ProductVariationForm({
         )}
         <div className="flex justify-end my-3 mt-6 gap-3">
           {newForm && (
-            <PrimaryButton outline onClick={removeNewForm}>
+            <PrimaryButton outline onClick={removeNewForm} type="button">
               Cancelar
             </PrimaryButton>
           )}
-          <PrimaryButton>Salvar Variação</PrimaryButton>
+          <PrimaryButton type="submit">Salvar Variação</PrimaryButton>
         </div>
       </form>
     </Card>

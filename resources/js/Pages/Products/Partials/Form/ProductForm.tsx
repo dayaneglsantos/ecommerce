@@ -4,25 +4,35 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
-import { useForm } from '@inertiajs/react';
+import ProductType from '@/Types/ProductType';
+import { useForm, usePage } from '@inertiajs/react';
 import { Editor } from '@tinymce/tinymce-react';
+import { useEffect } from 'react';
 import { IoMdInformationCircle } from 'react-icons/io';
 
 export default function ProductForm({ brands, categories }: any) {
-  const { data, setData, reset, post, errors } = useForm({
-    name: '',
-    full_description: '',
-    brand_id: '',
-    category_id: '',
-    slug: '',
-    description: '',
+  const product = usePage().props.product as ProductType;
+
+  const { data, setData, reset, post, errors, patch } = useForm({
+    name: product?.name || '',
+    full_description: product?.fullDescription || '',
+    brand_id: product?.brand?.id || 0,
+    category_id: product?.category?.id || 0,
+    slug: product?.slug || '',
+    description: product?.description || '',
   });
 
-  const createProduct = (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(route('products.store'), {
-      onSuccess: () => reset(),
-    });
+    if (product) {
+      patch(route('products.update', product.id), {
+        onSuccess: () => reset(),
+      });
+    } else {
+      post(route('products.store'), {
+        onSuccess: () => reset(),
+      });
+    }
   };
 
   const handleFilePicker = (cb: any, value: any, meta: any) => {
@@ -66,15 +76,17 @@ export default function ProductForm({ brands, categories }: any) {
     label: category.name,
     value: category.id,
   }));
+
   return (
     <Card className="w-full mb-3">
       <h3 className="font-bold text-lg text-primaryDark">Produto Principal</h3>
-      <form onSubmit={createProduct}>
+      <form onSubmit={submit}>
         <div>
           <InputLabel htmlFor="name" value="Nome do Produto" className="mt-4" />
           <TextInput
             id="name"
             name="name"
+            value={data.name}
             type="text"
             className="mt-1 block w-full"
             onChange={(e) => setData('name', e.target.value)}
@@ -92,6 +104,7 @@ export default function ProductForm({ brands, categories }: any) {
           <TextInput
             id="slug"
             name="slug"
+            value={data.slug}
             type="text"
             className="mt-1 block w-full"
             onChange={(e) => setData('slug', e.target.value)}
@@ -131,6 +144,7 @@ export default function ProductForm({ brands, categories }: any) {
           <TextInput
             id="description"
             name="description"
+            value={data.description}
             type="text"
             className="mt-1 block w-full"
             onChange={(e) => setData('description', e.target.value)}
