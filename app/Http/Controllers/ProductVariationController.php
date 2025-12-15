@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductVariationRequest;
 use App\Models\ProductVariation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductVariationController extends Controller
 {
@@ -30,12 +31,19 @@ class ProductVariationController extends Controller
   public function store(ProductVariationRequest $request)
   {
     try {
-      $validatedData = $request->validated();
-      ProductVariation::create($validatedData);
+      // Transaction garante que ou todas as operações sejam concluídas com sucesso ou nenhuma seja aplicada em caso de falha
+      DB::transaction(function () use ($request) {
+        $validated = $request->validated();
+        $variation = ProductVariation::create($validated);
 
-      return redirect()->route('products.index')->with('success', 'Variação do produto criada com sucesso!');
+        if ($request->boolean('is_default')) {
+          $variation->product->default_variation_id = $variation->id;
+          $variation->product->save();
+        }
+      });
+      return redirect()->back()->with('success', 'Variação do produto criada com sucesso!');
     } catch (\Exception $e) {
-      return redirect()->route('products.index')->with('error', 'Erro ao criar a variação do produto.');
+      return redirect()->back()->with('error', 'Erro ao criar a variação do produto.');
     }
   }
 
@@ -75,6 +83,13 @@ class ProductVariationController extends Controller
    */
   public function destroy(ProductVariation $productVariation)
   {
-    //
+    try {
+      $productVariation->delete();
+
+      // permanacer na mesma rota e apenas enviar mensagem
+      return redirect()->back()->with('success', 'Variação do produto excluída com sucesso!');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao excluir a variação do produto.');
+    }
   }
 }

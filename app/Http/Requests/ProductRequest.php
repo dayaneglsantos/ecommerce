@@ -32,7 +32,7 @@ class ProductRequest extends FormRequest
       'full_description' => ['nullable', 'string'],
       'brand_id' => ['required', 'exists:brands,id'], // exists:tabela,coluna - verifica se o id existe na tabela brands
       'category_id' => ['required', 'exists:categories,id'], // exists:tabela,coluna - verifica se o id existe na tabela categories
-      'slug' => ['required', 'string', 'max:255', Rule::unique('products', 'slug')->ignore($this->product->id)], // unique:tabela,coluna
+      'slug' => ['required', 'string', 'max:255', Rule::unique('products', 'slug')->ignore($this->product)], // unique:tabela,coluna
     ];
   }
 }

@@ -1,14 +1,19 @@
 import Card from '@/Components/Card';
+import Checkbox from '@/Components/Checkbox';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
+import ProductType from '@/Types/ProductType';
 import ProductVariationType from '@/Types/ProductVariationType';
 import SupplierType from '@/Types/SupplierType';
-import { useForm } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import { FaTrashAlt } from 'react-icons/fa';
 import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
+import { Tooltip } from 'react-tooltip';
 import { transform } from 'typescript';
 
 interface ProductVariationFormProps {
@@ -26,8 +31,16 @@ export default function ProductVariationForm({
 }: ProductVariationFormProps) {
   const [specificationName, setSpecificationName] = useState('');
   const [specificationDescription, setSpecificationDescription] = useState('');
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [selectedVariationId, setSelectedVariationId] = useState<number | null>(
+    null
+  );
+
+  const { id: productId, defaultVariation } = usePage().props
+    ?.product as ProductType;
 
   const { data, setData, reset, post, errors, patch } = useForm({
+    product_id: productId,
     color: variation?.color || '',
     color_code: variation?.colorCode || '',
     size: variation?.size || '',
@@ -38,6 +51,7 @@ export default function ProductVariationForm({
     sku: variation?.sku || '',
     supplier_id: variation?.supplier?.id || '',
     pix_discount_percent: variation?.pixDiscountPercent?.toString() || '',
+    is_default: false,
   });
 
   const submit = (e: React.FormEvent) => {
@@ -77,18 +91,75 @@ export default function ProductVariationForm({
     }
   };
 
+  const handleDeleteVariation = (variationId: number) => {
+    router.delete(route('productVariation.destroy', variationId), {
+      preserveScroll: true,
+    });
+  };
+
+  const handleDefaultVariation = (variationId: number) => {
+    router.patch(route('products.updateDefaultVariation', productId), {
+      default_variation_id: variationId,
+    });
+  };
+
   const specificationsSize = Object.entries(
     data.technical_specifications
   ).length;
 
-  console.log(variation);
-
   return (
-    <Card className="w-full">
+    <Card className="w-full relative">
       <h3 className="font-bold text-lg text-primaryDark">
         Variação do Produto
       </h3>
       <form onSubmit={submit}>
+        {!newForm && variation && (
+          <div className="absolute top-4 right-4 flex items-center gap-3">
+            <div
+              className={` border border-primary p-1 text-[12px] rounded-full px-2 text-primaryDark  ${
+                defaultVariation?.id === variation.id
+                  ? 'bg-gray-200 font-bold'
+                  : 'bg-gray-50 '
+              }`}
+            >
+              <button
+                type="button"
+                onClick={() => handleDefaultVariation(variation.id)}
+              >
+                {defaultVariation?.id === variation.id
+                  ? 'Produto Principal'
+                  : 'Definir como principal'}
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedVariationId(variation.id);
+                setOpenConfirmDialog(true);
+              }}
+            >
+              <FaTrashAlt
+                data-tooltip-id="delete"
+                className={`cursor-pointer text-gray-500 outline-none hover:text-red-600`}
+              />
+              <Tooltip
+                id="delete"
+                place="top"
+                content="Excluir"
+                className="!p-2 !text-[12px]"
+              />
+            </button>
+          </div>
+        )}
+        {newForm && (
+          <div className="flex items-center gap-3 absolute top-4 right-4">
+            <Checkbox
+              onChange={(e) => setData('is_default', e.target.checked)}
+              checked={data.is_default}
+            />
+            <InputLabel htmlFor="color" value="Produto principal" />
+          </div>
+        )}
         <div className="grid grid-cols-6 gap-3">
           <div className="col-span-3">
             <InputLabel htmlFor="color" value="Cor" className="mt-4" />
@@ -185,7 +256,8 @@ export default function ProductVariationForm({
             <InputLabel htmlFor="price" value="Preço" className="mt-4" />
             <TextInput
               id="price"
-              type="text"
+              type="number"
+              typeNumber="decimal"
               value={data.price}
               className="mt-1 block w-full"
               onChange={(e) => setData('price', e.target.value)}
@@ -274,6 +346,18 @@ export default function ProductVariationForm({
           <PrimaryButton type="submit">Salvar Variação</PrimaryButton>
         </div>
       </form>
+      <ConfirmDialog
+        open={openConfirmDialog}
+        title="Tem certeza que deseja remover esta variação?"
+        onAccept={() => {
+          selectedVariationId && handleDeleteVariation(selectedVariationId);
+          setOpenConfirmDialog(false);
+        }}
+        onClose={() => {
+          setOpenConfirmDialog(false);
+          setSelectedVariationId(null);
+        }}
+      />
     </Card>
   );
 }

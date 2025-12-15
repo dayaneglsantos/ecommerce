@@ -26,7 +26,6 @@ class ProductVariationResource extends JsonResource
       'pixDiscountPercent' => $this->pix_discount_percent,
       'tecnicalSpecifications' => $this->tecnical_specifications,
       'images' => ProductImageResource::collection($this->whenLoaded('images')),
-      'product' => new ProductResource($this->whenLoaded('product')),
       'supplier' => new SupplierResource($this->whenLoaded('supplier')),
     ];
   }

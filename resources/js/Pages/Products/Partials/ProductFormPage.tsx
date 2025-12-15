@@ -20,8 +20,11 @@ export default function ProductFormPage() {
       <ProductForm brands={brands} categories={categories} />
       <button
         type="button"
-        className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold`}
+        className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold ${
+          newForm ? 'opacity-50' : 'cursor-pointer hover:bg-gray-100'
+        }`}
         onClick={() => setNewForm(true)}
+        disabled={newForm}
       >
         Adicionar nova variação
       </button>

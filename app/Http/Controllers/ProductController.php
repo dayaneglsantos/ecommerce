@@ -75,13 +75,11 @@ class ProductController extends Controller
       'brands' => $brands,
       'categories' => $categories,
       'suppliers' => $suppliers,
-      'product' => new ProductResource($product->load('variations')),
+      'product' => new ProductResource($product->load('variations', 'defaultVariation')),
     ]);
   }
 
-  /**
-   * Update the specified resource in storage.
-   */
+  // Atualização de Produto
   public function update(ProductRequest $request, Product $product)
   {
     try {
@@ -91,6 +89,23 @@ class ProductController extends Controller
       return redirect()->route('products.index')->with('success', 'Produto atualizado com sucesso!');
     } catch (\Exception $e) {
       return redirect()->back()->with('error', 'Erro ao atualizar o produto.');
+    }
+  }
+
+  // Atualização da Variação Padrão do Produto
+  public function updateDefaultVariation(Request $request, Product $product)
+  {
+    try {
+      $validatedData = $request->validate([
+        'default_variation_id' => 'required|exists:product_variations,id',
+      ]);
+      $product->default_variation_id = $validatedData['default_variation_id'];
+      $product->save();
+
+      return redirect()->back()->with('success', 'Variação definida como principal com sucesso!');
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return redirect()->back()->with('error', 'Erro ao definir a variação principal.');
     }
   }
 

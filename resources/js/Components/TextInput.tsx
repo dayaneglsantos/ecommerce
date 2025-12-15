@@ -11,6 +11,7 @@ interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   tooltip?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  typeNumber?: 'integer' | 'decimal';
 }
 
 export default forwardRef<HTMLInputElement | null, TextInputProps>(
@@ -24,6 +25,7 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
       tooltip,
       value,
       onChange,
+      typeNumber = 'integer',
       ...props
     }: TextInputProps,
     ref: React.ForwardedRef<HTMLInputElement | null>
@@ -66,14 +68,46 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
         ) : (
           <input
             {...props}
-            onChange={onChange}
+            onChange={(e) => {
+              if (typeNumber === 'decimal') {
+                const value = e.target.value;
+                const decimalNumbers = value.split('.')[1];
+                if (decimalNumbers && decimalNumbers.length > 2) {
+                  return;
+                }
+                onChange?.(e);
+              } else {
+                onChange?.(e);
+              }
+            }}
             type={type}
             ref={localRef}
             value={value}
             className={
-              'w-full px-4 py-2 bg-transparent border-none focus:ring-0 focus:border-0 outline-none' +
+              'w-full px-4 py-2 bg-transparent border-none focus:ring-0 focus:border-0 outline-none no-spinner' +
               (icon ? 'pr-10' : '')
             }
+            onWheel={(e) => (e.target as HTMLElement).blur()} // Não permite alterar número com scroll
+            onKeyDown={(e) => {
+              if (type === 'number') {
+                // Não permite 'e', '+', '-' em inputs numéricos
+                if (
+                  e.key === 'e' ||
+                  e.key === 'E' ||
+                  e.key === '+' ||
+                  e.key === '-'
+                ) {
+                  e.preventDefault();
+                }
+                // Não permite '.' ou ',' se for inteiro
+                if (
+                  typeNumber === 'integer' &&
+                  (e.key === '.' || e.key === ',')
+                ) {
+                  e.preventDefault();
+                }
+              }
+            }}
           />
         )}
 

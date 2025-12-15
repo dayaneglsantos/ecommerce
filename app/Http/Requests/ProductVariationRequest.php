@@ -26,6 +26,7 @@ class ProductVariationRequest extends FormRequest
   public function rules(): array
   {
     return [
+      'product_id' => ['required', 'exists:products,id'],
       'color' => ['required', 'string', 'max:255'],
       'color_code' => ['required', 'string', 'max:7'],
       'size' => ['required', 'string', 'max:10'],
@@ -35,7 +36,8 @@ class ProductVariationRequest extends FormRequest
       'pix_discount_percent' => ['nullable', 'numeric', 'min:0'],
       'sku' => ['required', 'string', 'max:255', Rule::unique('product_variations', 'sku')->ignore($this->productVariation)],
       'technical_specifications' => ['nullable', 'array'],
-      'supplier_id' => ['required', 'exists:suppliers,id']
+      'supplier_id' => ['required', 'exists:suppliers,id'],
+      'is_default' => ['nullable', 'boolean'],
     ];
   }
 }

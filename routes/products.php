@@ -13,4 +13,5 @@ Route::middleware('auth')
     Route::post('/', [ProductController::class, 'store'])->name('store');
     Route::get('/{product}', [ProductController::class, 'edit'])->name('edit');
     Route::patch('/{product}', [ProductController::class, 'update'])->name('update');
+    Route::patch('/{product}/defaultVariation', [ProductController::class, 'updateDefaultVariation'])->name('updateDefaultVariation');
   });
