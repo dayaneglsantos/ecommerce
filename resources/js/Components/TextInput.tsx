@@ -90,12 +90,14 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
             onWheel={(e) => (e.target as HTMLElement).blur()} // Não permite alterar número com scroll
             onKeyDown={(e) => {
               if (type === 'number') {
-                // Não permite 'e', '+', '-' em inputs numéricos
+                // Não permite 'e', '+', '-' em inputs numéricos e não deixa usar setas para alterar valor
                 if (
                   e.key === 'e' ||
                   e.key === 'E' ||
                   e.key === '+' ||
-                  e.key === '-'
+                  e.key === '-' ||
+                  e.key === 'ArrowUp' ||
+                  e.key === 'ArrowDown'
                 ) {
                   e.preventDefault();
                 }

@@ -24,7 +24,7 @@ class ProductVariationResource extends JsonResource
       'oldPrice' => $this->old_price,
       'stockQuantity' => $this->stock_quantity,
       'pixDiscountPercent' => $this->pix_discount_percent,
-      'tecnicalSpecifications' => $this->tecnical_specifications,
+      'technicalSpecifications' => $this->technical_specifications,
       'images' => ProductImageResource::collection($this->whenLoaded('images')),
       'supplier' => new SupplierResource($this->whenLoaded('supplier')),
     ];

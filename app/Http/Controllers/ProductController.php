@@ -50,9 +50,9 @@ class ProductController extends Controller
 
       $product = Product::create($validatedData);
 
-      return redirect()->route('products.index')->with('success', 'Produto criado com sucesso!');
+      return redirect()->back()->with('success', 'Produto criado com sucesso!');
     } catch (\Exception $e) {
-      return redirect()->route('products.index')->with('error', 'Erro ao criar o produto.');
+      return redirect()->back()->with('error', 'Erro ao criar o produto.');
     }
   }
 

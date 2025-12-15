@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProductVariationRequest;
+
+use App\Http\Requests\ProductVariation\CreateVariationRequest;
+use App\Http\Requests\ProductVariation\EditVariationRequest;
 use App\Models\ProductVariation;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductVariationController extends Controller
@@ -28,7 +29,7 @@ class ProductVariationController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(ProductVariationRequest $request)
+  public function store(CreateVariationRequest $request)
   {
     try {
       // Transaction garante que ou todas as operações sejam concluídas com sucesso ou nenhuma seja aplicada em caso de falha
@@ -66,15 +67,15 @@ class ProductVariationController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(ProductVariationRequest $request, ProductVariation $productVariation)
+  public function update(EditVariationRequest $request, ProductVariation $productVariation)
   {
     try {
       $validated = $request->validated();
       $productVariation->update($validated);
 
-      return redirect()->route('products.index')->with('success', 'Variação do produto atualizada com sucesso!');
+      return redirect()->back()->with('success', 'Variação do produto atualizada com sucesso!');
     } catch (\Exception $e) {
-      return redirect()->route('products.index')->with('error', 'Erro ao atualizar a variação do produto.');
+      return redirect()->back()->with('error', 'Erro ao atualizar a variação do produto.');
     }
   }
 

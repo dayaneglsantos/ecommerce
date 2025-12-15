@@ -60,7 +60,6 @@ export default function ProductVariationForm({
     if (variation) {
       patch(route('productVariation.update', variation.id), {
         preserveScroll: true,
-        onSuccess: () => reset(),
       });
     } else {
       post(route('productVariation.store'), {
