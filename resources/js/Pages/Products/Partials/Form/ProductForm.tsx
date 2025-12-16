@@ -1,17 +1,21 @@
 import Card from '@/Components/Card';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import ProductType from '@/Types/ProductType';
-import { useForm, usePage } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
 import { Editor } from '@tinymce/tinymce-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { FaTrashAlt } from 'react-icons/fa';
 import { IoMdInformationCircle } from 'react-icons/io';
+import { Tooltip } from 'react-tooltip';
 
 export default function ProductForm({ brands, categories }: any) {
   const product = usePage().props.product as ProductType;
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false);
 
   const { data, setData, reset, post, errors, patch } = useForm({
     name: product?.name || '',
@@ -77,9 +81,35 @@ export default function ProductForm({ brands, categories }: any) {
     value: category.id,
   }));
 
+  const handleDeleteProduct = (productId: number) => {
+    router.delete(route('products.destroy', productId), {
+      onSuccess: () => {
+        setDeleteConfirmation(false);
+      },
+    });
+  };
+
   return (
-    <Card className="w-full mb-3">
+    <Card className="w-full mb-3 relative">
       <h3 className="font-bold text-lg text-primaryDark">Produto Principal</h3>
+      <button
+        type="button"
+        onClick={() => {
+          setDeleteConfirmation(true);
+        }}
+        className="absolute top-4 right-4"
+      >
+        <FaTrashAlt
+          data-tooltip-id="delete"
+          className={`cursor-pointer text-gray-500 outline-none hover:text-red-600`}
+        />
+        <Tooltip
+          id="delete"
+          place="top"
+          content="Excluir"
+          className="!p-2 !text-[12px]"
+        />
+      </button>
       <form onSubmit={submit}>
         <div>
           <InputLabel htmlFor="name" value="Nome do Produto" className="mt-4" />
@@ -185,6 +215,15 @@ export default function ProductForm({ brands, categories }: any) {
           <PrimaryButton>Salvar</PrimaryButton>
         </div>
       </form>
+      <ConfirmDialog
+        open={deleteConfirmation}
+        title="Tem certeza que deseja remover este produto?"
+        description="Todas as variações também serão excluidas."
+        onAccept={() => handleDeleteProduct(product.id)}
+        onClose={() => {
+          setDeleteConfirmation(false);
+        }}
+      />
     </Card>
   );
 }

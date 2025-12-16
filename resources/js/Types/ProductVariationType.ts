@@ -1,3 +1,4 @@
+import ProductImagesType from './ProductImagesType';
 import ProductType from './ProductType';
 import SupplierType from './SupplierType';
 
@@ -14,4 +15,5 @@ export default interface ProductVariationType {
   sku: string;
   technicalSpecifications: JSON | null;
   supplier: SupplierType | null;
+  images: ProductImagesType[];
 }

@@ -31,6 +31,7 @@ class ProductVariationController extends Controller
    */
   public function store(CreateVariationRequest $request)
   {
+    dd($request->all());
     try {
       // Transaction garante que ou todas as operações sejam concluídas com sucesso ou nenhuma seja aplicada em caso de falha
       DB::transaction(function () use ($request) {
@@ -40,6 +41,13 @@ class ProductVariationController extends Controller
         if ($request->boolean('is_default')) {
           $variation->product->default_variation_id = $variation->id;
           $variation->product->save();
+        }
+
+        if ($request->hasFile('images')) {
+          foreach ($request->file('images') as $image) {
+            $path = $image->store('product_images', 'public'); // Armazena a imagem no disco 'public' dentro da pasta 'product_images'
+            $variation->images()->create(['path' => $path]); // Cria o registro da imagem associada à variação do produto
+          }
         }
       });
       return redirect()->back()->with('success', 'Variação do produto criada com sucesso!');
@@ -70,9 +78,18 @@ class ProductVariationController extends Controller
   public function update(EditVariationRequest $request, ProductVariation $productVariation)
   {
     try {
-      $validated = $request->validated();
-      $productVariation->update($validated);
+      dd($request->all());
+      DB::transaction(function () use ($request, $productVariation) {
+        $validated = $request->validated();
+        $productVariation->update($validated);
 
+        if ($request->hasFile('images')) {
+          foreach ($request->file('images') as $image) {
+            $path = $image->store('product_images', 'public'); // Armazena a imagem no disco 'public' dentro da pasta 'product_images'
+            $productVariation->images()->create(['path' => $path]); // Cria o registro da imagem associada à variação do produto
+          }
+        }
+      });
       return redirect()->back()->with('success', 'Variação do produto atualizada com sucesso!');
     } catch (\Exception $e) {
       return redirect()->back()->with('error', 'Erro ao atualizar a variação do produto.');

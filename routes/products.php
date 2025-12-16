@@ -14,4 +14,5 @@ Route::middleware('auth')
     Route::get('/{product}', [ProductController::class, 'edit'])->name('edit');
     Route::patch('/{product}', [ProductController::class, 'update'])->name('update');
     Route::patch('/{product}/defaultVariation', [ProductController::class, 'updateDefaultVariation'])->name('updateDefaultVariation');
+    Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
   });

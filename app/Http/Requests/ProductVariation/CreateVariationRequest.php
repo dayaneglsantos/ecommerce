@@ -37,6 +37,8 @@ class CreateVariationRequest extends FormRequest
       'technical_specifications' => ['nullable', 'array'],
       'supplier_id' => ['required', 'exists:suppliers,id'],
       'is_default' => ['nullable', 'boolean'],
+      'images' => ['nullable', 'array'],
+      'images.*' => ['required', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
     ];
   }
 }

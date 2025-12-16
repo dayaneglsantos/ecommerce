@@ -112,8 +112,14 @@ class ProductController extends Controller
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Product $products)
+  public function destroy(Product $product)
   {
-    //
+    try {
+      $product->delete();
+
+      return redirect()->route('products.index')->with('success', 'Produto excluído com sucesso!');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao excluir o produto.');
+    }
   }
 }

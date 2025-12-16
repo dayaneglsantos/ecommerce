@@ -10,11 +10,11 @@ import ProductType from '@/Types/ProductType';
 import ProductVariationType from '@/Types/ProductVariationType';
 import SupplierType from '@/Types/SupplierType';
 import { router, useForm, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
 import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
+import { IoClose } from 'react-icons/io5';
 import { Tooltip } from 'react-tooltip';
-import { transform } from 'typescript';
 
 interface ProductVariationFormProps {
   suppliers: SupplierType[];
@@ -35,6 +35,10 @@ export default function ProductVariationForm({
   const [selectedVariationId, setSelectedVariationId] = useState<number | null>(
     null
   );
+  const [variationImages, setVariationImages] = useState(
+    variation?.images.map((image) => ({ ...image, path: image.path })) || []
+  );
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const { id: productId, defaultVariation } = usePage().props
     ?.product as ProductType;
@@ -52,11 +56,12 @@ export default function ProductVariationForm({
     supplier_id: variation?.supplier?.id || '',
     pix_discount_percent: variation?.pixDiscountPercent?.toString() || '',
     is_default: false,
+    images: [] as File[],
+    images_to_delete: [] as number[],
   });
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (variation) {
       patch(route('productVariation.update', variation.id), {
         preserveScroll: true,
@@ -105,6 +110,46 @@ export default function ProductVariationForm({
   const specificationsSize = Object.entries(
     data.technical_specifications
   ).length;
+
+  const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const filesArray = Array.from(files);
+
+    filesArray.forEach((file: File) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setVariationImages((prevImages: any) => [
+          ...prevImages,
+          { ...file, path: reader.result as string },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+    setData('images', [...data.images, ...(filesArray as File[])]);
+  };
+
+  const handleDeleteImage = (
+    image: { path: string; id: number },
+    index: number
+  ) => {
+    // Tirar da listagem de imagens exibidas
+    setVariationImages((prevImages) =>
+      prevImages.filter((_, i) => i !== index)
+    );
+
+    // Adicionar ao formulário o id para deletar no backend
+    if (image.id) {
+      setData('images_to_delete', [...data.images_to_delete, image.id]);
+    }
+
+    console.log(image);
+  };
+
+  console.log('data', data);
+  console.log('listagem de imagens', variationImages);
+  // console.log('ids para deletar', imagesIdsToDelete);
+  console.log(errors);
 
   return (
     <Card className="w-full relative">
@@ -336,6 +381,37 @@ export default function ProductVariationForm({
             )}
           </div>
         )}
+        <h4 className="font-bold mt-5">Imagens</h4>
+        <div className="grid grid-cols-6 gap-3 my-5">
+          {variationImages.map((item, index) => (
+            <div className="col-span-2 relative shadow-full rounded-lg h-40">
+              <IoClose
+                className="absolute -top-2 -right-2 cursor-pointer text-red-600 p-1 bg-gray-200 rounded-full text-2xl"
+                onClick={() => handleDeleteImage(item, index)}
+              />
+              <img
+                src={item.path}
+                alt="Imagem do produto"
+                className="object-cover w-full h-full rounded-lg"
+              />
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold`}
+          onClick={() => imageInputRef.current?.click()}
+        >
+          Adicionar nova imagem
+        </button>
+        <input
+          type="file"
+          multiple
+          className="hidden"
+          accept="image/*"
+          ref={imageInputRef}
+          onChange={(e) => handleAddImage(e)}
+        />
         <div className="flex justify-end my-3 mt-6 gap-3">
           {newForm && (
             <PrimaryButton outline onClick={removeNewForm} type="button">

@@ -8,9 +8,7 @@ use Illuminate\Validation\Rule;
 
 class EditVariationRequest extends FormRequest
 {
-  /**
-   * Determine if the user is authorized to make this request.
-   */
+  // Determina quem pode fazer esta requisição
   public function authorize(): bool
   {
     // Auth::check - verifica se o usuário está autenticado
@@ -36,6 +34,10 @@ class EditVariationRequest extends FormRequest
       'sku' => ['required', 'string', 'max:255', Rule::unique('product_variations', 'sku')->ignore($this->productVariation)],
       'technical_specifications' => ['nullable', 'array'],
       'supplier_id' => ['required', 'exists:suppliers,id'],
+      'images' => ['nullable', 'array'],
+      'images.*' => ['required', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
+      'images_to_delete' => ['nullable', 'array'],
+      'images_to_delete.*' => ['integer', 'exists:product_images,id'],
     ];
   }
 }
