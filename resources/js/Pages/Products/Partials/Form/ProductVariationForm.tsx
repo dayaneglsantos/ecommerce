@@ -62,9 +62,16 @@ export default function ProductVariationForm({
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const payload = {
+      ...data,
+      technical_specifications: JSON.stringify(data.technical_specifications),
+    };
+
     if (variation) {
-      patch(route('productVariation.update', variation.id), {
+      router.patch(route('productVariation.update', variation.id), payload, {
         preserveScroll: true,
+        forceFormData: true,
       });
     } else {
       post(route('productVariation.store'), {
@@ -121,7 +128,7 @@ export default function ProductVariationForm({
       reader.onloadend = () => {
         setVariationImages((prevImages: any) => [
           ...prevImages,
-          { ...file, path: reader.result as string },
+          { file, path: reader.result as string },
         ]);
       };
       reader.readAsDataURL(file);
@@ -129,10 +136,7 @@ export default function ProductVariationForm({
     setData('images', [...data.images, ...(filesArray as File[])]);
   };
 
-  const handleDeleteImage = (
-    image: { path: string; id: number },
-    index: number
-  ) => {
+  const handleDeleteImage = (image: any, index: number) => {
     // Tirar da listagem de imagens exibidas
     setVariationImages((prevImages) =>
       prevImages.filter((_, i) => i !== index)
@@ -141,9 +145,13 @@ export default function ProductVariationForm({
     // Adicionar ao formulário o id para deletar no backend
     if (image.id) {
       setData('images_to_delete', [...data.images_to_delete, image.id]);
+    } else {
+      // Remover do formulário de novas imagens
+      setData(
+        'images',
+        data.images.filter((file) => image.file.name !== file.name)
+      );
     }
-
-    console.log(image);
   };
 
   console.log('data', data);

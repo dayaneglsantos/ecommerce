@@ -77,8 +77,8 @@ class ProductVariationController extends Controller
    */
   public function update(EditVariationRequest $request, ProductVariation $productVariation)
   {
+    dd($request->all());
     try {
-      dd($request->all());
       DB::transaction(function () use ($request, $productVariation) {
         $validated = $request->validated();
         $productVariation->update($validated);
