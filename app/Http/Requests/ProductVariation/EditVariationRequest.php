@@ -33,20 +33,12 @@ class EditVariationRequest extends FormRequest
       'stock_quantity' => ['required', 'integer', 'min:0'],
       'pix_discount_percent' => ['nullable', 'numeric', 'min:0'],
       'sku' => ['required', 'string', 'max:255', Rule::unique('product_variations', 'sku')->ignore($this->productVariation)],
-      'technical_specifications' => ['nullable', 'string'],
+      'technical_specifications' => ['nullable', 'array'],
       'supplier_id' => ['required', 'exists:suppliers,id'],
       'images' => ['nullable', 'array'],
       'images.*' => ['required', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
       'images_to_delete' => ['nullable', 'array'],
       'images_to_delete.*' => ['integer', 'exists:product_images,id'],
     ];
-  }
-
-  protected function failedValidation(Validator $validator)
-  {
-    dd([
-      'errors' => $validator->errors()->toArray(),
-      'input' => $this->all(),
-    ]);
   }
 }

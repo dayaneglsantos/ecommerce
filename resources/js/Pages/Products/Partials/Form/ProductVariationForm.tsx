@@ -36,7 +36,10 @@ export default function ProductVariationForm({
     null
   );
   const [variationImages, setVariationImages] = useState(
-    variation?.images.map((image) => ({ ...image, path: image.path })) || []
+    variation?.images.map((image) => ({
+      ...image,
+      path: image.path,
+    })) || []
   );
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -63,16 +66,17 @@ export default function ProductVariationForm({
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const payload = {
-      ...data,
-      technical_specifications: JSON.stringify(data.technical_specifications),
-    };
-
     if (variation) {
-      router.patch(route('productVariation.update', variation.id), payload, {
-        preserveScroll: true,
-        forceFormData: true,
-      });
+      router.post(
+        route('productVariation.update', variation.id),
+        {
+          ...data,
+          _method: 'PATCH',
+        },
+        {
+          preserveScroll: true,
+        }
+      );
     } else {
       post(route('productVariation.store'), {
         preserveScroll: true,
@@ -153,11 +157,6 @@ export default function ProductVariationForm({
       );
     }
   };
-
-  console.log('data', data);
-  console.log('listagem de imagens', variationImages);
-  // console.log('ids para deletar', imagesIdsToDelete);
-  console.log(errors);
 
   return (
     <Card className="w-full relative">
@@ -391,14 +390,14 @@ export default function ProductVariationForm({
         )}
         <h4 className="font-bold mt-5">Imagens</h4>
         <div className="grid grid-cols-6 gap-3 my-5">
-          {variationImages.map((item, index) => (
+          {variationImages.map((item: any, index) => (
             <div className="col-span-2 relative shadow-full rounded-lg h-40">
               <IoClose
                 className="absolute -top-2 -right-2 cursor-pointer text-red-600 p-1 bg-gray-200 rounded-full text-2xl"
                 onClick={() => handleDeleteImage(item, index)}
               />
               <img
-                src={item.path}
+                src={item.url || item.path}
                 alt="Imagem do produto"
                 className="object-cover w-full h-full rounded-lg"
               />
