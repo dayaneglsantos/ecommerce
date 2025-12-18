@@ -46,7 +46,7 @@ class ProductVariation extends Model
 
   public function images()
   {
-    return $this->hasMany(ProductImages::class, 'product_variation_id');
+    return $this->hasMany(ProductImages::class, 'product_variation_id')->orderBy('position');
   }
 
   public function supplier()

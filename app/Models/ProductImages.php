@@ -15,11 +15,7 @@ class ProductImages extends Model
 
   protected $fillable = [
     'path',
-    'is_primary',
-  ];
-
-  protected $casts = [
-    'is_primary' => 'boolean',
+    'position',
   ];
 
   protected $appends = ["url"]; // Adiciona o atributo 'url' aos atributos serializados do modelo

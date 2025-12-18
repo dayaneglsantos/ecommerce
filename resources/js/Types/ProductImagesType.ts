@@ -1,6 +1,8 @@
 export default interface ProductImagesType {
   id: number;
+  uid?: string;
   productVariationId: number;
   path: string;
-  isPrimary: boolean;
+  url: string;
+  position: number;
 }

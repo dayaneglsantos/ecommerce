@@ -15,6 +15,7 @@ import { FaTrashAlt } from 'react-icons/fa';
 import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
 import { IoClose } from 'react-icons/io5';
 import { Tooltip } from 'react-tooltip';
+import SortableImages from './SortableImages';
 
 interface ProductVariationFormProps {
   suppliers: SupplierType[];
@@ -38,6 +39,7 @@ export default function ProductVariationForm({
   const [variationImages, setVariationImages] = useState(
     variation?.images.map((image) => ({
       ...image,
+      uid: crypto.randomUUID(),
       path: image.path,
     })) || []
   );
@@ -46,6 +48,7 @@ export default function ProductVariationForm({
   const { id: productId, defaultVariation } = usePage().props
     ?.product as ProductType;
 
+  // ==================== Configuração do formulário ====================
   const { data, setData, reset, post, errors, patch } = useForm({
     product_id: productId,
     color: variation?.color || '',
@@ -59,18 +62,29 @@ export default function ProductVariationForm({
     supplier_id: variation?.supplier?.id || '',
     pix_discount_percent: variation?.pixDiscountPercent?.toString() || '',
     is_default: false,
-    images: [] as File[],
+    images: variation?.images.map((image) => ({
+      id: image.id,
+      position: image.position,
+    })) as { id?: number; position: number; file?: File }[],
     images_to_delete: [] as number[],
   });
 
+  // ==================== Envio do formulário para o backend ====================
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const imagesWithPosition = data.images.map((img, index) => ({
+      ...img,
+      position: index + 1,
+    }));
+
+    const payload = { ...data, images: imagesWithPosition };
 
     if (variation) {
       router.post(
         route('productVariation.update', variation.id),
         {
-          ...data,
+          ...payload,
           _method: 'PATCH',
         },
         {
@@ -90,11 +104,13 @@ export default function ProductVariationForm({
     }
   };
 
+  // ==================== Opções de fornecedores para o select ====================
   const suppliersOptions = suppliers?.map((supplier) => ({
     value: supplier.id,
     label: supplier.name,
   }));
 
+  // ==================== Adicionar especificação técnica ao formulário ====================
   const handleAddSpecification = () => {
     if (specificationName && specificationDescription) {
       setData('technical_specifications', {
@@ -106,57 +122,79 @@ export default function ProductVariationForm({
     }
   };
 
+  // ==================== Deletar variação do produto no backend ====================
   const handleDeleteVariation = (variationId: number) => {
     router.delete(route('productVariation.destroy', variationId), {
       preserveScroll: true,
     });
   };
 
+  // ==================== Definir variação como padrão do produto no backend ====================
   const handleDefaultVariation = (variationId: number) => {
     router.patch(route('products.updateDefaultVariation', productId), {
       default_variation_id: variationId,
     });
   };
 
+  // Tamanho das especificações técnicas
   const specificationsSize = Object.entries(
     data.technical_specifications
   ).length;
 
+  // ==================== Adicionar nova imagem ao formulário ====================
   const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const filesArray = Array.from(files);
+    const filesWithPosition = filesArray.map((file, index) => ({
+      file,
+      position: variationImages.length + index + 1,
+    }));
 
-    filesArray.forEach((file: File) => {
+    filesArray.forEach((file: File, index: number) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setVariationImages((prevImages: any) => [
           ...prevImages,
-          { file, path: reader.result as string },
+          {
+            uid: crypto.randomUUID(),
+            file,
+            path: reader.result as string,
+          },
         ]);
       };
       reader.readAsDataURL(file);
     });
-    setData('images', [...data.images, ...(filesArray as File[])]);
+    setData('images', [...data.images, ...filesWithPosition]);
   };
 
-  const handleDeleteImage = (image: any, index: number) => {
+  // ==================== Deletar imagem do formulário ====================
+  const handleDeleteImage = (image: any) => {
+    console.log('image to delete', image);
     // Tirar da listagem de imagens exibidas
     setVariationImages((prevImages) =>
-      prevImages.filter((_, i) => i !== index)
+      prevImages.filter((img) => img.uid !== image.uid)
     );
 
     // Adicionar ao formulário o id para deletar no backend
     if (image.id) {
       setData('images_to_delete', [...data.images_to_delete, image.id]);
+      setData(
+        'images',
+        data.images.filter((img: any) => img.id !== image.id)
+      );
     } else {
       // Remover do formulário de novas imagens
       setData(
         'images',
-        data.images.filter((file) => image.file.name !== file.name)
+        data.images.filter((file: any) => image.file.name !== file.name)
       );
     }
   };
+
+  console.log('data', data);
+  console.log('variationImages', variationImages);
+  // console.log('errors', errors);
 
   return (
     <Card className="w-full relative">
@@ -389,21 +427,11 @@ export default function ProductVariationForm({
           </div>
         )}
         <h4 className="font-bold mt-5">Imagens</h4>
-        <div className="grid grid-cols-6 gap-3 my-5">
-          {variationImages.map((item: any, index) => (
-            <div className="col-span-2 relative shadow-full rounded-lg h-40">
-              <IoClose
-                className="absolute -top-2 -right-2 cursor-pointer text-red-600 p-1 bg-gray-200 rounded-full text-2xl"
-                onClick={() => handleDeleteImage(item, index)}
-              />
-              <img
-                src={item.url || item.path}
-                alt="Imagem do produto"
-                className="object-cover w-full h-full rounded-lg"
-              />
-            </div>
-          ))}
-        </div>
+        <SortableImages
+          images={variationImages}
+          handleDelete={handleDeleteImage}
+          setImages={setVariationImages}
+        />
         <button
           type="button"
           className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold`}

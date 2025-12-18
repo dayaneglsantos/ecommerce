@@ -18,7 +18,7 @@ class ProductImagesFactory extends Factory
   {
     return [
       'path' => fake()->imageUrl(),
-      'is_primary' => false,
+      'position' => fake()->numberBetween(0, 10),
     ];
   }
 }
