@@ -17,10 +17,11 @@ return new class extends Migration
       $table->string('color')->nullable();
       $table->string('color_code')->nullable();
       $table->string('size')->nullable();
-      $table->decimal('old_price', 10, 2)->nullable();
-      $table->decimal('price', 10, 2);
+      $table->unsignedInteger('old_price')->nullable();
+      $table->unsignedInteger('price');
       $table->integer('stock_quantity')->default(0);
-      $table->integer('pix_discount_percent')->default(0);
+      $table->enum('pix_discount_type', ['percentage', 'fixed'])->default('fixed')->nullable();
+      $table->unsignedInteger('pix_discount_value')->default(0)->nullable();
       $table->string('sku')->unique();
       $table->json('technical_specifications')->nullable();
       $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('set null');

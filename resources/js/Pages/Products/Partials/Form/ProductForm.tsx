@@ -26,6 +26,18 @@ export default function ProductForm({ brands, categories }: any) {
     description: product?.description || '',
   });
 
+  // Preencher o formulário quando o produto for carregado (para o caso de ter criado um novo produto e estar editando em seguida)
+  useEffect(() => {
+    if (product) {
+      setData('brand_id', product?.brand?.id || 0);
+      setData('category_id', product?.category?.id || 0);
+      setData('name', product?.name || '');
+      setData('full_description', product?.fullDescription || '');
+      setData('slug', product?.slug || '');
+      setData('description', product?.description || '');
+    }
+  }, [product]);
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (product) {

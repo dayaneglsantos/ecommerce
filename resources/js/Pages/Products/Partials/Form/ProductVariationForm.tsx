@@ -16,6 +16,7 @@ import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
 import { IoClose } from 'react-icons/io5';
 import { Tooltip } from 'react-tooltip';
 import SortableImages from './SortableImages';
+import { parse } from 'path';
 
 interface ProductVariationFormProps {
   suppliers: SupplierType[];
@@ -43,17 +44,20 @@ export default function ProductVariationForm({
 
   // ==================== Configuração do formulário ====================
   const { data, setData, reset, post, errors, patch } = useForm({
-    product_id: productId,
+    product_id: productId || '',
     color: variation?.color || '',
     color_code: variation?.colorCode || '',
     size: variation?.size || '',
-    price: variation?.price.toString() || '',
+    price: parseFloat(variation?.price.toString() || '0').toFixed(2),
     old_price: variation?.oldPrice || '',
     stock_quantity: variation?.stockQuantity.toString() || '',
     technical_specifications: variation?.technicalSpecifications || {},
     sku: variation?.sku || '',
     supplier_id: variation?.supplier?.id || '',
-    pix_discount_percent: variation?.pixDiscountPercent?.toString() || '',
+    pix_discount_type: variation?.pixDiscountType || '',
+    pix_discount_value:
+      parseFloat(variation?.pixDiscountValue?.toString() || '0').toFixed(2) ||
+      '',
     is_default: false,
     images:
       (variation?.images.map((image) => ({
@@ -74,7 +78,10 @@ export default function ProductVariationForm({
       position: index + 1,
     }));
 
-    const payload = { ...data, images: imagesWithPosition };
+    const payload = {
+      ...data,
+      images: imagesWithPosition,
+    };
 
     if (variation) {
       router.post(
@@ -169,12 +176,13 @@ export default function ProductVariationForm({
       // Remover do formulário de novas imagens
       setData(
         'images',
-        data.images.filter((file: any) => image.file.name !== file.name)
+        data.images.filter((img: any) => image.file.name !== img.file.name)
       );
     }
   };
 
   console.log('data', data);
+  console.log(errors);
 
   return (
     <Card className="w-full relative">
@@ -258,7 +266,7 @@ export default function ProductVariationForm({
             />
             <InputError className="mt-2" message={errors.color_code} />
           </div>
-          <div className="col-span-3">
+          <div className="col-span-3 self-end">
             <InputLabel
               htmlFor="size"
               value="Tamanho"
@@ -292,7 +300,7 @@ export default function ProductVariationForm({
             />
             <InputError className="mt-2" message={errors.sku} />
           </div>
-          <div className="col-span-3">
+          <div className="col-span-6 md:col-span-3">
             <InputLabel
               htmlFor="supplier_id"
               value="Fornecedor"
@@ -333,31 +341,63 @@ export default function ProductVariationForm({
             />
             <InputError className="mt-2" message={errors.price} />
           </div>
+
           <div className="col-span-3">
             <InputLabel
-              htmlFor="pix_discount_percent"
-              value="Desconto PIX (%)"
+              htmlFor="pix_discount_value"
+              value="Desconto PIX"
               className="mt-4"
             />
-            <TextInput
-              id="pix_discount_percent"
-              type="text"
-              className="mt-1 block w-full"
-              value={data.pix_discount_percent}
-              onChange={(e) => {
-                if (
-                  Number(e.target.value) < 0 ||
-                  Number(e.target.value) > 100 ||
-                  isNaN(Number(e.target.value))
-                )
-                  return;
-                setData('pix_discount_percent', e.target.value);
-              }}
-            />
-            <InputError
-              className="mt-2"
-              message={errors.pix_discount_percent}
-            />
+            <div className=" flex gap-3">
+              <div className="grow">
+                <TextInput
+                  id="pix_discount_value"
+                  type="number"
+                  typeNumber={
+                    data.pix_discount_type === 'fixed' ? 'decimal' : 'integer'
+                  }
+                  className="mt-1 block w-full"
+                  value={data.pix_discount_value}
+                  onChange={(e) => {
+                    if (data.pix_discount_type === 'percentage') {
+                      if (
+                        Number(e.target.value) < 0 ||
+                        Number(e.target.value) > 100 ||
+                        isNaN(Number(e.target.value))
+                      )
+                        return;
+                    }
+                    setData('pix_discount_value', e.target.value);
+                  }}
+                />
+                <InputError
+                  className="mt-2"
+                  message={errors.pix_discount_value}
+                />
+              </div>
+              <div className="self-end mb-2 ml-3">
+                <div className="flex items-center gap-1">
+                  <Checkbox
+                    onChange={(e) => {
+                      setData('pix_discount_type', 'percentage');
+                      setData('pix_discount_value', '');
+                    }}
+                    checked={data.pix_discount_type === 'percentage'}
+                  />
+                  <InputLabel htmlFor="color" value="Porcentagem (%)" />
+                </div>
+                <div className="flex items-center gap-1">
+                  <Checkbox
+                    onChange={(e) => {
+                      setData('pix_discount_type', 'fixed');
+                      setData('pix_discount_value', '');
+                    }}
+                    checked={data.pix_discount_type === 'fixed'}
+                  />
+                  <InputLabel htmlFor="color" value="Valor fixo" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <h4 className="font-bold mt-5">Espeficicações técnicas</h4>
@@ -365,9 +405,9 @@ export default function ProductVariationForm({
         <div className="flex items-center mb-5">
           <div className="grid grid-cols-6 gap-3 grow mt-3">
             <div className="col-span-6 md:col-span-3">
-              <InputLabel htmlFor="price" value="Tipo" />
+              <InputLabel htmlFor="specificationName" value="Tipo" />
               <TextInput
-                id="price"
+                id="specificationName"
                 type="text"
                 value={specificationName}
                 className="mt-1 block w-full"
@@ -376,9 +416,12 @@ export default function ProductVariationForm({
               {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
             </div>
             <div className="col-span-6 md:col-span-3">
-              <InputLabel htmlFor="price" value="Descrição" />
+              <InputLabel
+                htmlFor="specificationDescription"
+                value="Descrição"
+              />
               <TextInput
-                id="price"
+                id="specificationDescription"
                 value={specificationDescription}
                 type="text"
                 className="mt-1 block w-full"

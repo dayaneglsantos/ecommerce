@@ -50,7 +50,7 @@ class ProductController extends Controller
 
       $product = Product::create($validatedData);
 
-      return redirect()->back()->with('success', 'Produto criado com sucesso!');
+      return redirect()->route('products.edit', $product->id)->with('success', 'Produto criado com sucesso!');
     } catch (\Exception $e) {
       return redirect()->back()->with('error', 'Erro ao criar o produto.');
     }
@@ -86,7 +86,7 @@ class ProductController extends Controller
       $validatedData = $request->validated();
       $product->update($validatedData);
 
-      return redirect()->route('products.index')->with('success', 'Produto atualizado com sucesso!');
+      return redirect()->back()->with('success', 'Produto atualizado com sucesso!');
     } catch (\Exception $e) {
       return redirect()->back()->with('error', 'Erro ao atualizar o produto.');
     }

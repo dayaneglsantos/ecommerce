@@ -31,7 +31,8 @@ class EditVariationRequest extends FormRequest
       'price' => ['required', 'numeric', 'min:0'],
       'old_price' => ['nullable', 'numeric', 'min:0'],
       'stock_quantity' => ['required', 'integer', 'min:0'],
-      'pix_discount_percent' => ['nullable', 'numeric', 'min:0'],
+      'pix_discount_type' => ['nullable', 'string', 'in:percentage,fixed'],
+      'pix_discount_value' => ['nullable', 'numeric', 'min:0'],
       'sku' => ['required', 'string', 'max:255', Rule::unique('product_variations', 'sku')->ignore($this->productVariation)],
       'technical_specifications' => ['nullable', 'array'],
       'supplier_id' => ['required', 'exists:suppliers,id'],
@@ -42,5 +43,28 @@ class EditVariationRequest extends FormRequest
       'images_to_delete' => ['nullable', 'array'],
       'images_to_delete.*' => ['integer', 'exists:product_images,id'],
     ];
+  }
+
+  protected function failedValidation(Validator $validator)
+  {
+    // Adicione aqui qualquer lógica personalizada que você queira executar em caso de falha na validação
+    dd($validator->errors()->toArray());
+  }
+
+  protected function prepareForValidation()
+  {
+    $this->merge([
+      'price' => $this->price
+        ? (int) round(str_replace(',', '.', $this->price) * 100)
+        : null,
+
+      'old_price' => $this->old_price
+        ? (int) round(str_replace(',', '.', $this->old_price) * 100)
+        : null,
+
+      'pix_discount_value' => $this->pix_discount_type === 'fixed' && $this->pix_discount_value
+        ? (int) round(str_replace(',', '.', $this->pix_discount_value) * 100)
+        : $this->pix_discount_value,
+    ]);
   }
 }

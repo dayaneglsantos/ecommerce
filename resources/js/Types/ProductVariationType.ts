@@ -11,7 +11,8 @@ export default interface ProductVariationType {
   oldPrice: number | null;
   price: number;
   stockQuantity: number;
-  pixDiscountPercent: number | null;
+  pixDiscountType: string | null;
+  pixDiscountValue: string | null;
   sku: string;
   technicalSpecifications: JSON | null;
   supplier: SupplierType | null;

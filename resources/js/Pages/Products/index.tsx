@@ -1,14 +1,8 @@
 import NavLink from '@/Components/NavLink';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import BrandType from '@/Types/BrandType';
-import CategoryType from '@/Types/CategoryType';
-import ProductType from '@/Types/ProductType';
 import { Head } from '@inertiajs/react';
-import ProductForm from './Partials/ProductFormPage';
 import ProductsList from './Partials/ProductsList';
-import ProductVariationType from '@/Types/ProductVariationType';
 import ProductFormPage from './Partials/ProductFormPage';
-import SupplierType from '@/Types/SupplierType';
 
 export default function ProductsPage() {
   const currentTab = route().current();

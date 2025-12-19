@@ -25,7 +25,8 @@ class ProductVariation extends Model
     'old_price',
     'price',
     'stock_quantity',
-    'pix_discount_percent',
+    'pix_discount_type',
+    'pix_discount_value',
     'sku',
     'technical_specifications',
     'supplier_id',
@@ -33,8 +34,9 @@ class ProductVariation extends Model
 
   protected $casts = [
     'technical_specifications' => 'array',  // Informar ao Laravel que este campo JSON deve ser tratado como um array PHP.
-    'old_price' => 'float',
-    'price' => 'float',
+    'old_price' => 'integer',
+    'price' => 'integer',
+    'pix_discount_value' => 'integer',
   ];
 
   protected $with = ['images', 'supplier', 'product'];
@@ -52,5 +54,26 @@ class ProductVariation extends Model
   public function supplier()
   {
     return $this->belongsTo(Supplier::class);
+  }
+
+  public function getPriceFormattedAttribute(): float
+  {
+    return $this->price / 100;
+  }
+
+  public function getOldPriceFormattedAttribute(): ?float
+  {
+    return $this->old_price !== null
+      ? $this->old_price / 100
+      : null;
+  }
+
+  public function getPixDiscountFormattedAttribute(): ?float
+  {
+    if ($this->pix_discount_type !== 'fixed') {
+      return null;
+    }
+
+    return $this->pix_discount_value / 100;
   }
 }
