@@ -4,10 +4,17 @@ import { arrayMove, SortableContext, useSortable } from '@dnd-kit/sortable';
 import { IoClose } from 'react-icons/io5';
 import { CSS } from '@dnd-kit/utilities';
 
+interface ReceivedImageType {
+  file?: File;
+  id?: number;
+  uid?: string;
+  preview?: string;
+}
+
 interface SortableImagesProps {
-  images: ProductImagesType[];
-  handleDelete: (image: ProductImagesType) => void;
-  setImages: React.Dispatch<React.SetStateAction<any>>;
+  images: ReceivedImageType[];
+  handleDelete: (image: ReceivedImageType) => void;
+  setImages: any;
 }
 
 export default function SortableImages({
@@ -22,9 +29,8 @@ export default function SortableImages({
     const oldIndex = images.findIndex((img) => img.uid === active.id);
     const newIndex = images.findIndex((img) => img.uid === over.id);
 
-    setImages((items: ProductImagesType[]) => {
-      return arrayMove(items, oldIndex, newIndex);
-    });
+    const newImagesOrder = arrayMove(images, oldIndex, newIndex);
+    setImages('images', newImagesOrder);
   };
 
   return (
@@ -47,8 +53,8 @@ export default function SortableImages({
 // --------------------------------------
 
 interface SortableImageItemProps {
-  image: ProductImagesType;
-  handleDelete: (image: ProductImagesType) => void;
+  image: ReceivedImageType;
+  handleDelete: (image: ReceivedImageType) => void;
 }
 
 const SortableImageItem = ({ image, handleDelete }: SortableImageItemProps) => {
@@ -72,7 +78,7 @@ const SortableImageItem = ({ image, handleDelete }: SortableImageItemProps) => {
         onClick={() => handleDelete(image)}
       />
       <img
-        src={image.url || image.path}
+        src={image.preview}
         alt="Imagem do produto"
         className="object-cover w-full h-full rounded-lg"
         {...listeners} // Eventos de drag and drop

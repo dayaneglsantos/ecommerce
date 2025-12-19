@@ -7,6 +7,7 @@ use App\Http\Requests\ProductVariation\CreateVariationRequest;
 use App\Http\Requests\ProductVariation\EditVariationRequest;
 use App\Models\ProductVariation;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductVariationController extends Controller
 {
@@ -77,12 +78,22 @@ class ProductVariationController extends Controller
    */
   public function update(EditVariationRequest $request, ProductVariation $productVariation)
   {
-    dd($request->all());
     try {
       DB::transaction(function () use ($request, $productVariation) {
         $validated = $request->validated();
         $productVariation->update($validated);
 
+        // Exclusão de imagens
+        if (isset($validated['images_to_delete'])) {
+          foreach ($validated['images_to_delete'] as $imageId) {
+            $image = $productVariation->images()->find($imageId);
+            if ($image) {
+              $image->delete(); // Excluir o registro do banco de dados
+            }
+          }
+        }
+
+        // Inclusão e atualização de imagens
         foreach ($validated['images'] as $imageData) {
           if (isset($imageData['file'])) { // Nova imagem para upload
             $path = $imageData['file']->store('product_images', 'public');

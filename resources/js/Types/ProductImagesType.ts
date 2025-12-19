@@ -4,5 +4,4 @@ export default interface ProductImagesType {
   productVariationId: number;
   path: string;
   url: string;
-  position: number;
 }

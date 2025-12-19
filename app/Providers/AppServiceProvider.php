@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\ProductImages;
+use App\Observers\ProductImageObserver;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
-use Nette\Utils\Json;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
   public function boot(): void
   {
     Vite::prefetch(concurrency: 3);
+
     JsonResource::withoutWrapping(); // Desabilita o "data" no retorno dos Resources
+
+    ProductImages::observe(ProductImageObserver::class); // Registrando o Observer para ProductImages
   }
 }

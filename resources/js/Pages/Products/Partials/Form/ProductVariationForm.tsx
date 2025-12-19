@@ -36,13 +36,6 @@ export default function ProductVariationForm({
   const [selectedVariationId, setSelectedVariationId] = useState<number | null>(
     null
   );
-  const [variationImages, setVariationImages] = useState(
-    variation?.images.map((image) => ({
-      ...image,
-      uid: crypto.randomUUID(),
-      path: image.path,
-    })) || []
-  );
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const { id: productId, defaultVariation } = usePage().props
@@ -62,10 +55,13 @@ export default function ProductVariationForm({
     supplier_id: variation?.supplier?.id || '',
     pix_discount_percent: variation?.pixDiscountPercent?.toString() || '',
     is_default: false,
-    images: variation?.images.map((image) => ({
-      id: image.id,
-      position: image.position,
-    })) as { id?: number; position: number; file?: File }[],
+    images:
+      (variation?.images.map((image) => ({
+        id: image.id,
+        preview: image.url,
+        uid: crypto.randomUUID(),
+      })) as { id?: number; file?: File; preview?: string; uid?: string }[]) ||
+      [],
     images_to_delete: [] as number[],
   });
 
@@ -143,39 +139,25 @@ export default function ProductVariationForm({
 
   // ==================== Adicionar nova imagem ao formulário ====================
   const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('passei');
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const filesArray = Array.from(files);
-    const filesWithPosition = filesArray.map((file, index) => ({
-      file,
-      position: variationImages.length + index + 1,
-    }));
 
     filesArray.forEach((file: File, index: number) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setVariationImages((prevImages: any) => [
-          ...prevImages,
-          {
-            uid: crypto.randomUUID(),
-            file,
-            path: reader.result as string,
-          },
+        setData('images', [
+          ...data.images,
+          { file, preview: reader.result as string, uid: crypto.randomUUID() },
         ]);
       };
       reader.readAsDataURL(file);
     });
-    setData('images', [...data.images, ...filesWithPosition]);
   };
 
   // ==================== Deletar imagem do formulário ====================
   const handleDeleteImage = (image: any) => {
-    console.log('image to delete', image);
-    // Tirar da listagem de imagens exibidas
-    setVariationImages((prevImages) =>
-      prevImages.filter((img) => img.uid !== image.uid)
-    );
-
     // Adicionar ao formulário o id para deletar no backend
     if (image.id) {
       setData('images_to_delete', [...data.images_to_delete, image.id]);
@@ -193,8 +175,6 @@ export default function ProductVariationForm({
   };
 
   console.log('data', data);
-  console.log('variationImages', variationImages);
-  // console.log('errors', errors);
 
   return (
     <Card className="w-full relative">
@@ -426,18 +406,22 @@ export default function ProductVariationForm({
             )}
           </div>
         )}
-        <h4 className="font-bold mt-5">Imagens</h4>
-        <SortableImages
-          images={variationImages}
-          handleDelete={handleDeleteImage}
-          setImages={setVariationImages}
-        />
+        {data.images && data.images.length > 0 && (
+          <>
+            <h4 className="font-bold mt-5">Imagens</h4>
+            <SortableImages
+              images={data.images}
+              handleDelete={handleDeleteImage}
+              setImages={setData}
+            />
+          </>
+        )}
         <button
           type="button"
           className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold`}
           onClick={() => imageInputRef.current?.click()}
         >
-          Adicionar nova imagem
+          Adicionar imagem
         </button>
         <input
           type="file"
