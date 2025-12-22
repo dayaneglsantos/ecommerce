@@ -43,7 +43,7 @@ export default function ProductVariationForm({
     ?.product as ProductType;
 
   // ==================== Configuração do formulário ====================
-  const { data, setData, reset, post, errors, patch } = useForm({
+  const { data, setData, reset, post, errors, patch, setError } = useForm({
     product_id: productId || '',
     color: variation?.color || '',
     color_code: variation?.colorCode || '',
@@ -72,6 +72,14 @@ export default function ProductVariationForm({
   // ==================== Envio do formulário para o backend ====================
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (specificationDescription && specificationName) {
+      setError(
+        'technical_specifications',
+        'Você possui uma especificação não adicionada.'
+      );
+      return;
+    }
 
     const imagesWithPosition = data.images.map((img, index) => ({
       ...img,
@@ -257,13 +265,31 @@ export default function ProductVariationForm({
               icon={<IoMdInformationCircle />}
               iconText="Código hexadecimal da cor. Ex: #FFFFFF"
             />
-            <TextInput
-              id="color_code"
-              type="text"
-              value={data.color_code}
-              className="mt-1 block w-full"
-              onChange={(e) => setData('color_code', e.target.value)}
-            />
+            <div className="flex items-center gap-2">
+              <TextInput
+                id="color_code"
+                type="text"
+                value={data.color_code}
+                className="mt-1 block w-full"
+                onChange={(e) => {
+                  // Garantir que o valor comece com #
+                  if (!e.target.value.startsWith('#')) {
+                    e.target.value = `#${e.target.value}`;
+                  }
+                  // Limitar a 7 caracteres (# + 6 dígitos hexadecimais)
+                  if (e.target.value.length > 7) {
+                    e.target.value = e.target.value.slice(0, 7);
+                  }
+                  setData('color_code', e.target.value);
+                }}
+              />
+              {data?.color_code && (
+                <div
+                  className={`h-8 w-8 rounded-lg border border-gray-300`}
+                  style={{ backgroundColor: data.color_code }}
+                />
+              )}
+            </div>
             <InputError className="mt-2" message={errors.color_code} />
           </div>
           <div className="col-span-3 self-end">
@@ -400,9 +426,11 @@ export default function ProductVariationForm({
             </div>
           </div>
         </div>
-        <h4 className="font-bold mt-5">Espeficicações técnicas</h4>
+        <h4 className="font-bold mt-5  text-primary">
+          Espeficicações técnicas
+        </h4>
 
-        <div className="flex items-center mb-5">
+        <div className="flex items-center mb-1">
           <div className="grid grid-cols-6 gap-3 grow mt-3">
             <div className="col-span-6 md:col-span-3">
               <InputLabel htmlFor="specificationName" value="Tipo" />
@@ -413,7 +441,6 @@ export default function ProductVariationForm({
                 className="mt-1 block w-full"
                 onChange={(e) => setSpecificationName(e.target.value)}
               />
-              {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
             </div>
             <div className="col-span-6 md:col-span-3">
               <InputLabel
@@ -427,7 +454,6 @@ export default function ProductVariationForm({
                 className="mt-1 block w-full"
                 onChange={(e) => setSpecificationDescription(e.target.value)}
               />
-              {/* <InputError className="mt-2" message={errors.technical_specifications} /> */}
             </div>
           </div>
           <IoIosAddCircle
@@ -435,23 +461,37 @@ export default function ProductVariationForm({
             onClick={handleAddSpecification}
           />
         </div>
-        {specificationsSize > 0 && (
-          <div className="w-full shadow-full p-3 rounded-2xl my-5">
-            {Object.entries(data.technical_specifications).map(
-              ([key, value]) => (
-                <div key={key} className="flex items-center mt-2 gap-3 ">
-                  <p>
-                    <b>{key}: </b>
-                    {value as React.ReactNode}
-                  </p>
-                </div>
-              )
-            )}
-          </div>
-        )}
+        <InputError message={errors.technical_specifications} />
+
+        {specificationsSize > 0 &&
+          Object.entries(data.technical_specifications).map(([key, value]) => (
+            <div className="w-full shadow-full p-3 rounded-2xl my-5">
+              <div
+                key={key}
+                className="flex items-center justify-between gap-3 "
+              >
+                <p>
+                  <b>{key}: </b>
+                  {value as React.ReactNode}
+                </p>
+                <FaTrashAlt
+                  onClick={() => {
+                    const updatedSpecifications = Object.fromEntries(
+                      Object.entries(data.technical_specifications).filter(
+                        ([k]) => k !== key
+                      )
+                    );
+                    setData('technical_specifications', updatedSpecifications);
+                  }}
+                  className={`cursor-pointer text-gray-500 outline-none hover:text-red-600`}
+                />
+              </div>
+            </div>
+          ))}
+
         {data.images && data.images.length > 0 && (
           <>
-            <h4 className="font-bold mt-5">Imagens</h4>
+            <h4 className="text-primary font-bold mt-5 ">Imagens</h4>
             <SortableImages
               images={data.images}
               handleDelete={handleDeleteImage}
