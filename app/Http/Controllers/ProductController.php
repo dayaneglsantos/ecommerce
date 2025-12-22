@@ -17,7 +17,7 @@ class ProductController extends Controller
   // Listagem de Produtos
   public function index()
   {
-    $products = Product::all()->load('defaultVariation');
+    $products = Product::all()->load('defaultVariation', 'variations');
     $brands = Brand::all();
     $categories = Category::all();
 
@@ -61,7 +61,9 @@ class ProductController extends Controller
    */
   public function show(Product $products)
   {
-    //
+    return Inertia::render('Products/index', [
+      'product' => new ProductResource($products->load('variations', 'defaultVariation')),
+    ]);
   }
 
   // Formulário de Edição de Produto

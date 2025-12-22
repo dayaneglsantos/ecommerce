@@ -17,24 +17,21 @@ const Dropdown = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <DropDownContext.Provider value={{ open, setOpen, toggleOpen }}>
-      <div className="relative">{children}</div>
+      <div
+        className="relative"
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+      >
+        {children}
+      </div>
     </DropDownContext.Provider>
   );
 };
 
 const Trigger = ({ children }: { children: React.ReactNode }) => {
-  const { open, setOpen, toggleOpen } = useContext(DropDownContext);
-
   return (
     <>
-      <div onClick={toggleOpen}>{children}</div>
-
-      {open && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setOpen(false)}
-        ></div>
-      )}
+      <div>{children}</div>
     </>
   );
 };

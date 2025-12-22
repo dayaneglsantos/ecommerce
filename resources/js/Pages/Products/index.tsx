@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import ProductsList from './Partials/ProductsList';
 import ProductFormPage from './Partials/ProductFormPage';
+import ProductDetails from './Partials/ProductDetails';
 
 export default function ProductsPage() {
   const currentTab = route().current();
@@ -10,25 +11,15 @@ export default function ProductsPage() {
   return (
     <AuthenticatedLayout>
       <Head title="Criar produto" />
-      <div className="flex gap-2 px-3 py-2 bg-primaryLight/20">
-        <NavLink
-          href={route('products.index')}
-          active={route().current('products.index')}
-        >
-          Produtos cadastrados
-        </NavLink>
-        <NavLink
-          href={route('products.create')}
-          active={route().current('products.create')}
-        >
-          Novo produto
-        </NavLink>
-        <NavLink>Nova variação de produto</NavLink>
-      </div>
+
       <div className="py-8">
         <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
           {/* Listagem de produtos */}
           {currentTab === 'products.index' && <ProductsList />}
+
+          {/* Detalhes do produto */}
+          {currentTab === 'products.show' && <ProductDetails />}
+
           {/* Criação e edição de produtos */}
           {(currentTab === 'products.create' ||
             currentTab === 'products.edit') && <ProductFormPage />}

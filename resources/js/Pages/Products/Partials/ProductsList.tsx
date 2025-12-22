@@ -1,4 +1,5 @@
 import Card from '@/Components/Card';
+import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import BrandType from '@/Types/BrandType';
 import CategoryType from '@/Types/CategoryType';
@@ -59,37 +60,23 @@ export default function ProductsList() {
           <Card key={product.id} className="relative col-span-1 w-full">
             <div className="h-32 border border-gray-200 rounded-md">foto</div>
             <p>{product.name}</p>
-            {/* {product.defaultVariation.oldPrice &&
-            product.defaultVariation.oldPrice >
-              product.defaultVariation.price ? (
-              <>
-                <p>
-                  De R${' '}
-                  <span className="line-through">
-                    {product.defaultVariation.oldPrice}
-                  </span>
-                </p>
-                <p>
-                  por R${' '}
-                  <span className="text-primary font-bold">
-                    {product.defaultVariation.price}
-                  </span>
-                </p>
-              </>
-            ) : (
-              <span className="text-primary font-bold">
-                R${product.defaultVariation.price}
-              </span>
-            )}
-            {isAdmin && (
-              <p className="text-sm">
-                Quantidade em estoque:{' '}
-                <b>{product.defaultVariation.stockQuantity}</b>
-              </p>
-            )} */}
-            <div className="absolute -top-2 -right-2 p-2 cursor-pointer bg-gray-100 rounded-full">
-              <SlOptionsVertical />
-            </div>
+
+            <span className="font-bold">Preço atual: </span>
+            <span className="text-primary font-bold">
+              R${product.defaultVariation.price}
+            </span>
+
+            <p className="text-sm">
+              Variações cadastradas: <b>{product?.variations.length}</b>
+            </p>
+
+            <PrimaryButton
+              outline
+              className="mt-2 w-full justify-center"
+              href={route('products.show', product.id)}
+            >
+              Ver detalhes
+            </PrimaryButton>
           </Card>
         ))}
       </div>
