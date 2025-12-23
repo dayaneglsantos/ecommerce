@@ -12,7 +12,7 @@ export default function ProductsPage() {
     <AuthenticatedLayout>
       <Head title="Criar produto" />
 
-      <div className="py-8">
+      <div>
         <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
           {/* Listagem de produtos */}
           {currentTab === 'products.index' && <ProductsList />}
