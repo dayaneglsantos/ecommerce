@@ -1,13 +1,14 @@
 import Card from '@/Components/Card';
+import Carousel from '@/Components/Carousel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import BrandType from '@/Types/BrandType';
 import CategoryType from '@/Types/CategoryType';
 import ProductType from '@/Types/ProductType';
 import { UserType } from '@/Types/UserType';
-import { usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { SlOptionsVertical } from 'react-icons/sl';
+import { Navigation, Pagination } from 'swiper/modules';
 
 export default function ProductsList() {
   const currentUser = usePage().props.auth.user as UserType;
@@ -58,7 +59,7 @@ export default function ProductsList() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         {products.map((product: ProductType) => (
           <Card key={product.id} className="relative col-span-1 w-full">
-            <div className="h-32 border border-gray-200 rounded-md">foto</div>
+            <Carousel images={product.defaultVariation.images} />
             <p>{product.name}</p>
 
             <span className="font-bold">Preço atual: </span>
@@ -70,12 +71,10 @@ export default function ProductsList() {
               Variações cadastradas: <b>{product?.variations.length}</b>
             </p>
 
-            <PrimaryButton
-              outline
-              className="mt-2 w-full justify-center"
-              href={route('products.show', product.id)}
-            >
-              Ver detalhes
+            <PrimaryButton outline className="mt-2 w-full justify-center">
+              <Link href={route('products.show', product.id)}>
+                Ver detalhes
+              </Link>
             </PrimaryButton>
           </Card>
         ))}

@@ -13,3 +13,17 @@
     -moz-appearance: textfield; /* Firefox */
   }
 }
+
+.swiper-navigation-icon {
+  width: 24px !important;
+  height: 24px !important;
+  color: theme('colors.primaryLight') !important;
+}
+
+.swiper-button-next {
+  right: 0 !important;
+}
+
+.swiper-button-prev {
+  left: 0 !important;
+}

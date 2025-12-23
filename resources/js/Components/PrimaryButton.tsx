@@ -14,14 +14,14 @@ export default function PrimaryButton({
   ...props
 }: PrimaryButtonProps) {
   const outlineClasses =
-    'text-primary border border-primary hover:bg-primaryLight hover:text-primaryDark focus:ring-primary focus:ring-offset-white active:bg-gray-100';
+    'text-primary border border-primary hover:bg-primaryLight hover:text-primaryDark focus:ring-offset-white active:bg-gray-100';
   const normalClasses =
     'bg-primary text-white hover:bg-primaryDark active:bg-primaryDark';
   return (
     <button
       {...props}
       className={
-        `inline-flex items-center rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-widest transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 ${
+        `inline-flex items-center rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-widest transition duration-150 ease-in-out focus:outline-none ${
           outline ? outlineClasses : normalClasses
         } ${disabled ? 'opacity-25' : ''} ` + className
       }
