@@ -36,7 +36,7 @@ class EditVariationRequest extends FormRequest
       'sku' => ['required', 'string', 'max:255', Rule::unique('product_variations', 'sku')->ignore($this->productVariation)],
       'technical_specifications' => ['nullable', 'array'],
       'supplier_id' => ['required', 'exists:suppliers,id'],
-      'images' => ['nullable', 'array'],
+      'images' => ['required', 'array'],
       'images.*.file' => ['nullable', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
       'images.*.position' => ['required', 'integer', 'min:1'], // posição da imagem na ordem
       'images.*.id' => ['nullable', 'integer', 'exists:product_images,id'], // id da imagem existente

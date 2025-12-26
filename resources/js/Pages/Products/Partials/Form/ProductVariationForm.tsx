@@ -10,7 +10,7 @@ import ProductType from '@/Types/ProductType';
 import ProductVariationType from '@/Types/ProductVariationType';
 import SupplierType from '@/Types/SupplierType';
 import { router, useForm, usePage } from '@inertiajs/react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
 import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
 import { IoClose } from 'react-icons/io5';
@@ -22,21 +22,23 @@ interface ProductVariationFormProps {
   suppliers: SupplierType[];
   variation?: ProductVariationType;
   newForm?: boolean;
-  removeNewForm?: () => void;
+  setNewForm?: (newForm: boolean) => void;
+  handleCancelButton?: () => void;
+  setOpenConfirmDialog?: (open: boolean) => void;
+  setSelectedVariation?: (variation: ProductVariationType | null) => void;
 }
 
 export default function ProductVariationForm({
   suppliers,
   variation,
   newForm,
-  removeNewForm,
+  setNewForm,
+  handleCancelButton,
+  setOpenConfirmDialog,
+  setSelectedVariation,
 }: ProductVariationFormProps) {
   const [specificationName, setSpecificationName] = useState('');
   const [specificationDescription, setSpecificationDescription] = useState('');
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [selectedVariationId, setSelectedVariationId] = useState<number | null>(
-    null
-  );
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const { id: productId, defaultVariation } = usePage().props
@@ -45,29 +47,67 @@ export default function ProductVariationForm({
   // ==================== Configuração do formulário ====================
   const { data, setData, reset, post, errors, patch, setError } = useForm({
     product_id: productId || '',
-    color: variation?.color || '',
-    color_code: variation?.colorCode || '',
-    size: variation?.size || '',
-    price: parseFloat(variation?.price.toString() || '0').toFixed(2),
-    old_price: variation?.oldPrice || '',
-    stock_quantity: variation?.stockQuantity.toString() || '',
-    technical_specifications: variation?.technicalSpecifications || {},
-    sku: variation?.sku || '',
-    supplier_id: variation?.supplier?.id || '',
-    pix_discount_type: variation?.pixDiscountType || '',
-    pix_discount_value:
-      parseFloat(variation?.pixDiscountValue?.toString() || '0').toFixed(2) ||
-      '',
+    color: '',
+    color_code: '',
+    size: '',
+    price: '',
+    old_price: '',
+    stock_quantity: '',
+    technical_specifications: {},
+    sku: '',
+    supplier_id: '',
+    pix_discount_type: '',
+    pix_discount_value: '',
     is_default: false,
-    images:
-      (variation?.images.map((image) => ({
-        id: image.id,
-        preview: image.url,
-        uid: crypto.randomUUID(),
-      })) as { id?: number; file?: File; preview?: string; uid?: string }[]) ||
-      [],
+    images: [] as {
+      id?: number;
+      file?: File;
+      preview?: string;
+      uid?: string;
+    }[],
     images_to_delete: [] as number[],
   });
+
+  useEffect(() => {
+    if (variation) {
+      setData('color', variation.color);
+      setData('color_code', variation.colorCode);
+      setData('size', variation.size);
+      setData('price', parseFloat(variation.price.toString()).toFixed(2));
+      setData(
+        'old_price',
+        variation.oldPrice
+          ? parseFloat(variation.oldPrice.toString()).toFixed(2)
+          : ''
+      );
+      setData('stock_quantity', variation.stockQuantity.toString());
+      setData(
+        'technical_specifications',
+        variation.technicalSpecifications || {}
+      );
+      setData('sku', variation.sku);
+      setData('supplier_id', (variation?.supplier?.id as any) || '');
+      setData('pix_discount_type', variation.pixDiscountType || '');
+      setData(
+        'pix_discount_value',
+        parseFloat(variation?.pixDiscountValue?.toString() || '0').toFixed(2) ||
+          ''
+      );
+      setData(
+        'images',
+        (variation?.images.map((image) => ({
+          id: image.id,
+          preview: image.url,
+          uid: crypto.randomUUID(),
+        })) as {
+          id?: number;
+          file?: File;
+          preview?: string;
+          uid?: string;
+        }[]) || []
+      );
+    }
+  }, [variation]);
 
   // ==================== Envio do formulário para o backend ====================
   const submit = (e: React.FormEvent) => {
@@ -100,18 +140,26 @@ export default function ProductVariationForm({
         },
         {
           preserveScroll: true,
+          onSuccess: () => {
+            setSelectedVariation && setSelectedVariation(null);
+          },
         }
       );
     } else {
-      post(route('productVariation.store'), {
-        preserveScroll: true,
-        onSuccess: () => {
-          if (newForm && removeNewForm) {
-            removeNewForm();
-            reset();
-          }
-        },
-      });
+      router.post(
+        route('productVariation.store'),
+        { ...payload },
+        {
+          preserveScroll: true,
+          onSuccess: () => {
+            if (newForm && handleCancelButton) {
+              handleCancelButton();
+              setNewForm && setNewForm(false);
+              reset();
+            }
+          },
+        }
+      );
     }
   };
 
@@ -131,13 +179,6 @@ export default function ProductVariationForm({
       setSpecificationName('');
       setSpecificationDescription('');
     }
-  };
-
-  // ==================== Deletar variação do produto no backend ====================
-  const handleDeleteVariation = (variationId: number) => {
-    router.delete(route('productVariation.destroy', variationId), {
-      preserveScroll: true,
-    });
   };
 
   // ==================== Definir variação como padrão do produto no backend ====================
@@ -193,16 +234,16 @@ export default function ProductVariationForm({
   console.log(errors);
 
   return (
-    <Card className="w-full relative">
-      <h3 className="font-bold text-lg text-primaryDark">
+    <Card className="w-full relative mt-6">
+      <h3 className="font-bold text-lg text-primary-dark">
         Variação do Produto
       </h3>
       <form onSubmit={submit}>
         {!newForm && variation && (
           <div className="absolute top-4 right-4 flex items-center gap-3">
             <div
-              className={` border border-primary p-1 text-[12px] rounded-full px-2 text-primaryDark  ${
-                defaultVariation?.id === variation.id
+              className={` border border-primary p-1 text-[12px] rounded-full px-2 text-primary-dark  ${
+                defaultVariation?.id === variation?.id
                   ? 'bg-gray-200 font-bold'
                   : 'bg-gray-50 '
               }`}
@@ -219,8 +260,8 @@ export default function ProductVariationForm({
             <button
               type="button"
               onClick={() => {
-                setSelectedVariationId(variation.id);
-                setOpenConfirmDialog(true);
+                setSelectedVariation && setSelectedVariation(variation);
+                setOpenConfirmDialog && setOpenConfirmDialog(true);
               }}
             >
               <FaTrashAlt
@@ -457,7 +498,7 @@ export default function ProductVariationForm({
             </div>
           </div>
           <IoIosAddCircle
-            className="text-2xl mt-8 ml-3 cursor-pointer text-primaryDark"
+            className="text-2xl mt-8 ml-3 cursor-pointer text-primary-dark"
             onClick={handleAddSpecification}
           />
         </div>
@@ -506,6 +547,12 @@ export default function ProductVariationForm({
         >
           Adicionar imagem
         </button>
+        {errors.images && (
+          <InputError
+            className="mt-2"
+            message="Você deve adicionar pelo menos uma imagem."
+          />
+        )}
         <input
           type="file"
           multiple
@@ -515,26 +562,13 @@ export default function ProductVariationForm({
           onChange={(e) => handleAddImage(e)}
         />
         <div className="flex justify-end my-3 mt-6 gap-3">
-          {newForm && (
-            <PrimaryButton outline onClick={removeNewForm} type="button">
-              Cancelar
-            </PrimaryButton>
-          )}
+          <PrimaryButton outline onClick={handleCancelButton} type="button">
+            Cancelar
+          </PrimaryButton>
+
           <PrimaryButton type="submit">Salvar Variação</PrimaryButton>
         </div>
       </form>
-      <ConfirmDialog
-        open={openConfirmDialog}
-        title="Tem certeza que deseja remover esta variação?"
-        onAccept={() => {
-          selectedVariationId && handleDeleteVariation(selectedVariationId);
-          setOpenConfirmDialog(false);
-        }}
-        onClose={() => {
-          setOpenConfirmDialog(false);
-          setSelectedVariationId(null);
-        }}
-      />
     </Card>
   );
 }

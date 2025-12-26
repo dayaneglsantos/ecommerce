@@ -55,7 +55,7 @@ export default function Welcome({
                       Cadastrar
                     </Link>
                     <span
-                      className="w-10 h-10 flex items-center justify-center rounded-full bg-primaryLight cursor-pointer ml-4"
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-light cursor-pointer ml-4"
                       onClick={() => setShowCart(true)}
                     >
                       <PiShoppingCartSimple className="text-xl" />

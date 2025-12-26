@@ -14,9 +14,9 @@ export default function PrimaryButton({
   ...props
 }: PrimaryButtonProps) {
   const outlineClasses =
-    'text-primary border border-primary hover:bg-primaryLight hover:text-primaryDark focus:ring-offset-white active:bg-gray-100';
+    'text-primary border border-primary hover:bg-primary-light hover:text-primary-dark focus:ring-offset-white active:bg-gray-100';
   const normalClasses =
-    'bg-primary text-white hover:bg-primaryDark active:bg-primaryDark';
+    'bg-primary text-white hover:bg-primary-dark active:bg-primary-dark';
   return (
     <button
       {...props}

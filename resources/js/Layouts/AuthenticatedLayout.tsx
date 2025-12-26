@@ -39,7 +39,7 @@ export default function AuthenticatedLayout({
         </header>
       )}
 
-      <main>{children}</main>
+      <main className="pt-24">{children}</main>
     </div>
   );
 }

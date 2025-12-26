@@ -32,7 +32,6 @@ class ProductVariationController extends Controller
    */
   public function store(CreateVariationRequest $request)
   {
-    dd($request->file('images'));
     try {
       // Transaction garante que ou todas as operações sejam concluídas com sucesso ou nenhuma seja aplicada em caso de falha
       DB::transaction(function () use ($request) {
@@ -120,6 +119,14 @@ class ProductVariationController extends Controller
   public function destroy(ProductVariation $productVariation)
   {
     try {
+      $productVariations = $productVariation->product->variations;
+      if ($productVariations->count() === 2 && $productVariation->product->default_variation_id === $productVariation->id) {
+        // Definir a outra variação como padrão
+        $otherVariation = $productVariations->firstWhere('id', '!=', $productVariation->id);
+        $productVariation->product->default_variation_id = $otherVariation->id;
+        $productVariation->product->save();
+      }
+
       $productVariation->delete();
 
       // permanacer na mesma rota e apenas enviar mensagem

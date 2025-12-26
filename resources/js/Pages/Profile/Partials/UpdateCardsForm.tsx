@@ -122,7 +122,7 @@ export default function UpdateCards({
           user.cards.map((card: any) => (
             <Card className="relative pt-12 mt-6 col-span-2 w-full">
               <div
-                className={`absolute top-4 left-4 border border-primary p-1 text-[12px] rounded-full px-2 text-primaryDark  ${
+                className={`absolute top-4 left-4 border border-primary p-1 text-[12px] rounded-full px-2 text-primary-dark  ${
                   card.is_default ? 'bg-gray-200' : 'bg-gray-50 '
                 }`}
               >

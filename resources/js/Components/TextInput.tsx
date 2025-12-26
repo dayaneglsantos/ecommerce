@@ -45,7 +45,7 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
     return (
       <div
         className={
-          'relative flex items-center bg-white border border-gray-300 rounded-md shadow-sm focus-within:border-primaryLight focus-within:ring-1 focus-within:ring-primaryLight ' +
+          'relative flex items-center bg-white border border-gray-300 rounded-md shadow-sm focus-within:border-primary-light focus-within:ring-1 focus-within:ring-primary-light ' +
           className
         }
       >

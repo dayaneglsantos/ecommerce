@@ -15,9 +15,9 @@
 }
 
 .swiper-navigation-icon {
-  width: 24px !important;
-  height: 24px !important;
-  color: theme('colors.primaryLight') !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: theme('colors.primary-light') !important;
 }
 
 .swiper-button-next {

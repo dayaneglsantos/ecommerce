@@ -104,7 +104,7 @@ class ProductController extends Controller
       $product->default_variation_id = $validatedData['default_variation_id'];
       $product->save();
 
-      return redirect()->back()->with('success', 'Variação definida como principal com sucesso!');
+      return redirect()->back()->with('success', 'Variação definida como principal!');
     } catch (\Exception $e) {
       dd($e->getMessage());
       return redirect()->back()->with('error', 'Erro ao definir a variação principal.');

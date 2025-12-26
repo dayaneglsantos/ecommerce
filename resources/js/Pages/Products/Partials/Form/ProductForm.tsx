@@ -103,7 +103,7 @@ export default function ProductForm({ brands, categories }: any) {
 
   return (
     <Card className="w-full mb-3 relative">
-      <h3 className="font-bold text-lg text-primaryDark">Produto Principal</h3>
+      <h3 className="font-bold text-lg text-primary-dark">Produto Principal</h3>
       <button
         type="button"
         onClick={() => {

@@ -17,11 +17,11 @@ export default {
       },
       colors: {
         primary: '#ed8866',
-        primaryDark: '#E75626',
-        primaryLight: '#f5c3b3',
+        'primary-dark': '#E75626',
+        'primary-light': '#f5c3b3',
         secondary: '#268aa3',
-        secondaryDark: '#004F63',
-        secondaryLight: '#a1e0f0',
+        'secondary-dark': '#004F63',
+        'secondary-light': '#a1e0f0',
         neutral: '#fffbfa',
       },
       boxShadow: {

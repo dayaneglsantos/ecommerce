@@ -62,7 +62,7 @@ export default function SelectInput({
       <Listbox multiple={multiple} onChange={onChange} value={value}>
         <ListboxButton
           className={
-            'w-full p-2 flex items-center justify-between bg-white border border-gray-300 rounded-md shadow-sm focus-within:border-primaryLight focus-within:ring-1 focus-within:ring-primaryLight outline-none '
+            'w-full p-2 flex items-center justify-between bg-white border border-gray-300 rounded-md shadow-sm focus-within:border-primary-light focus-within:ring-1 focus-within:ring-primary-light outline-none '
           }
         >
           {getSelectedOptions()}

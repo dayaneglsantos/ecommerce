@@ -238,7 +238,7 @@ export default function UpdateAddress({
             </div>
             {editingAddressId !== address.id && (
               <div
-                className={`absolute top-4 left-4 border border-primary p-1 text-[12px] rounded-full px-2 text-primaryDark  ${
+                className={`absolute top-4 left-4 border border-primary p-1 text-[12px] rounded-full px-2 text-primary-dark  ${
                   address.default ? 'bg-gray-200' : 'bg-gray-50 '
                 }`}
               >
