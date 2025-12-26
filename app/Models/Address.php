@@ -40,4 +40,9 @@ class Address extends Model
     // morphTo diz ao Eloquent para olhar para addressable_id e addressable_type para descobrir a qual modelo este endereço pertence
     return $this->morphTo();
   }
+
+  public function suppliers()
+  {
+    return $this->belongsTo(Supplier::class);
+  }
 }

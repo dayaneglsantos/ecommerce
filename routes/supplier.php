@@ -8,7 +8,7 @@ Route::middleware('auth')
   ->prefix('fornecedores')
   ->name('suppliers.')
   ->group(function () {
-    // Route::get('/', [ProductController::class, 'index'])->name('index');
+    Route::get('/', [SupplierController::class, 'index'])->name('index');
     Route::get('/novo', [SupplierController::class, 'create'])->name('create');
     // Route::post('/', [ProductController::class, 'store'])->name('store');
     // Route::get('/editar/{product}', [ProductController::class, 'edit'])->name('edit');

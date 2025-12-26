@@ -10,6 +10,8 @@ class Supplier extends Model
   /** @use HasFactory<\Database\Factories\SupplierFactory> */
   use HasFactory;
 
+  protected $hidden = ['address_id'];
+
   protected $fillable = [
     'name',
     'cnpj',
@@ -19,9 +21,9 @@ class Supplier extends Model
     'notes'
   ];
 
-  public function addresses()
+  public function address()
   {
-    return $this->morphMany(Address::class, 'addressable'); // Definindo o relacionamento polimórfico
+    return $this->morphOne(Address::class, 'addressable'); // Definindo o relacionamento polimórfico
   }
 
   public function productVariations()
