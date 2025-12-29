@@ -20,15 +20,11 @@ interface GridItemProps {
 }
 
 const GridItem = ({ size, smSize, mdSize, children }: GridItemProps) => {
-  return (
-    <div
-      className={`col-span-${smSize || size} sm:col-span-${
-        mdSize || size
-      } md:col-span-${size}`}
-    >
-      {children}
-    </div>
-  );
+  const mdClass = mdSize ? `md:col-span-${mdSize}` : '';
+  const smClass = smSize ? `col-span-${smSize}` : '';
+  const lgClass = `lg:col-span-${size}`;
+
+  return <div className={`${smClass} ${mdClass} ${lgClass}`}>{children}</div>;
 };
 
 export { GridContainer, GridItem };

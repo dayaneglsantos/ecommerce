@@ -27,3 +27,4 @@ require __DIR__ . '/cards.php';
 require __DIR__ . '/products.php';
 require __DIR__ . '/productVariation.php';
 require __DIR__ . '/supplier.php';
+require __DIR__ . '/brands.php';
