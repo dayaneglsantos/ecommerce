@@ -5,10 +5,10 @@ export default interface SupplierType {
   name: string;
   cnpj: string;
   email: string;
-  phone_number: string;
-  contact_name: string;
+  phoneNumber: string;
+  contactName: string;
   notes: string | null;
   address: AddressType;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }

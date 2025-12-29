@@ -3,18 +3,30 @@ import NavLink from '@/Components/NavLink';
 import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import SupplierType from '@/Types/SupplierType';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import SupplierFormModal from './Partials/SupplierFormModal';
 import { useState } from 'react';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
 export default function SuppliersPage() {
   const currentTab = route().current();
   const suppliers = usePage().props.suppliers as SupplierType[];
   const [openFormModal, setOpenFormModal] = useState(false);
+  const [selectedSupplier, setSelectedSupplier] = useState<SupplierType | null>(
+    null
+  );
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  console.log(suppliers);
+  const handleDeleteSupplier = (supplierId: number) => {
+    router.delete(route('suppliers.destroy', supplierId), {
+      onSuccess: () => {
+        setSelectedSupplier(null);
+        setOpenDeleteDialog(false);
+      },
+    });
+  };
 
   return (
     <AuthenticatedLayout>
@@ -60,6 +72,10 @@ export default function SuppliersPage() {
                       className={`cursor-pointer ${
                         true ? 'text-gray-500' : 'text-gray-200'
                       } outline-none`}
+                      onClick={() => {
+                        setSelectedSupplier(supplier);
+                        setOpenFormModal(true);
+                      }}
                     />
                     <Tooltip
                       id="edit"
@@ -72,6 +88,10 @@ export default function SuppliersPage() {
                     <FaTrashAlt
                       data-tooltip-id="delete"
                       className={`cursor-pointer text-gray-500 outline-none hover:text-red-600`}
+                      onClick={() => {
+                        setSelectedSupplier(supplier);
+                        setOpenDeleteDialog(true);
+                      }}
                     />
                     <Tooltip
                       id="delete"
@@ -88,7 +108,20 @@ export default function SuppliersPage() {
       </div>
       <SupplierFormModal
         open={openFormModal}
-        onClose={() => setOpenFormModal(false)}
+        onClose={() => {
+          setOpenFormModal(false);
+          setSelectedSupplier(null);
+        }}
+        supplier={selectedSupplier}
+      />
+      <ConfirmDialog
+        open={openDeleteDialog}
+        title="Tem certeza que deseja excluir este fornecedor?"
+        onClose={() => {
+          setOpenDeleteDialog(false);
+          setSelectedSupplier(null);
+        }}
+        onAccept={() => handleDeleteSupplier(selectedSupplier!.id)}
       />
     </AuthenticatedLayout>
   );

@@ -10,9 +10,7 @@ Route::middleware('auth')
   ->group(function () {
     Route::get('/', [SupplierController::class, 'index'])->name('index');
     Route::get('/novo', [SupplierController::class, 'create'])->name('create');
-    // Route::post('/', [ProductController::class, 'store'])->name('store');
-    // Route::get('/editar/{product}', [ProductController::class, 'edit'])->name('edit');
-    // Route::patch('/{product}', [ProductController::class, 'update'])->name('update');
-    // Route::patch('/{product}/defaultVariation', [ProductController::class, 'updateDefaultVariation'])->name('updateDefaultVariation');
-    // Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+    Route::post('/', [SupplierController::class, 'store'])->name('store');
+    Route::patch('/{supplier}', [SupplierController::class, 'update'])->name('update');
+    Route::delete('/{supplier}', [SupplierController::class, 'destroy'])->name('destroy');
   });
