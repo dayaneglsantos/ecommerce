@@ -20,6 +20,7 @@ return new class extends Migration
       $table->string('phone_number')->nullable();
       $table->foreignId('address_id')->nullable()->constrained('addresses')->onDelete('set null'); // Se o endereço for deletado, define address_id como null
       $table->text('notes')->nullable();
+      $table->enum('status', ['active', 'inactive'])->default('active');
       $table->timestamps();
     });
   }

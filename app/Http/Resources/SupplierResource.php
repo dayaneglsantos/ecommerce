@@ -22,6 +22,7 @@ class SupplierResource extends JsonResource
       'phoneNumber' => $this->phone_number,
       'contactName' => $this->contact_name,
       'address' => new AddressResource($this->whenLoaded('address')),
+      'notes' => $this->notes,
     ];
   }
 }

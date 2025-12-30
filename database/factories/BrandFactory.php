@@ -22,6 +22,7 @@ class BrandFactory extends Factory
       'slug' => fake()->unique()->slug(),
       'logo' => fake()->imageUrl(),
       'status' => 'active',
+      'website' => fake()->url(),
     ];
   }
 }

@@ -4,4 +4,5 @@ export default interface BrandType {
   slug: string;
   logo: string;
   status: string;
+  website: string;
 }

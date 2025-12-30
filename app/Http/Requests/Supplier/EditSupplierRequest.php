@@ -28,6 +28,7 @@ class EditSupplierRequest extends FormRequest
       'email' => ['required', 'string', 'email', 'max:255', 'unique:suppliers,email,' . $this->supplier->id],
       'phone_number' => ['required', 'string', 'max:11'],
       'contact_name' => ['required', 'string', 'max:255'],
+      'notes' => ['nullable', 'string'],
     ];
   }
 }

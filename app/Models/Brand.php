@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Product;
+use Illuminate\Support\Facades\Storage;
 
 class Brand extends Model
 {
@@ -21,7 +22,13 @@ class Brand extends Model
     'slug',
     'logo',
     'status',
+    'website',
   ];
+
+  public function getLogoAttribute()
+  {
+    return Storage::url($this->attributes['logo']); // Gera a URL completa para acessar a imagem armazenada
+  }
 
   public function products()
   {

@@ -39,9 +39,9 @@ class EditVariationRequest extends FormRequest
       'images' => ['required', 'array'],
       'images.*.file' => ['nullable', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
       'images.*.position' => ['required', 'integer', 'min:1'], // posição da imagem na ordem
-      'images.*.id' => ['nullable', 'integer', 'exists:product_images,id'], // id da imagem existente
+      'images.*.id' => ['nullable', 'integer', 'exists:product-images,id'], // id da imagem existente
       'images_to_delete' => ['nullable', 'array'],
-      'images_to_delete.*' => ['integer', 'exists:product_images,id'],
+      'images_to_delete.*' => ['integer', 'exists:product-images,id'],
     ];
   }
 

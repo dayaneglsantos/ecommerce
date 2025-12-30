@@ -13,7 +13,7 @@ class SupplierSeeder extends Seeder
   {
     // Cria 10 fornecedores, cada um com 1 endereço associado
     Supplier::factory(10)
-      ->has(Address::factory(1), 'addresses')
+      ->has(Address::factory(1), 'address')
       ->create();
   }
 }

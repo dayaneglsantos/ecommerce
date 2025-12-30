@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Supplier;
+namespace App\Http\Requests\Brand;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class CreateSupplierRequest extends FormRequest
+class CreateBrandRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -24,12 +24,9 @@ class CreateSupplierRequest extends FormRequest
   {
     return [
       'name' => ['required', 'string', 'max:255'],
-      'cnpj' => ['required', 'string', 'max:20', 'unique:suppliers,cnpj'],
-      'email' => ['required', 'string', 'email', 'max:255', 'unique:suppliers,email'],
-      'phone_number' => ['required', 'string', 'max:11'],
-      'contact_name' => ['required', 'string', 'max:255'],
-      'notes' => ['nullable', 'string'],
-      'status' => ['required', 'in:active,inactive'],
+      'slug' => ['required', 'string', 'max:255', 'unique:brands,slug'],
+      'logo' => ['required', 'image', 'max:2048'],
+      'website' => ['nullable', 'url', 'max:255'],
     ];
   }
 }

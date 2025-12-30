@@ -45,7 +45,7 @@ class ProductVariationController extends Controller
 
         foreach ($validated['images'] as $imageData) {
           if (isset($imageData['file'])) {
-            $path = $imageData['file']->store('product_images', 'public');
+            $path = $imageData['file']->store('product-images', 'public');
             $variation->images()->create(['path' => $path, 'position' => $imageData['position']]);
           }
         }
@@ -95,7 +95,7 @@ class ProductVariationController extends Controller
         // Inclusão e atualização de imagens
         foreach ($validated['images'] as $imageData) {
           if (isset($imageData['file'])) { // Nova imagem para upload
-            $path = $imageData['file']->store('product_images', 'public');
+            $path = $imageData['file']->store('product-images', 'public');
             $productVariation->images()->create(['path' => $path, 'position' => $imageData['position']]);
           } else if (isset($imageData['id'])) { // Atualizar a posição da imagem existente
             $image = $productVariation->images()->find($imageData['id']);

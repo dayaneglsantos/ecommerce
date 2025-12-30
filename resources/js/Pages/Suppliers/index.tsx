@@ -29,6 +29,8 @@ export default function SuppliersPage() {
     });
   };
 
+  console.log(suppliers);
+
   return (
     <AuthenticatedLayout>
       <Head title="Criar produto" />
@@ -48,7 +50,7 @@ export default function SuppliersPage() {
           <GridContainer gap={3}>
             {suppliers.map((supplier: any) => (
               <GridItem key={supplier.id} size={4} smSize={12} mdSize={6}>
-                <Card key={supplier.id} className="w-full">
+                <Card key={supplier.id} className="w-full relative">
                   <h3 className="text-lg font-medium text-gray-900">
                     {supplier.name}
                   </h3>
@@ -70,9 +72,7 @@ export default function SuppliersPage() {
                     <button type="button" onClick={() => {}}>
                       <FaPencilAlt
                         data-tooltip-id="edit"
-                        className={`cursor-pointer ${
-                          true ? 'text-gray-500' : 'text-gray-200'
-                        } outline-none`}
+                        className={`cursor-pointer text-gray-500 outline-none`}
                         onClick={() => {
                           setSelectedSupplier(supplier);
                           setOpenFormModal(true);
