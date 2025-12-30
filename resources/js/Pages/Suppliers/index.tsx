@@ -47,7 +47,7 @@ export default function SuppliersPage() {
         {currentTab === 'suppliers.index' && (
           <GridContainer gap={3}>
             {suppliers.map((supplier: any) => (
-              <GridItem key={supplier.id} size={4} mdSize={6} smSize={12}>
+              <GridItem key={supplier.id} size={4} smSize={12} mdSize={6}>
                 <Card key={supplier.id} className="w-full">
                   <h3 className="text-lg font-medium text-gray-900">
                     {supplier.name}

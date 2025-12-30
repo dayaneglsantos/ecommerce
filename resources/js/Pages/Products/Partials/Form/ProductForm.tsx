@@ -1,5 +1,6 @@
 import Card from '@/Components/Card';
 import ConfirmDialog from '@/Components/ConfirmDialog';
+import { GridContainer, GridItem } from '@/Components/Grid';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -153,8 +154,8 @@ export default function ProductForm({ brands, categories }: any) {
           />
           <InputError className="mt-2" message={errors.slug} />
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-1">
+        <GridContainer gap={3}>
+          <GridItem size={6}>
             <InputLabel htmlFor="brand" value="Marca" className="mt-4" />
             <SelectInput
               options={brandsOptions}
@@ -164,8 +165,8 @@ export default function ProductForm({ brands, categories }: any) {
               }}
             />
             <InputError className="mt-2" message={errors.brand_id} />
-          </div>
-          <div className="col-span-1">
+          </GridItem>
+          <GridItem size={6}>
             <InputLabel htmlFor="category" value="Categoria" className="mt-4" />
             <SelectInput
               options={categoriesOptions}
@@ -173,8 +174,8 @@ export default function ProductForm({ brands, categories }: any) {
               onChange={(e) => setData('category_id', e)}
             />
             <InputError className="mt-2" message={errors.category_id} />
-          </div>
-        </div>
+          </GridItem>
+        </GridContainer>
         <div>
           <InputLabel
             htmlFor="description"

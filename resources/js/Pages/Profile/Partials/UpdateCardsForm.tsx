@@ -11,6 +11,8 @@ import ConfirmDialog from '@/Components/ConfirmDialog';
 import visa from '@/assets/visa.svg';
 import mastercard from '@/assets/mastercard.svg';
 import toast from 'react-hot-toast';
+import { GridContainer, GridItem } from '@/Components/Grid';
+import { Grid } from 'swiper/modules';
 interface UpdateProfileInformationProps {
   status: string | null;
   className?: string;
@@ -116,95 +118,96 @@ export default function UpdateCards({
 
         <p className="mt-1 text-sm text-gray-600">Atualize seus cartões.</p>
       </header>
-
-      <div className="grid grid-cols-4 gap-4">
+      <GridContainer gap={4}>
         {user.cards.length > 0 &&
           user.cards.map((card: any) => (
-            <Card className="relative pt-12 mt-6 col-span-2 w-full">
-              <div
-                className={`absolute top-4 left-4 border border-primary p-1 text-[12px] rounded-full px-2 text-primary-dark  ${
-                  card.is_default ? 'bg-gray-200' : 'bg-gray-50 '
-                }`}
-              >
+            <GridItem key={card.id} size={6}>
+              <Card className="relative pt-12 mt-6 w-full">
+                <div
+                  className={`absolute top-4 left-4 border border-primary p-1 text-[12px] rounded-full px-2 text-primary-dark  ${
+                    card.is_default ? 'bg-gray-200' : 'bg-gray-50 '
+                  }`}
+                >
+                  <button
+                    type="button"
+                    disabled={card.is_default}
+                    onClick={() => handleSetDefaultCard(card.id)}
+                  >
+                    {card.is_default ? 'Cartão Padrão' : 'Definir como padrão'}
+                  </button>
+                </div>
                 <button
                   type="button"
-                  disabled={card.is_default}
-                  onClick={() => handleSetDefaultCard(card.id)}
+                  onClick={() => {
+                    setSelectedCardId(card.id);
+                    setOpenConfirmDialog(true);
+                  }}
                 >
-                  {card.is_default ? 'Cartão Padrão' : 'Definir como padrão'}
+                  <FaTrashAlt
+                    data-tooltip-id="delete"
+                    className={`cursor-pointer text-gray-500 outline-none absolute top-4 right-4 hover:text-red-600`}
+                  />
+                  <Tooltip
+                    id="delete"
+                    place="top"
+                    content="Excluir"
+                    className="!p-2 !text-[12px]"
+                  />
                 </button>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedCardId(card.id);
-                  setOpenConfirmDialog(true);
-                }}
-              >
-                <FaTrashAlt
-                  data-tooltip-id="delete"
-                  className={`cursor-pointer text-gray-500 outline-none absolute top-4 right-4 hover:text-red-600`}
-                />
-                <Tooltip
-                  id="delete"
-                  place="top"
-                  content="Excluir"
-                  className="!p-2 !text-[12px]"
-                />
-              </button>
-              <div className="flex items-center gap-4">
-                <img
-                  src={
-                    card.brand === 'mastercard'
-                      ? mastercard
-                      : card.brand === 'visa'
-                      ? visa
-                      : creditCard
-                  }
-                  alt="Credit Card"
-                  className="w-14"
-                />
-                <div>
-                  <p>
-                    {' '}
-                    <strong>****.****.****.{card.last_four}</strong>
-                  </p>
-                  <p>
-                    <strong>
-                      {card.expiration_month.padStart(2, '0')}/
-                      {card.expiration_year}
-                    </strong>
-                  </p>
+                <div className="flex items-center gap-4">
+                  <img
+                    src={
+                      card.brand === 'mastercard'
+                        ? mastercard
+                        : card.brand === 'visa'
+                        ? visa
+                        : creditCard
+                    }
+                    alt="Credit Card"
+                    className="w-14"
+                  />
+                  <div>
+                    <p>
+                      {' '}
+                      <strong>****.****.****.{card.last_four}</strong>
+                    </p>
+                    <p>
+                      <strong>
+                        {card.expiration_month.padStart(2, '0')}/
+                        {card.expiration_year}
+                      </strong>
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </GridItem>
           ))}
-      </div>
+      </GridContainer>
       {isEditing && (
         <form onSubmit={submit} autoComplete="off">
-          <div className="grid grid-cols-6 gap-4 mb-3">
-            <div className="col-span-3">
+          <GridContainer gap={4} className="mb-3">
+            <GridItem size={6}>
               <div
                 ref={cardNumberRef}
                 className=" p-3 border border-gray-300 rounded-md shadow-sm mt-3"
               ></div>
               {numbererror && <div className="text-red-500">{numbererror}</div>}
-            </div>
-            <div className="col-span-2">
+            </GridItem>
+            <GridItem size={4}>
               <div
                 ref={cardExpiryRef}
                 className=" p-3 border border-gray-300 rounded-md shadow-sm mt-3"
               ></div>
               {expiryerror && <div className="text-red-500">{expiryerror}</div>}
-            </div>
-            <div className="col-span-1">
+            </GridItem>
+            <GridItem size={2}>
               <div
                 ref={cardCvcRef}
                 className=" p-3 border border-gray-300 rounded-md shadow-sm mt-3"
               ></div>
               {cvcerror && <div className="text-red-500">{cvcerror}</div>}
-            </div>
-          </div>
+            </GridItem>
+          </GridContainer>
           <div className="flex gap-3">
             <PrimaryButton
               type="button"

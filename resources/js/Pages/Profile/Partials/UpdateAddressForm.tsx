@@ -1,4 +1,5 @@
 import ConfirmDialog from '@/Components/ConfirmDialog';
+import { GridContainer, GridItem } from '@/Components/Grid';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -10,6 +11,7 @@ import toast from 'react-hot-toast';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { GoSearch } from 'react-icons/go';
 import { Tooltip } from 'react-tooltip';
+import { Grid } from 'swiper/modules';
 
 interface UpdateProfileInformationProps {
   status: string | null;
@@ -169,9 +171,10 @@ export default function UpdateAddress({
 
       <form onSubmit={submit} autoComplete="off">
         {userAddresses.map((address: AddressType, index: number) => (
-          <div
-            className="mt-6 grid grid-cols-5 gap-4 shadow-full rounded-2xl p-4 pt-14 -mx-4 relative"
-            key={index}
+          <GridContainer
+            key={address.id}
+            gap={4}
+            className="mt-6 shadow-full rounded-2xl p-4 pt-14 -mx-4 relative"
           >
             <div className="absolute top-4 right-4 flex gap-2">
               <button
@@ -262,9 +265,8 @@ export default function UpdateAddress({
                 </button>
               </div>
             )}
-            <div className="col-span-2 md:col-span-1 ">
+            <GridItem size={3}>
               <InputLabel htmlFor="zip_code" value="CEP" />
-
               <TextInput
                 mask={'00.000-000'}
                 id="zip_code"
@@ -296,8 +298,8 @@ export default function UpdateAddress({
               />
 
               <InputError className="mt-2" message={errors.zip_code} />
-            </div>
-            <div className="col-span-3 md:col-span-2">
+            </GridItem>
+            <GridItem size={4}>
               <InputLabel htmlFor="state" value="Estado" />
 
               <TextInput
@@ -316,9 +318,9 @@ export default function UpdateAddress({
               />
 
               <InputError className="mt-2" message={errors.state} />
-            </div>
+            </GridItem>
 
-            <div className="col-span-5 md:col-span-2">
+            <GridItem size={5}>
               <InputLabel htmlFor="city" value="Cidade" />
 
               <TextInput
@@ -336,8 +338,8 @@ export default function UpdateAddress({
               />
 
               <InputError className="mt-2" message={errors.city} />
-            </div>
-            <div className="col-span-5 md:col-span-2">
+            </GridItem>
+            <GridItem size={10}>
               <InputLabel htmlFor="street" value="Logradouro" />
 
               <TextInput
@@ -355,8 +357,8 @@ export default function UpdateAddress({
               />
 
               <InputError className="mt-2" message={errors.street} />
-            </div>
-            <div className="col-span-2 md:col-span-1">
+            </GridItem>
+            <GridItem size={2}>
               <InputLabel htmlFor="number" value="Número" />
 
               <TextInput
@@ -374,8 +376,8 @@ export default function UpdateAddress({
               />
 
               <InputError className="mt-2" message={errors.number} />
-            </div>
-            <div className="col-span-3 md:col-span-2">
+            </GridItem>
+            <GridItem size={12}>
               <InputLabel htmlFor="complement" value="Complemento" />
 
               <TextInput
@@ -394,7 +396,7 @@ export default function UpdateAddress({
               />
 
               <InputError className="mt-2" message={errors.complement} />
-            </div>
+            </GridItem>
             <div className="flex items-center gap-4 mt-3">
               {editingAddressId === address.id && (
                 <PrimaryButton
@@ -417,7 +419,7 @@ export default function UpdateAddress({
                 <PrimaryButton disabled={processing}>Salvar</PrimaryButton>
               )}
             </div>
-          </div>
+          </GridContainer>
         ))}
         <button
           type="button"

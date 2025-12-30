@@ -17,6 +17,7 @@ import { IoClose } from 'react-icons/io5';
 import { Tooltip } from 'react-tooltip';
 import SortableImages from './SortableImages';
 import { parse } from 'path';
+import { GridContainer, GridItem } from '@/Components/Grid';
 
 interface ProductVariationFormProps {
   suppliers: SupplierType[];
@@ -286,8 +287,8 @@ export default function ProductVariationForm({
             <InputLabel htmlFor="color" value="Produto principal" />
           </div>
         )}
-        <div className="grid grid-cols-6 gap-3">
-          <div className="col-span-3">
+        <GridContainer gap={3}>
+          <GridItem size={6}>
             <InputLabel htmlFor="color" value="Cor" className="mt-4" />
             <TextInput
               id="color"
@@ -297,8 +298,8 @@ export default function ProductVariationForm({
               onChange={(e) => setData('color', e.target.value)}
             />
             <InputError className="mt-2" message={errors.color} />
-          </div>
-          <div className="col-span-3">
+          </GridItem>
+          <GridItem size={6}>
             <InputLabel
               htmlFor="color_code"
               value="Código da cor"
@@ -332,8 +333,8 @@ export default function ProductVariationForm({
               )}
             </div>
             <InputError className="mt-2" message={errors.color_code} />
-          </div>
-          <div className="col-span-3 self-end">
+          </GridItem>
+          <GridItem size={6}>
             <InputLabel
               htmlFor="size"
               value="Tamanho"
@@ -349,8 +350,8 @@ export default function ProductVariationForm({
               onChange={(e) => setData('size', e.target.value)}
             />
             <InputError className="mt-2" message={errors.size} />
-          </div>
-          <div className="col-span-3">
+          </GridItem>
+          <GridItem size={6}>
             <InputLabel
               htmlFor="sku"
               value="Código de identificação do produto"
@@ -366,8 +367,8 @@ export default function ProductVariationForm({
               onChange={(e) => setData('sku', e.target.value)}
             />
             <InputError className="mt-2" message={errors.sku} />
-          </div>
-          <div className="col-span-6 md:col-span-3">
+          </GridItem>
+          <GridItem size={6}>
             <InputLabel
               htmlFor="supplier_id"
               value="Fornecedor"
@@ -380,8 +381,8 @@ export default function ProductVariationForm({
               placeholder="Selecione um fornecedor"
             />
             <InputError className="mt-2" message={errors.supplier_id} />
-          </div>
-          <div className="col-span-3">
+          </GridItem>
+          <GridItem size={6}>
             <InputLabel
               htmlFor="stock_quantity"
               value="Quantidade em estoque"
@@ -395,8 +396,8 @@ export default function ProductVariationForm({
               onChange={(e) => setData('stock_quantity', e.target.value)}
             />
             <InputError className="mt-2" message={errors.stock_quantity} />
-          </div>
-          <div className="col-span-3">
+          </GridItem>
+          <GridItem size={5}>
             <InputLabel htmlFor="price" value="Preço" className="mt-4" />
             <TextInput
               id="price"
@@ -407,15 +408,15 @@ export default function ProductVariationForm({
               onChange={(e) => setData('price', e.target.value)}
             />
             <InputError className="mt-2" message={errors.price} />
-          </div>
+          </GridItem>
 
-          <div className="col-span-3">
+          <GridItem size={7}>
             <InputLabel
               htmlFor="pix_discount_value"
               value="Desconto PIX"
               className="mt-4"
             />
-            <div className=" flex gap-3">
+            <div className="flex gap-3">
               <div className="grow">
                 <TextInput
                   id="pix_discount_value"
@@ -465,15 +466,15 @@ export default function ProductVariationForm({
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </GridItem>
+        </GridContainer>
         <h4 className="font-bold mt-5  text-primary">
           Espeficicações técnicas
         </h4>
 
         <div className="flex items-center mb-1">
-          <div className="grid grid-cols-6 gap-3 grow mt-3">
-            <div className="col-span-6 md:col-span-3">
+          <GridContainer gap={3} className="mt-3 grow">
+            <GridItem size={6}>
               <InputLabel htmlFor="specificationName" value="Tipo" />
               <TextInput
                 id="specificationName"
@@ -482,8 +483,8 @@ export default function ProductVariationForm({
                 className="mt-1 block w-full"
                 onChange={(e) => setSpecificationName(e.target.value)}
               />
-            </div>
-            <div className="col-span-6 md:col-span-3">
+            </GridItem>
+            <GridItem size={6}>
               <InputLabel
                 htmlFor="specificationDescription"
                 value="Descrição"
@@ -495,8 +496,8 @@ export default function ProductVariationForm({
                 className="mt-1 block w-full"
                 onChange={(e) => setSpecificationDescription(e.target.value)}
               />
-            </div>
-          </div>
+            </GridItem>
+          </GridContainer>
           <IoIosAddCircle
             className="text-2xl mt-8 ml-3 cursor-pointer text-primary-dark"
             onClick={handleAddSpecification}

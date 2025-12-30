@@ -13,6 +13,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import { FaTriangleExclamation } from 'react-icons/fa6';
 import { MdVerified } from 'react-icons/md';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { GridContainer, GridItem } from '@/Components/Grid';
+import { Grid } from 'swiper/modules';
 
 dayjs.extend(customParseFormat); // Adiciona o plugin de formato personalizado
 
@@ -123,8 +125,8 @@ export default function UpdateProfileInformation({
       </header>
 
       <form onSubmit={submit} className="mt-6 space-y-6">
-        <div className="grid grid-cols-6 gap-3">
-          <div className="col-span-6">
+        <GridContainer gap={3}>
+          <GridItem size={12}>
             <div className="flex flex-col items-center gap-2 mb-3">
               <div className="relative group w-fit">
                 <Avatar
@@ -157,8 +159,8 @@ export default function UpdateProfileInformation({
                 Remover atual
               </PrimaryButton>
             </div>
-          </div>
-          <div className="col-span-6 md:col-span-3">
+          </GridItem>
+          <GridItem size={6}>
             <InputLabel htmlFor="name" value="Name" />
 
             <TextInput
@@ -171,9 +173,9 @@ export default function UpdateProfileInformation({
             />
 
             <InputError className="mt-2" message={errors.name} />
-          </div>
+          </GridItem>
 
-          <div className="col-span-6 md:col-span-3">
+          <GridItem size={6}>
             <InputLabel htmlFor="email" value="Email" />
 
             <TextInput
@@ -198,9 +200,9 @@ export default function UpdateProfileInformation({
             />
 
             <InputError className="mt-2" message={errors.email} />
-          </div>
+          </GridItem>
 
-          <div className="col-span-3 md:col-span-2 ">
+          <GridItem size={3}>
             <InputLabel htmlFor="cpf" value="CPF" />
 
             <TextInput
@@ -216,8 +218,8 @@ export default function UpdateProfileInformation({
             />
 
             <InputError className="mt-2" message={errors.cpf} />
-          </div>
-          <div className="col-span-3 md:col-span-2">
+          </GridItem>
+          <GridItem size={3}>
             <InputLabel htmlFor="phone_number" value="Telefone" />
 
             <TextInput
@@ -233,8 +235,8 @@ export default function UpdateProfileInformation({
             />
 
             <InputError className="mt-2" message={errors.phone_number} />
-          </div>
-          <div className="col-span-3 md:col-span-2 ">
+          </GridItem>
+          <GridItem size={3}>
             <InputLabel htmlFor="birthdate" value="Data de Nascimento" />
 
             <TextInput
@@ -264,8 +266,8 @@ export default function UpdateProfileInformation({
             />
 
             <InputError className="mt-2" message={errors.birthdate} />
-          </div>
-          <div className="col-span-3 md:col-span-2 ">
+          </GridItem>
+          <GridItem size={3}>
             <InputLabel htmlFor="gender" value="Gênero" />
 
             <SelectInput
@@ -280,8 +282,8 @@ export default function UpdateProfileInformation({
             />
 
             <InputError className="mt-2" message={errors.gender} />
-          </div>
-        </div>
+          </GridItem>
+        </GridContainer>
 
         {mustVerifyEmail && user.email_verified_at === null && (
           <div>

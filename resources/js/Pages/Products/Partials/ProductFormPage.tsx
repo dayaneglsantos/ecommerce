@@ -12,6 +12,8 @@ import Carousel from '@/Components/Carousel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import ProductVariationType from '@/Types/ProductVariationType';
 import ConfirmDialog from '@/Components/ConfirmDialog';
+import { GridContainer, GridItem } from '@/Components/Grid';
+import { Grid } from 'swiper/modules';
 
 export default function ProductFormPage() {
   const product = usePage().props.product as ProductType | null;
@@ -43,8 +45,8 @@ export default function ProductFormPage() {
 
   return (
     <>
-      <div className="grid grid-cols-6 gap-6 pb-6">
-        <div className="col-span-6 lg:col-span-4">
+      <GridContainer gap={6} className="mb-6">
+        <GridItem size={8} mdSize={12}>
           <ProductForm brands={brands} categories={categories} />
           <button
             type="button"
@@ -80,105 +82,107 @@ export default function ProductFormPage() {
               setSelectedVariation={setSelectedVariation}
             />
           )}
-        </div>
-        <Card className="col-span-6 lg:col-span-2 w-full max-h-[880px] overflow-y-auto">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-primary-dark font-bold text-lg">
-              Variações do produto
-            </h2>
-            <span className="font-bold text-sm">
-              Total: {product?.variations.length}
-            </span>
-          </div>
-          <div className="grid grid-cols-4 gap-3">
-            {product?.variations.map((variation) => (
-              <Card
-                className="w-full mb-3 col-span-4 md:col-span-2 lg:col-span-4"
-                key={variation.id}
-              >
-                <Carousel images={variation.images} />
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="col-span-1">
-                    <p className="font-bold">Cor:</p>
-                    <p>{variation.color}</p>
-                  </div>
-                  <div className="col-span-1">
-                    <p className="font-bold">Cod. da Cor:</p>
-                    <p>{variation.colorCode}</p>
-                  </div>
-                  <div className="col-span-1">
-                    <p className="font-bold">Tamanho:</p>
-                    <p>{variation.size}</p>
-                  </div>
-                  <div className="col-span-1">
-                    <p className="font-bold">Cod. Identificação:</p>
-                    <p>{variation.sku}</p>
-                  </div>
-                  <div className="col-span-1">
-                    <p className="font-bold">Estoque</p>
-                    <p>{variation.stockQuantity}</p>
-                  </div>
-                  <div className="col-span-1">
-                    <p className="font-bold">Preço</p>
-                    <p>{variation.price}</p>
-                  </div>
-                  <div className="col-span-1">
-                    <p className="font-bold">Desconto PIX</p>
-                    <p>{variation.pixDiscountValue}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="font-bold mt-2">Especificações:</p>
-                    {Object.entries(
-                      variation?.technicalSpecifications || {}
-                    ).map(([key, value]) => (
-                      <p key={key}>
-                        {key}: <span className="italic">{value}</span>
-                      </p>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 mt-4 justify-between">
-                  <div
-                    className={` border border-primary p-1 text-[12px] rounded-full px-2 text-primary-dark  ${
-                      variation.id === product?.defaultVariation?.id
-                        ? 'bg-gray-200 font-bold'
-                        : 'bg-gray-50 '
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => handleDefaultVariation(variation.id)}
-                    >
-                      {variation.id === product?.defaultVariation?.id
-                        ? 'Produto Principal'
-                        : 'Definir principal'}
-                    </button>
-                  </div>
-                  <div className="flex gap-3">
-                    <PrimaryButton
-                      outline
-                      onClick={() => {
-                        setSelectedVariation(variation);
-                        setNewForm(false);
-                      }}
-                    >
-                      Editar
-                    </PrimaryButton>
-                    <PrimaryButton
-                      onClick={() => {
-                        setSelectedVariation(variation);
-                        setOpenConfirmDialog(true);
-                      }}
-                    >
-                      Excluir
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </Card>
-      </div>
+        </GridItem>
+        <GridItem size={4} mdSize={12}>
+          <Card className="w-full max-h-[880px] overflow-y-auto">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-primary-dark font-bold text-lg">
+                Variações do produto
+              </h2>
+              <span className="font-bold text-sm">
+                Total: {product?.variations.length}
+              </span>
+            </div>
+            <GridContainer gap={3}>
+              {product?.variations.map((variation) => (
+                <GridItem key={variation.id} size={12}>
+                  <Card className="w-full mb-3" key={variation.id}>
+                    <Carousel images={variation.images} />
+                    <GridContainer gap={2}>
+                      <GridItem size={6}>
+                        <p className="font-bold">Cor:</p>
+                        <p>{variation.color}</p>
+                      </GridItem>
+
+                      <GridItem size={6}>
+                        <p className="font-bold">Cod. da Cor:</p>
+                        <p>{variation.colorCode}</p>
+                      </GridItem>
+                      <GridItem size={6}>
+                        <p className="font-bold">Tamanho:</p>
+                        <p>{variation.size}</p>
+                      </GridItem>
+                      <GridItem size={6}>
+                        <p className="font-bold">Cod. Identificação:</p>
+                        <p>{variation.sku}</p>
+                      </GridItem>
+                      <GridItem size={6}>
+                        <p className="font-bold">Estoque</p>
+                        <p>{variation.stockQuantity}</p>
+                      </GridItem>
+                      <GridItem size={6}>
+                        <p className="font-bold">Preço</p>
+                        <p>{variation.price}</p>
+                      </GridItem>
+                      <GridItem size={6}>
+                        <p className="font-bold">Desconto PIX</p>
+                        <p>{variation.pixDiscountValue}</p>
+                      </GridItem>
+                      <GridItem size={12}>
+                        <p className="font-bold mt-2">Especificações:</p>
+                        {Object.entries(
+                          variation?.technicalSpecifications || {}
+                        ).map(([key, value]) => (
+                          <p key={key}>
+                            {key}: <span className="italic">{value}</span>
+                          </p>
+                        ))}
+                      </GridItem>
+                    </GridContainer>
+                    <div className="flex items-center gap-3 mt-4 justify-between">
+                      <div
+                        className={` border border-primary p-1 text-[12px] rounded-full px-2 text-primary-dark  ${
+                          variation.id === product?.defaultVariation?.id
+                            ? 'bg-gray-200 font-bold'
+                            : 'bg-gray-50 '
+                        }`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => handleDefaultVariation(variation.id)}
+                        >
+                          {variation.id === product?.defaultVariation?.id
+                            ? 'Produto Principal'
+                            : 'Definir principal'}
+                        </button>
+                      </div>
+                      <div className="flex gap-3">
+                        <PrimaryButton
+                          outline
+                          onClick={() => {
+                            setSelectedVariation(variation);
+                            setNewForm(false);
+                          }}
+                        >
+                          Editar
+                        </PrimaryButton>
+                        <PrimaryButton
+                          onClick={() => {
+                            setSelectedVariation(variation);
+                            setOpenConfirmDialog(true);
+                          }}
+                        >
+                          Excluir
+                        </PrimaryButton>
+                      </div>
+                    </div>
+                  </Card>
+                </GridItem>
+              ))}
+            </GridContainer>
+          </Card>
+        </GridItem>
+      </GridContainer>
       {selectedVariation && (
         <ConfirmDialog
           open={openConfirmDialog}

@@ -1,5 +1,6 @@
 import Card from '@/Components/Card';
 import Carousel from '@/Components/Carousel';
+import { GridContainer, GridItem } from '@/Components/Grid';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import BrandType from '@/Types/BrandType';
@@ -8,7 +9,7 @@ import ProductType from '@/Types/ProductType';
 import { UserType } from '@/Types/UserType';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Grid, Navigation, Pagination } from 'swiper/modules';
 
 export default function ProductsList() {
   const currentUser = usePage().props.auth.user as UserType;
@@ -34,8 +35,8 @@ export default function ProductsList() {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="col-span-2 md:col-span-1">
+      <GridContainer gap={3} className="mb-6">
+        <GridItem size={4} smSize={12}>
           <SelectInput
             options={brandOptions}
             value={filters.brand}
@@ -44,8 +45,8 @@ export default function ProductsList() {
             placeholder="Marca"
             resetSelected={() => setFilters({ ...filters, brand: [] })}
           />
-        </div>
-        <div className="col-span-2 md:col-span-1">
+        </GridItem>
+        <GridItem size={4} smSize={12}>
           <SelectInput
             options={categoryOptions}
             value={filters.category}
@@ -54,31 +55,33 @@ export default function ProductsList() {
             placeholder="Categoria"
             resetSelected={() => setFilters({ ...filters, category: [] })}
           />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        </GridItem>
+      </GridContainer>
+      <GridContainer gap={3}>
         {products.map((product: ProductType) => (
-          <Card key={product.id} className="relative col-span-1 w-full">
-            <Carousel images={product.defaultVariation.images} />
-            <p>{product.name}</p>
+          <GridItem key={product.id} size={4} smSize={12} mdSize={6}>
+            <Card key={product.id} className="relative w-full">
+              <Carousel images={product.defaultVariation.images} />
+              <p>{product.name}</p>
 
-            <span className="font-bold">Preço atual: </span>
-            <span className="text-primary font-bold">
-              R${product.defaultVariation.price}
-            </span>
+              <span className="font-bold">Preço atual: </span>
+              <span className="text-primary font-bold">
+                R${product.defaultVariation.price}
+              </span>
 
-            <p className="text-sm">
-              Variações cadastradas: <b>{product?.variations.length}</b>
-            </p>
+              <p className="text-sm">
+                Variações cadastradas: <b>{product?.variations.length}</b>
+              </p>
 
-            <PrimaryButton outline className="mt-2 w-full justify-center">
-              <Link href={route('products.show', product.id)}>
-                Ver detalhes
-              </Link>
-            </PrimaryButton>
-          </Card>
+              <PrimaryButton outline className="mt-2 w-full justify-center">
+                <Link href={route('products.show', product.id)}>
+                  Ver detalhes
+                </Link>
+              </PrimaryButton>
+            </Card>
+          </GridItem>
         ))}
-      </div>
+      </GridContainer>
     </>
   );
 }

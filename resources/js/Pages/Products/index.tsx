@@ -13,7 +13,7 @@ export default function ProductsPage() {
       <Head title="Criar produto" />
 
       <div>
-        <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl space-y-6 px-3 sm:px-6 lg:px-8">
           {/* Listagem de produtos */}
           {currentTab === 'products.index' && <ProductsList />}
 
