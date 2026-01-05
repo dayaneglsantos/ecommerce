@@ -80,6 +80,13 @@ class ProductVariationController extends Controller
     try {
       DB::transaction(function () use ($request, $productVariation) {
         $validated = $request->validated();
+
+        if ((int)$validated['price'] !== (int)$productVariation->price) {
+          $validated['old_price'] = $productVariation->price;
+        } else {
+          $validated['old_price'] = $productVariation->old_price;
+        }
+
         $productVariation->update($validated);
 
         // Exclusão de imagens
@@ -119,13 +126,25 @@ class ProductVariationController extends Controller
   public function destroy(ProductVariation $productVariation)
   {
     try {
-      $productVariations = $productVariation->product->variations;
-      if ($productVariations->count() === 2 && $productVariation->product->default_variation_id === $productVariation->id) {
-        // Definir a outra variação como padrão
-        $otherVariation = $productVariations->firstWhere('id', '!=', $productVariation->id);
-        $productVariation->product->default_variation_id = $otherVariation->id;
-        $productVariation->product->save();
-      }
+
+      DB::transaction(function () use ($productVariation) {
+        $productVariations = $productVariation->product->variations;
+        // Definir a outra variação como padrão quando a variação padrão for excluída e houver apenas duas variações
+        if ($productVariations->count() === 2 && $productVariation->product->default_variation_id === $productVariation->id) {
+          $otherVariation = $productVariations->firstWhere('id', '!=', $productVariation->id);
+          $productVariation->product->default_variation_id = $otherVariation->id;
+          $productVariation->product->save();
+        }
+
+        // 1. Deleta as imagens manualmente para disparar o Observer de cada imagem
+        foreach ($productVariation->images as $image) {
+          $image->delete();
+        }
+
+        $productVariation->delete();
+      });
+
+
 
       $productVariation->delete();
 

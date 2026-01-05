@@ -71,7 +71,7 @@ class ProductVariation extends Model
   public function getPixDiscountFormattedAttribute(): ?float
   {
     if ($this->pix_discount_type !== 'fixed') {
-      return null;
+      return $this->pix_discount_value;
     }
 
     return $this->pix_discount_value / 100;

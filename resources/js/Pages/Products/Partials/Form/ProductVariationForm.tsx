@@ -91,8 +91,11 @@ export default function ProductVariationForm({
       setData('pix_discount_type', variation.pixDiscountType || '');
       setData(
         'pix_discount_value',
-        parseFloat(variation?.pixDiscountValue?.toString() || '0').toFixed(2) ||
-          ''
+        variation.pixDiscountType === 'fixed'
+          ? parseFloat(variation?.pixDiscountValue?.toString() || '0').toFixed(
+              2
+            )
+          : variation?.pixDiscountValue?.toString() || ''
       );
       setData(
         'images',
@@ -144,6 +147,11 @@ export default function ProductVariationForm({
           onSuccess: () => {
             setSelectedVariation && setSelectedVariation(null);
           },
+          onError: (errors) => {
+            Object.keys(errors).forEach((key: any) => {
+              setError(key, errors[key]);
+            });
+          },
         }
       );
     } else {
@@ -158,6 +166,11 @@ export default function ProductVariationForm({
               setNewForm && setNewForm(false);
               reset();
             }
+          },
+          onError: (errors) => {
+            Object.keys(errors).forEach((key: any) => {
+              setError(key, errors[key]);
+            });
           },
         }
       );
@@ -196,7 +209,6 @@ export default function ProductVariationForm({
 
   // ==================== Adicionar nova imagem ao formulário ====================
   const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('passei');
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const filesArray = Array.from(files);

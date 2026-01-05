@@ -13,7 +13,7 @@ return new class extends Migration
   {
     Schema::create('product_images', function (Blueprint $table) {
       $table->id();
-      $table->foreignId('product_variation_id')->constrained('product_variations')->onDelete('cascade');
+      $table->foreignId('product_variation_id')->constrained('product_variations')->onDelete('cascade'); // Deleta as imagens quando a variação for deletada
       $table->string('path');
       $table->integer('position')->default(0);
       $table->timestamps();

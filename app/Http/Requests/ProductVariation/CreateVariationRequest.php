@@ -43,4 +43,18 @@ class CreateVariationRequest extends FormRequest
       'images.*.position' => ['required', 'integer', 'min:1'], // posição da imagem na ordem
     ];
   }
+
+  // Preparação dos dados antes da validação
+  protected function prepareForValidation()
+  {
+    $this->merge([
+      'price' => $this->price
+        ? (int) round(str_replace(',', '.', $this->price) * 100)
+        : null,
+
+      'pix_discount_value' => $this->pix_discount_type === 'fixed' && $this->pix_discount_value
+        ? (int) round(str_replace(',', '.', $this->pix_discount_value) * 100)
+        : $this->pix_discount_value,
+    ]);
+  }
 }

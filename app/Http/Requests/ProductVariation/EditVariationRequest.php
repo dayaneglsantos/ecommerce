@@ -39,17 +39,17 @@ class EditVariationRequest extends FormRequest
       'images' => ['required', 'array'],
       'images.*.file' => ['nullable', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
       'images.*.position' => ['required', 'integer', 'min:1'], // posição da imagem na ordem
-      'images.*.id' => ['nullable', 'integer', 'exists:product-images,id'], // id da imagem existente
+      'images.*.id' => ['nullable', 'integer', 'exists:product_images,id'], // id da imagem existente
       'images_to_delete' => ['nullable', 'array'],
-      'images_to_delete.*' => ['integer', 'exists:product-images,id'],
+      'images_to_delete.*' => ['integer', 'exists:product_images,id'],
     ];
   }
 
-  protected function failedValidation(Validator $validator)
-  {
-    // Adicione aqui qualquer lógica personalizada que você queira executar em caso de falha na validação
-    dd($validator->errors()->toArray());
-  }
+  // protected function failedValidation(Validator $validator)
+  // {
+  //   // Adicione aqui qualquer lógica personalizada que você queira executar em caso de falha na validação
+  //   dd($validator->errors()->toArray());
+  // }
 
   protected function prepareForValidation()
   {

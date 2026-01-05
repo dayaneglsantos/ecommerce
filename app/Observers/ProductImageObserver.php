@@ -29,8 +29,9 @@ class ProductImageObserver
   public function deleted(ProductImages $image): void
   {
     // Se o caminho da imagem existir, exclua o arquivo físico
-    if ($image->path && Storage::disk('public')->exists($image->path)) {
-      Storage::disk('public')->delete($image->path);
+    $path = $image->getRawOriginal('path');
+    if ($path && Storage::disk('public')->exists($path)) {
+      Storage::disk('public')->delete($path);
     }
   }
 
