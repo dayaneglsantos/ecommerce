@@ -4,6 +4,7 @@ interface AvatarProps {
   size?: 'sm' | 'md' | 'lg';
   src: string | null;
   className?: string;
+  [key: string]: any;
 }
 
 export default function Avatar({

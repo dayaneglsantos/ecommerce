@@ -72,11 +72,7 @@ class BrandController extends Controller
     try {
       $validated = $request->validated();
 
-      if (isset($validated['logo'])) {
-        // Deleta o logo antigo se existir
-        if ($brand->logo) {
-          Storage::disk('public')->delete($brand->logo);
-        }
+      if (isset($validated['logo'])) { // Se um novo logo foi enviada para upload
         $path = $validated['logo']->store('brand-logos', 'public');
         $validated['logo'] = $path;
       }
@@ -94,11 +90,6 @@ class BrandController extends Controller
   public function destroy(Brand $brand)
   {
     try {
-      // Deleta o logo se existir
-      if ($brand->logo) {
-        Storage::disk('public')->delete($brand->logo);
-      }
-
       $brand->delete();
       return redirect()->back()->with('success', 'Marca deletada com sucesso');
     } catch (\Exception $e) {

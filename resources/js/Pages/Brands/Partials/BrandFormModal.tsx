@@ -59,12 +59,16 @@ export default function BrandFormModal({
     };
 
     if (brand) {
-      router.patch(route('brands.update', brand.id), payload, {
-        onSuccess: () => {
-          reset();
-          onClose();
-        },
-      });
+      router.post(
+        route('brands.update', brand.id),
+        { ...payload, _method: 'PATCH' },
+        {
+          onSuccess: () => {
+            reset();
+            onClose();
+          },
+        }
+      );
     } else {
       post(route('brands.store'), {
         onSuccess: () => {
@@ -87,8 +91,6 @@ export default function BrandFormModal({
     };
     reader.readAsDataURL(file);
   };
-
-  console.log(brand);
 
   return (
     <Modal
