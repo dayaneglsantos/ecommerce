@@ -29,6 +29,7 @@ class EditSupplierRequest extends FormRequest
       'phone_number' => ['required', 'string', 'max:11'],
       'contact_name' => ['required', 'string', 'max:255'],
       'notes' => ['nullable', 'string'],
+      'status' => ['required', 'in:active,inactive'],
     ];
   }
 }

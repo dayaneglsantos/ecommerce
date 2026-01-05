@@ -3,6 +3,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
+import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import SupplierType from '@/Types/SupplierType';
 import { useForm } from '@inertiajs/react';
@@ -27,6 +28,7 @@ export default function SupplierFormModal({
     phone_number: '',
     contact_name: '',
     notes: '',
+    status: 'active',
   });
 
   //  ============== POPULAR FORMULÁRIO NA EDIÇÃO ===============
@@ -38,6 +40,7 @@ export default function SupplierFormModal({
       setData('phone_number', supplier.phoneNumber);
       setData('contact_name', supplier.contactName);
       setData('notes', supplier.notes || '');
+      setData('status', supplier.status);
     } else {
       reset();
     }
@@ -66,22 +69,35 @@ export default function SupplierFormModal({
   return (
     <Modal show={open} onClose={onClose}>
       <form onSubmit={submit}>
-        <div>
-          <InputLabel
-            htmlFor="name"
-            value="Nome do Fornecedor"
-            className="mt-4"
-          />
-          <TextInput
-            id="name"
-            name="name"
-            value={data.name}
-            type="text"
-            className="mt-1 block w-full"
-            onChange={(e) => setData('name', e.target.value)}
-          />
-          <InputError className="mt-2" message={errors.name} />
-        </div>
+        <GridContainer>
+          <GridItem size={7}>
+            <InputLabel
+              htmlFor="name"
+              value="Nome do Fornecedor"
+              className="mt-4"
+            />
+            <TextInput
+              id="name"
+              name="name"
+              value={data.name}
+              type="text"
+              className="mt-1 block w-full"
+              onChange={(e) => setData('name', e.target.value)}
+            />
+            <InputError className="mt-2" message={errors.name} />
+          </GridItem>
+          <GridItem size={5}>
+            <InputLabel htmlFor="status" value="Status" className="mt-4 mb-1" />
+            <SelectInput
+              options={[
+                { label: 'Ativo', value: 'active' },
+                { label: 'Inativo', value: 'inactive' },
+              ]}
+              value={data.status}
+              onChange={(e) => setData('status', e)}
+            />
+          </GridItem>
+        </GridContainer>
         <div>
           <InputLabel htmlFor="cnpj" value="CNPJ" className="mt-4" />
           <TextInput
@@ -95,7 +111,7 @@ export default function SupplierFormModal({
           />
           <InputError className="mt-2" message={errors.cnpj} />
         </div>
-        <GridContainer gap={4}>
+        <GridContainer>
           <GridItem size={6}>
             <InputLabel htmlFor="email" value="Email" className="mt-4" />
             <TextInput

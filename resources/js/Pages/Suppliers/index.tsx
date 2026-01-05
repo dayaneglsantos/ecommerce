@@ -10,6 +10,7 @@ import SupplierFormModal from './Partials/SupplierFormModal';
 import { useState } from 'react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import { GridContainer, GridItem } from '@/Components/Grid';
+import Badge from '@/Components/Badge';
 
 export default function SuppliersPage() {
   const currentTab = route().current();
@@ -54,6 +55,12 @@ export default function SuppliersPage() {
                   <h3 className="text-lg font-medium text-gray-900">
                     {supplier.name}
                   </h3>
+                  <Badge
+                    type={supplier.status === 'active' ? 'success' : 'error'}
+                    size="sm"
+                  >
+                    {supplier.status === 'active' ? 'Ativo' : 'Inativo'}
+                  </Badge>
                   <p className="mt-2 text-sm text-gray-600">
                     CNPJ: {supplier.cnpj}
                   </p>

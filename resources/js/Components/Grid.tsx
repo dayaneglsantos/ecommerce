@@ -9,7 +9,7 @@ interface GridContainerProps {
 
 const GridContainer = ({
   columns,
-  gap,
+  gap = 3,
   children,
   className,
 }: GridContainerProps) => {

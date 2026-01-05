@@ -18,7 +18,8 @@ class Supplier extends Model
     'phone_number',
     'email',
     'contact_name',
-    'notes'
+    'notes',
+    'status'
   ];
 
   public function address()

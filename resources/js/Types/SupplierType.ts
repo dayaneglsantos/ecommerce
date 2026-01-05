@@ -7,6 +7,7 @@ export default interface SupplierType {
   email: string;
   phoneNumber: string;
   contactName: string;
+  status: 'active' | 'inactive';
   notes: string | null;
   address: AddressType;
   createdAt: string;
