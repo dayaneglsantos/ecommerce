@@ -15,7 +15,7 @@ export default function Carousel({ images }: CarouselProps) {
       navigation={true}
       slidesPerView={1}
       spaceBetween={8}
-      className="w-full h-48 mb-2"
+      className="w-full h-full mb-2"
     >
       {images.map((image) => (
         <SwiperSlide key={image.id}>

@@ -42,12 +42,11 @@ export default function ProductVariationForm({
   const [specificationDescription, setSpecificationDescription] = useState('');
   const imageInputRef = useRef<HTMLInputElement>(null);
 
-  const { id: productId, defaultVariation } = usePage().props
-    ?.product as ProductType;
+  const product = usePage().props?.product as ProductType;
 
   // ==================== Configuração do formulário ====================
   const { data, setData, reset, post, errors, patch, setError } = useForm({
-    product_id: productId || '',
+    product_id: product.id || '',
     color: '',
     color_code: '',
     size: '',
@@ -57,9 +56,9 @@ export default function ProductVariationForm({
     technical_specifications: {},
     sku: '',
     supplier_id: '',
-    pix_discount_type: '',
+    pix_discount_type: 'percentage',
     pix_discount_value: '',
-    is_default: false,
+    is_default: product.variations.length === 0 ? true : false,
     images: [] as {
       id?: number;
       file?: File;
@@ -197,7 +196,7 @@ export default function ProductVariationForm({
 
   // ==================== Definir variação como padrão do produto no backend ====================
   const handleDefaultVariation = (variationId: number) => {
-    router.patch(route('products.updateDefaultVariation', productId), {
+    router.patch(route('products.updateDefaultVariation', product.id), {
       default_variation_id: variationId,
     });
   };
@@ -256,7 +255,7 @@ export default function ProductVariationForm({
           <div className="absolute top-4 right-4 flex items-center gap-3">
             <div
               className={` border border-primary p-1 text-[12px] rounded-full px-2 text-primary-dark  ${
-                defaultVariation?.id === variation?.id
+                product.defaultVariation?.id === variation?.id
                   ? 'bg-gray-200 font-bold'
                   : 'bg-gray-50 '
               }`}
@@ -265,7 +264,7 @@ export default function ProductVariationForm({
                 type="button"
                 onClick={() => handleDefaultVariation(variation.id)}
               >
-                {defaultVariation?.id === variation.id
+                {product.defaultVariation?.id === variation.id
                   ? 'Produto Principal'
                   : 'Definir como principal'}
               </button>
@@ -295,8 +294,16 @@ export default function ProductVariationForm({
             <Checkbox
               onChange={(e) => setData('is_default', e.target.checked)}
               checked={data.is_default}
+              disabled={product.variations.length === 0}
+              id="defaultCheckbox"
             />
-            <InputLabel htmlFor="color" value="Produto principal" />
+            <InputLabel
+              htmlFor="defaultCheckbox"
+              value="Produto principal"
+              className={`${
+                product.variations.length === 0 ? '!text-gray-400' : ''
+              }`}
+            />
           </div>
         )}
         <GridContainer gap={3}>

@@ -11,9 +11,7 @@ export default function Sidebar({
 }: AsideProps) {
   return (
     <aside
-      className={`fixed z-40 top-16 p-3 border-gray-100 shadow-lg bg-gray-100 h-svh ${
-        position === 'left' ? 'border-r' : 'border-l'
-      } ${position}-0`}
+      className="h-screen mt-16 p-3 bg-orange-50 fixed right-0 top-0 overflow-y-auto transition-all"
       style={{ width: width || '350px' }}
     >
       {children}

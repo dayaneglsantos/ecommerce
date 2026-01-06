@@ -90,7 +90,7 @@ export default function ProductFormPage() {
                 Variações do produto
               </h2>
               <span className="font-bold text-sm">
-                Total: {product?.variations.length}
+                Total: {product?.variations.length || 0}
               </span>
             </div>
             <GridContainer gap={3}>

@@ -59,10 +59,10 @@ class ProductController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(Product $products)
+  public function show(Product $product)
   {
     return Inertia::render('Products/index', [
-      'product' => new ProductResource($products->load('variations', 'defaultVariation')),
+      'product' => new ProductResource($product->load('variations', 'defaultVariation')),
     ]);
   }
 
