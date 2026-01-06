@@ -23,6 +23,11 @@ class ProductFactory extends Factory
       'full_description' => fake()->text(500),
       'brand_id' => null,
       'category_id' => null,
+      'technical_specifications' => [
+        'Tamanho' => fake()->randomFloat(2, 0.1, 5.0) . ' kg',
+        'Dimensões' => fake()->randomFloat(2, 5.0, 50.0) . ' x ' . fake()->randomFloat(2, 5.0, 50.0) . ' x ' . fake()->randomFloat(2, 1.0, 30.0) . ' cm',
+        'Material' => fake()->randomElement(['Cotton', 'Polyester', 'Leather', 'Wool']),
+      ],
     ];
   }
 }

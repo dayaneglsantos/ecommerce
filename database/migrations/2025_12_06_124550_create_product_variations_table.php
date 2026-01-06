@@ -14,16 +14,12 @@ return new class extends Migration
     Schema::create('product_variations', function (Blueprint $table) {
       $table->id();
       $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-      $table->string('color')->nullable();
-      $table->string('color_code')->nullable();
-      $table->string('size')->nullable();
       $table->unsignedInteger('old_price')->nullable();
       $table->unsignedInteger('price');
       $table->integer('stock_quantity')->default(0);
       $table->enum('pix_discount_type', ['percentage', 'fixed'])->default('fixed')->nullable();
       $table->unsignedInteger('pix_discount_value')->default(0)->nullable();
       $table->string('sku')->unique();
-      $table->json('technical_specifications')->nullable();
       $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('set null');
       $table->timestamps();
     });

@@ -18,6 +18,10 @@ class Product extends Model
     'category_id',
   ];
 
+  protected $casts = [
+    'technical_specifications' => 'array',  // Informar ao Laravel que este campo JSON deve ser tratado como um array PHP.
+  ];
+
   protected $fillable = [
     'name',
     'slug',
@@ -47,6 +51,11 @@ class Product extends Model
   public function defaultVariation()
   {
     return $this->belongsTo(ProductVariation::class, 'default_variation_id');
+  }
+
+  public function images()
+  {
+    return $this->hasMany(ProductImages::class, 'product_id')->orderBy('position');
   }
 
   public function reviews()

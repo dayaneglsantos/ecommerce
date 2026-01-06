@@ -33,7 +33,6 @@ class ProductVariation extends Model
   ];
 
   protected $casts = [
-    'technical_specifications' => 'array',  // Informar ao Laravel que este campo JSON deve ser tratado como um array PHP.
     'old_price' => 'integer',
     'price' => 'integer',
     'pix_discount_value' => 'integer',
@@ -46,10 +45,6 @@ class ProductVariation extends Model
     return $this->belongsTo(Product::class, 'product_id');
   }
 
-  public function images()
-  {
-    return $this->hasMany(ProductImages::class, 'product_variation_id')->orderBy('position');
-  }
 
   public function supplier()
   {

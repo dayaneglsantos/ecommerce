@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AttributeValue;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
@@ -15,6 +16,7 @@ class ProductSeeder extends Seeder
   {
     $categories = Category::all();
     $brands = Brand::all();
+    $attributesValues = AttributeValue::all();
 
 
     Product::factory(10)
@@ -26,7 +28,12 @@ class ProductSeeder extends Seeder
           'category_id' => $categories->random()->id,
         ];
       })
-      ->has(ProductVariation::factory(3)->has(ProductImages::factory(2), 'images'), 'variations')
+      ->has(ProductVariation::factory(3), 'variations')
+      ->has(ProductImages::factory(3)->recycle($attributesValues)->state(function () use ($attributesValues) {
+        return [
+          'attribute_id' => $attributesValues->random()->id,
+        ];
+      }), 'images')
       ->create()
       ->each(function (Product $product) {
         // Define a variação padrão como a primeira variação criada

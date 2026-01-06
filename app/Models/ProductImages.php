@@ -16,6 +16,8 @@ class ProductImages extends Model
   protected $fillable = [
     'path',
     'position',
+    'product_id',
+    'attribute_id',
   ];
 
   protected $appends = ["url"]; // Adiciona o atributo 'url' aos atributos serializados do modelo
@@ -25,8 +27,8 @@ class ProductImages extends Model
     return Storage::url($this->path); // Gera a URL completa para acessar a imagem armazenada
   }
 
-  public function productVariation()
+  public function product()
   {
-    return $this->belongsTo(ProductVariation::class, 'product_variation_id');
+    return $this->belongsTo(Product::class, 'product_id');
   }
 }
