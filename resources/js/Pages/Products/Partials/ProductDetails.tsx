@@ -10,19 +10,21 @@ export default function ProductDetails() {
   const [selectedVariation, setSelectedVariation] =
     useState<ProductVariationType>(product.defaultVariation);
 
+  console.log(product);
+
   return (
     <div className="flex">
       <Sidebar position="right">Conteúdo do sidebar</Sidebar>
       <div className="w-[calc(100%-340px)] ">
-        <div className="h-60 mb-3">
+        {/* <div className="h-60 mb-3">
           <Carousel images={selectedVariation.images} />
-        </div>
+        </div> */}
         <div className="w-full flex justify-center gap-2">
-          {product.variations.map((variation) => (
+          {/* {product.variations.map((variation) => (
             <button className="w-8 cursor-pointer">
               <img src={variation.images[0].url} alt={variation.color} />
             </button>
-          ))}
+          ))} */}
         </div>
         <p className="text-lg font-medium mt-2">{product.name}</p>
         <p
@@ -30,7 +32,7 @@ export default function ProductDetails() {
           className="my-3"
         />
         <div>
-          {Object.entries(selectedVariation.technicalSpecifications || {}).map(
+          {Object.entries(product.technicalSpecifications || {}).map(
             ([key, value]) => (
               <p key={key}>
                 {key}: <span className="italic">{value}</span>

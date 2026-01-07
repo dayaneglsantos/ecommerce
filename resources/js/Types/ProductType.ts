@@ -12,4 +12,5 @@ export default interface ProductType {
   category: CategoryType;
   defaultVariation: ProductVariationType;
   variations: ProductVariationType[];
+  technicalSpecifications: JSON | null;
 }

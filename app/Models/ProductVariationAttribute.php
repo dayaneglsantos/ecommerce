@@ -13,10 +13,22 @@ class ProductVariationAttribute extends Model
   protected $hidden = [
     'created_at',
     'updated_at',
+    'product_variation_id',
+    'attribute_value_id'
   ];
 
   protected $fillable = [
     'product_variation_id',
     'attribute_value_id'
   ];
+
+  public function productVariation()
+  {
+    return $this->belongsTo(ProductVariation::class, 'product_variation_id');
+  }
+
+  public function attributes()
+  {
+    return $this->hasMany(AttributeValue::class, 'attribute_value_id');
+  }
 }

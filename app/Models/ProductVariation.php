@@ -38,13 +38,17 @@ class ProductVariation extends Model
     'pix_discount_value' => 'integer',
   ];
 
-  protected $with = ['images', 'supplier', 'product'];
+  protected $with = ['supplier', 'product'];
 
   public function product()
   {
     return $this->belongsTo(Product::class, 'product_id');
   }
 
+  public function attributeValues()
+  {
+    return $this->belongsToMany(AttributeValue::class, 'product_variation_attributes', 'product_variation_id', 'attribute_value_id');
+  }
 
   public function supplier()
   {

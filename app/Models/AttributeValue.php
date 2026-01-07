@@ -13,6 +13,7 @@ class AttributeValue extends Model
   protected $hidden = [
     'created_at',
     'updated_at',
+    'attribute_id'
   ];
 
   protected $fillable = [
@@ -30,5 +31,10 @@ class AttributeValue extends Model
   public function attribute()
   {
     return $this->belongsTo(Attribute::class, 'attribute_id');
+  }
+
+  public function productVariations()
+  {
+    return $this->belongsToMany(ProductVariationAttribute::class, 'product_variation_attributes');
   }
 }

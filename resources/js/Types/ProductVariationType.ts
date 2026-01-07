@@ -6,7 +6,6 @@ export default interface ProductVariationType {
   id: number;
   product: ProductType;
   color: string;
-  colorCode: string;
   size: string;
   oldPrice: number | null;
   price: number;
@@ -14,7 +13,6 @@ export default interface ProductVariationType {
   pixDiscountType: string | null;
   pixDiscountValue: string | null;
   sku: string;
-  technicalSpecifications: JSON | null;
   supplier: SupplierType | null;
   images: ProductImagesType[];
 }
