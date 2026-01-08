@@ -5,6 +5,8 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use function PHPSTORM_META\type;
+
 class ProductResource extends JsonResource
 {
   /**
@@ -16,25 +18,21 @@ class ProductResource extends JsonResource
   {
 
     $variations = $this->whenLoaded('variations');
-
+    $images = $this->productImages;
 
     $groupedVariations = $variations->groupBy(function ($variation) {
       $colorAttribute = $variation->attributeValues->first(function ($attrValue) {
         return $attrValue->attribute && $attrValue->attribute->name === 'cor';
       });
 
-
-      // Retorna o valor ou um fallback caso a variação não tenha cor cadastrada
       return $colorAttribute && $colorAttribute->id;
     })
-      ->map(function ($item, $colorValueId) {
-        // dd($item->first()->attributeValues->first()->value);
+      ->map(function ($item) use ($images) {
         $firstItem = $item->first();
 
         $colorData = $firstItem->attributeValues->first(function ($attrValue) {
           return $attrValue->attribute && $attrValue->attribute->name === 'cor';
         });
-        // dd($colorData->value);
 
         return [
           'color' => $colorData ? $colorData->value : '',
@@ -46,14 +44,14 @@ class ProductResource extends JsonResource
               'id' => $var->id,
               'size' => $sizeData ? $sizeData->value : '',
               'price' => $var->price,
-              'oldPrice' => $var->oldPrice,
-              'stockQuantity' => $var->stockQuantity,
+              'oldPrice' => $var->old_price,
+              'stockQuantity' => $var->stock_quantity,
               'sku' => $var->sku,
             ];
           })->values(),
-          'images' => $this->images->filter(function ($img) use ($colorValueId) {
-            return $img->attribute_value_id === $colorValueId;
-          })->pluck('path')
+          'images' => $images->filter(function ($img) use ($colorData) {
+            return $colorData ? $colorData->id === $img->attribute_id : [];
+          })->values(),
         ];
       })->values();
 
@@ -63,7 +61,7 @@ class ProductResource extends JsonResource
       'description' => $this->description,
       'fullDescription' => $this->full_description,
       'slug' => $this->slug,
-      'defaultVariation' => new ProductVariationResource($this->whenLoaded('defaultVariation')),
+      // 'defaultVariation' => new ProductVariationResource($this->whenLoaded('defaultVariation')),
       'brand' => $this->whenLoaded('brand'), // Não foi criado Resource para Brand
       'category' => new CategoryResource($this->whenLoaded('category')),
       'variations' => $groupedVariations,

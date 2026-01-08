@@ -22,9 +22,9 @@ class AttributeValue extends Model
   ];
 
   // Possuem várias imagens
-  public function images()
+  public function attributeImages()
   {
-    return $this->hasMany(ProductImages::class, 'attribute_value_id')->orderBy('position');
+    return $this->hasMany(ProductImages::class, 'attribute_id')->orderBy('position');
   }
 
   // Pertencem a um atributo
@@ -33,6 +33,7 @@ class AttributeValue extends Model
     return $this->belongsTo(Attribute::class, 'attribute_id');
   }
 
+  // Possuem várias variações de produtos
   public function productVariations()
   {
     return $this->belongsToMany(ProductVariationAttribute::class, 'product_variation_attributes');

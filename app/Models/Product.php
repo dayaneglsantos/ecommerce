@@ -53,7 +53,7 @@ class Product extends Model
     return $this->belongsTo(ProductVariation::class, 'default_variation_id');
   }
 
-  public function images()
+  public function productImages()
   {
     return $this->hasMany(ProductImages::class, 'product_id')->orderBy('position');
   }

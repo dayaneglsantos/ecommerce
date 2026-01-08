@@ -22,11 +22,13 @@ class ProductVariationAttribute extends Model
     'attribute_value_id'
   ];
 
+  // Pertencem a uma variação de produto
   public function productVariation()
   {
     return $this->belongsTo(ProductVariation::class, 'product_variation_id');
   }
 
+  // Possuem vários valores de atributos
   public function attributes()
   {
     return $this->hasMany(AttributeValue::class, 'attribute_value_id');
