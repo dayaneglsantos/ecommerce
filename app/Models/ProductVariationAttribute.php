@@ -28,9 +28,9 @@ class ProductVariationAttribute extends Model
     return $this->belongsTo(ProductVariation::class, 'product_variation_id');
   }
 
-  // Possuem vários valores de atributos
-  public function attributes()
+  // Pertencem a um valor de atributo
+  public function attribute()
   {
-    return $this->hasMany(AttributeValue::class, 'attribute_value_id');
+    return $this->belongsTo(AttributeValue::class, 'attribute_value_id');
   }
 }

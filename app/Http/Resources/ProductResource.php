@@ -17,43 +17,59 @@ class ProductResource extends JsonResource
   public function toArray(Request $request): array
   {
 
-    $variations = $this->whenLoaded('variations');
-    $images = $this->productImages;
+    $variations = $this->whenLoaded('variations'); // Carrega as variações do produto passadas pelo controller
+    $images = $this->whenLoaded('productImages'); // Carrega as imagens do produto passadas pelo controller
 
+    // ======= Agrupamento das variações por cor =======
     $groupedVariations = $variations->groupBy(function ($variation) {
-      $colorAttribute = $variation->attributeValues->first(function ($attrValue) {
-        return $attrValue->attribute && $attrValue->attribute->name === 'cor';
-      });
 
-      return $colorAttribute && $colorAttribute->id;
-    })
-      ->map(function ($item) use ($images) {
-        $firstItem = $item->first();
+      $colorAttribute = $variation->attributeValues->first(function ($attrValue) {
+        return $attrValue?->attribute?->name === 'cor';
+      }); // Obtém o valor do atributo de cor
+
+      return $colorAttribute?->id;
+    }) // Agrupa as variações pelo ID do atributo de cor
+      ->map(function ($item) use ($images) { // O item aqui é uma coleção de variações que possuem a mesma cor
+
+        $firstItem = $item->first(); // Pega a primeira variação para obter os dados da cor (que são os mesmos para todas as variações do grupo, por isso pegamos apenas a primeira)
 
         $colorData = $firstItem->attributeValues->first(function ($attrValue) {
-          return $attrValue->attribute && $attrValue->attribute->name === 'cor';
-        });
+          return $attrValue?->attribute?->name === 'cor';
+        }); // Obtém o valor do atributo de cor (nome e id)
 
         return [
-          'color' => $colorData ? $colorData->value : '',
-          'sizes' => $item->map(function ($var) {
-            $sizeData = $var->attributeValues->first(function ($attrValue) {
+          'color' => $colorData?->value,
+          'sizes' => $item->map(function ($variation) {
+            $sizeData = $variation->attributeValues->first(function ($attrValue) {
               return $attrValue->attribute && strtolower($attrValue->attribute->name) === 'tamanho';
-            });
+            }); // pega o valor do atributo de tamanho
             return [
-              'id' => $var->id,
-              'size' => $sizeData ? $sizeData->value : '',
-              'price' => $var->price,
-              'oldPrice' => $var->old_price,
-              'stockQuantity' => $var->stock_quantity,
-              'sku' => $var->sku,
+              'id' => $variation->id,
+              'size' => $sizeData?->value,
+              'price' => $variation->price,
+              'oldPrice' => $variation->old_price,
+              'stockQuantity' => $variation->stock_quantity,
+              'sku' => $variation->sku,
             ];
-          })->values(),
+          }),
           'images' => $images->filter(function ($img) use ($colorData) {
-            return $colorData ? $colorData->id === $img->attribute_id : [];
+            return $colorData?->id === $img->attribute_id; // Filtra as imagens que possuem o atributo_id igual ao id do valor do atributo de cor
           })->values(),
         ];
       })->values();
+
+    // OBS: Values faz com que o índice do array volte a ser numérico sequencial pois o groupBy e map podem gerar índices não sequenciais.
+    // Sem o values() o retorno seria algo como:
+    // [
+    //    3 => [ ... ],  // índice 3
+    //    7 => [ ... ],  // índice 7
+    // ]
+    // Com o values() o retorno será:
+    // [
+    //    0 => [ ... ],  // índice 0
+    //    1 => [ ... ],  // índice 1
+    // ]
+    // ================================================
 
     return [
       'id' => $this->id,

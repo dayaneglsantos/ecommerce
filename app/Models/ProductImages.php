@@ -11,7 +11,9 @@ class ProductImages extends Model
   /** @use HasFactory<\Database\Factories\ProductImagesFactory> */
   use HasFactory;
 
-  protected $hidden = ['path'];
+  protected $hidden = ['path', 'created_at', 'updated_at', 'position', 'product_id', 'attribute_id'];
+
+  protected $with = ['attribute'];
 
   protected $fillable = [
     'path',
@@ -30,5 +32,10 @@ class ProductImages extends Model
   public function product()
   {
     return $this->belongsTo(Product::class, 'product_id');
+  }
+
+  public function attribute()
+  {
+    return $this->belongsTo(AttributeValue::class, 'attribute_id');
   }
 }
