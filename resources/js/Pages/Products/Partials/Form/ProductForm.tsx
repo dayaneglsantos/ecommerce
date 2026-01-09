@@ -11,20 +11,23 @@ import { router, useForm, usePage } from '@inertiajs/react';
 import { Editor } from '@tinymce/tinymce-react';
 import { useEffect, useState } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
-import { IoMdInformationCircle } from 'react-icons/io';
+import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
 import { Tooltip } from 'react-tooltip';
 
 export default function ProductForm({ brands, categories }: any) {
   const product = usePage().props.product as ProductType;
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+  const [specificationName, setSpecificationName] = useState('');
+  const [specificationDescription, setSpecificationDescription] = useState('');
 
-  const { data, setData, reset, post, errors, patch } = useForm({
+  const { data, setData, reset, post, errors, patch, setError } = useForm({
     name: product?.name || '',
     full_description: product?.fullDescription || '',
     brand_id: product?.brand?.id || 0,
     category_id: product?.category?.id || 0,
     slug: product?.slug || '',
     description: product?.description || '',
+    technical_specifications: {},
   });
 
   // Preencher o formulário quando o produto for carregado (para o caso de ter criado um novo produto e estar editando em seguida)
@@ -36,11 +39,24 @@ export default function ProductForm({ brands, categories }: any) {
       setData('full_description', product?.fullDescription || '');
       setData('slug', product?.slug || '');
       setData('description', product?.description || '');
+      setData(
+        'technical_specifications',
+        product.technicalSpecifications || {}
+      );
     }
   }, [product]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (specificationDescription && specificationName) {
+      setError(
+        'technical_specifications',
+        'Você possui uma especificação não adicionada.'
+      );
+      return;
+    }
+
     if (product) {
       patch(route('products.update', product.id), {
         onSuccess: () => reset(),
@@ -101,6 +117,23 @@ export default function ProductForm({ brands, categories }: any) {
       },
     });
   };
+
+  // ==================== Adicionar especificação técnica ao formulário ====================
+  const handleAddSpecification = () => {
+    if (specificationName && specificationDescription) {
+      setData('technical_specifications', {
+        ...data.technical_specifications,
+        [specificationName]: specificationDescription,
+      });
+      setSpecificationName('');
+      setSpecificationDescription('');
+    }
+  };
+
+  // Tamanho das especificações técnicas
+  const specificationsSize = Object.entries(
+    data.technical_specifications
+  ).length;
 
   return (
     <Card className="w-full mb-3 relative">
@@ -224,6 +257,69 @@ export default function ProductForm({ brands, categories }: any) {
           />
           <InputError className="mt-2" message={errors.full_description} />
         </div>
+        <h4 className="font-bold mt-5  text-primary">
+          Espeficicações técnicas
+        </h4>
+
+        <div className="flex items-center mb-1">
+          <GridContainer gap={3} className="mt-3 grow">
+            <GridItem size={6}>
+              <InputLabel htmlFor="specificationName" value="Tipo" />
+              <TextInput
+                id="specificationName"
+                type="text"
+                value={specificationName}
+                className="mt-1 block w-full"
+                onChange={(e) => setSpecificationName(e.target.value)}
+              />
+            </GridItem>
+            <GridItem size={6}>
+              <InputLabel
+                htmlFor="specificationDescription"
+                value="Descrição"
+              />
+              <TextInput
+                id="specificationDescription"
+                value={specificationDescription}
+                type="text"
+                className="mt-1 block w-full"
+                onChange={(e) => setSpecificationDescription(e.target.value)}
+              />
+            </GridItem>
+          </GridContainer>
+          <IoIosAddCircle
+            className="text-2xl mt-8 ml-3 cursor-pointer text-primary-dark"
+            onClick={handleAddSpecification}
+          />
+        </div>
+        <InputError message={errors.technical_specifications} />
+
+        {specificationsSize > 0 &&
+          Object.entries(data.technical_specifications).map(([key, value]) => (
+            <div className="w-full shadow-full p-3 rounded-2xl my-5">
+              <div
+                key={key}
+                className="flex items-center justify-between gap-3 "
+              >
+                <p>
+                  <b>{key}: </b>
+                  {value as React.ReactNode}
+                </p>
+                <FaTrashAlt
+                  onClick={() => {
+                    const updatedSpecifications = Object.fromEntries(
+                      Object.entries(data.technical_specifications).filter(
+                        ([k]) => k !== key
+                      )
+                    );
+                    setData('technical_specifications', updatedSpecifications);
+                  }}
+                  className={`cursor-pointer text-gray-500 outline-none hover:text-red-600`}
+                />
+              </div>
+            </div>
+          ))}
+
         <div className="flex justify-end my-3 mt-6">
           <PrimaryButton>Salvar</PrimaryButton>
         </div>

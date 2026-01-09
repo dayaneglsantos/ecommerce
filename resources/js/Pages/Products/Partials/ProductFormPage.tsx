@@ -27,7 +27,7 @@ export default function ProductFormPage() {
     useState<ProductVariationType | null>(null);
 
   const disabledVariationButton =
-    product === undefined || newForm || selectedVariation !== null;
+    !product || newForm || selectedVariation !== null;
 
   // ==================== Definir variação como padrão do produto no backend ====================
   const handleDefaultVariation = (variationId: number) => {
@@ -43,28 +43,14 @@ export default function ProductFormPage() {
     });
   };
 
+  console.log(product?.variations);
+
   return (
     <>
       <GridContainer gap={6} className="mb-6">
         <GridItem size={8} mdSize={12}>
           <ProductForm brands={brands} categories={categories} />
-          <button
-            type="button"
-            className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold ${
-              disabledVariationButton
-                ? 'opacity-50'
-                : 'cursor-pointer hover:bg-gray-100'
-            }`}
-            onClick={() => setNewForm(true)}
-            disabled={disabledVariationButton}
-            title={
-              disabledVariationButton
-                ? 'Salve o produto antes de adicionar variações'
-                : ''
-            }
-          >
-            Adicionar nova variação
-          </button>
+
           {newForm && (
             <ProductVariationForm
               suppliers={suppliers}
@@ -84,64 +70,38 @@ export default function ProductFormPage() {
           )}
         </GridItem>
         <GridItem size={4} mdSize={12}>
-          <Card className="w-full max-h-[880px] overflow-y-auto">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-primary-dark font-bold text-lg">
-                Variações do produto
-              </h2>
-              <span className="font-bold text-sm">
-                Total: {product?.variations.length || 0}
-              </span>
-            </div>
-            <GridContainer gap={3}>
-              {product?.variations.map((variation) => (
-                <GridItem key={variation.id} size={12}>
-                  <Card className="w-full mb-3" key={variation.id}>
-                    <Carousel images={variation.images} />
-                    <GridContainer gap={2}>
-                      <GridItem size={6}>
-                        <p className="font-bold">Cor:</p>
-                        <p>{variation.color}</p>
-                      </GridItem>
+          {product && product.variations.length > 0 && (
+            <Card className="w-full max-h-[880px] overflow-y-auto">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-primary-dark font-bold text-lg">
+                  Variações do produto
+                </h2>
+                <span className="font-bold text-sm">
+                  Total: {product.variations.length || 0}
+                </span>
+              </div>
+              <GridContainer gap={3}>
+                {product.variations.map((variation) => (
+                  <GridItem key={variation.id} size={12}>
+                    <Card className="w-full mb-3" key={variation.id}>
+                      <Carousel images={variation.images} />
+                      <GridContainer gap={2}>
+                        <GridItem size={6}>
+                          <p className="font-bold">Cor:</p>
+                          <p>{variation.color}</p>
+                        </GridItem>
 
-                      <GridItem size={6}>
-                        <p className="font-bold">Cod. da Cor:</p>
-                        <p>{variation.colorCode}</p>
-                      </GridItem>
-                      <GridItem size={6}>
-                        <p className="font-bold">Tamanho:</p>
-                        <p>{variation.size}</p>
-                      </GridItem>
-                      <GridItem size={6}>
-                        <p className="font-bold">Cod. Identificação:</p>
-                        <p>{variation.sku}</p>
-                      </GridItem>
-                      <GridItem size={6}>
-                        <p className="font-bold">Estoque</p>
-                        <p>{variation.stockQuantity}</p>
-                      </GridItem>
-                      <GridItem size={6}>
-                        <p className="font-bold">Preço</p>
-                        <p>{variation.price}</p>
-                      </GridItem>
-                      <GridItem size={6}>
-                        <p className="font-bold">Desconto PIX</p>
-                        <p>{variation.pixDiscountValue}</p>
-                      </GridItem>
-                      <GridItem size={12}>
-                        <p className="font-bold mt-2">Especificações:</p>
-                        {Object.entries(
-                          variation?.technicalSpecifications || {}
-                        ).map(([key, value]) => (
-                          <p key={key}>
-                            {key}: <span className="italic">{value}</span>
+                        <GridItem size={6}>
+                          <p className="font-bold">Tamanhos:</p>
+                          <p>
+                            {variation.sizes
+                              .map((item) => item.size)
+                              .join(', ')}
                           </p>
-                        ))}
-                      </GridItem>
-                    </GridContainer>
-                    <div className="flex items-center gap-3 mt-4 justify-between">
+                        </GridItem>
+                      </GridContainer>
                       <div
-                        className={` border border-primary p-1 text-[12px] rounded-full px-2 text-primary-dark  ${
+                        className={`w-24 border border-primary p-1 text-[12px] rounded-full px-2 mt-2 text-primary-dark  ${
                           variation.id === product?.defaultVariation?.id
                             ? 'bg-gray-200 font-bold'
                             : 'bg-gray-50 '
@@ -152,35 +112,50 @@ export default function ProductFormPage() {
                           onClick={() => handleDefaultVariation(variation.id)}
                         >
                           {variation.id === product?.defaultVariation?.id
-                            ? 'Produto Principal'
-                            : 'Definir principal'}
+                            ? 'Cor principal'
+                            : 'Definir cor principal'}
                         </button>
                       </div>
-                      <div className="flex gap-3">
-                        <PrimaryButton
-                          outline
-                          onClick={() => {
-                            setSelectedVariation(variation);
-                            setNewForm(false);
-                          }}
-                        >
-                          Editar
-                        </PrimaryButton>
-                        <PrimaryButton
-                          onClick={() => {
-                            setSelectedVariation(variation);
-                            setOpenConfirmDialog(true);
-                          }}
-                        >
-                          Excluir
-                        </PrimaryButton>
+                      <div className="flex items-center gap-3 mt-4 justify-between">
+                        <div className="flex gap-3">
+                          <PrimaryButton onClick={() => {}}>
+                            Imagens
+                          </PrimaryButton>
+                          <PrimaryButton
+                            outline
+                            onClick={() => {
+                              setSelectedVariation(variation);
+                              setNewForm(false);
+                            }}
+                          >
+                            Editar tamanhos
+                          </PrimaryButton>
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                </GridItem>
-              ))}
-            </GridContainer>
-          </Card>
+                    </Card>
+                  </GridItem>
+                ))}
+              </GridContainer>
+            </Card>
+          )}
+
+          <button
+            type="button"
+            className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold ${
+              disabledVariationButton
+                ? 'opacity-50'
+                : 'cursor-pointer hover:bg-gray-100'
+            }`}
+            onClick={() => setNewForm(true)}
+            disabled={disabledVariationButton}
+            title={
+              disabledVariationButton
+                ? 'Salve o produto antes de adicionar uma nova variação'
+                : ''
+            }
+          >
+            Adicionar nova cor
+          </button>
         </GridItem>
       </GridContainer>
       {selectedVariation && (

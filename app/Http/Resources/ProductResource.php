@@ -52,7 +52,7 @@ class ProductResource extends JsonResource
               'sku' => $variation->sku,
             ];
           }),
-          'images' => $images->filter(function ($img) use ($colorData) {
+          'images' => $images?->filter(function ($img) use ($colorData) {
             return $colorData?->id === $img->attribute_id; // Filtra as imagens que possuem o atributo_id igual ao id do valor do atributo de cor
           })->values(),
         ];
@@ -78,7 +78,7 @@ class ProductResource extends JsonResource
       'fullDescription' => $this->full_description,
       'slug' => $this->slug,
       // 'defaultVariation' => new ProductVariationResource($this->whenLoaded('defaultVariation')),
-      'brand' => $this->whenLoaded('brand'), // Não foi criado Resource para Brand
+      'brand' => new BrandResource($this->whenLoaded('brand')),
       'category' => new CategoryResource($this->whenLoaded('category')),
       'variations' => $groupedVariations,
       'technicalSpecifications' => $this->technical_specifications,

@@ -20,11 +20,14 @@ export default function ProductDetails() {
           <Carousel images={selectedVariation.images} />
         </div> */}
         <div className="w-full flex justify-center gap-2">
-          {/* {product.variations.map((variation) => (
-            <button className="w-8 cursor-pointer">
-              <img src={variation.images[0].url} alt={variation.color} />
+          {product.variations.map((variation) => (
+            <button
+              className="w-8 cursor-pointer"
+              onClick={() => setSelectedVariation(variation)}
+            >
+              <img src={variation?.images[0]?.url} alt={variation?.color} />
             </button>
-          ))} */}
+          ))}
         </div>
         <p className="text-lg font-medium mt-2">{product.name}</p>
         <p

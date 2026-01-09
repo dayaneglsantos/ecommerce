@@ -17,7 +17,7 @@ class ProductController extends Controller
   // Listagem de Produtos
   public function index()
   {
-    $products = Product::all()->load('defaultVariation', 'variations');
+    $products = Product::all()->load('defaultVariation', 'variations', 'productImages');
     $brands = Brand::all();
     $categories = Category::all();
 
@@ -72,6 +72,7 @@ class ProductController extends Controller
     $brands = Brand::all();
     $categories = Category::all();
     $suppliers = Supplier::all();
+    $product->load('productImages');
 
     return Inertia::render('Products/index', [
       'brands' => $brands,
