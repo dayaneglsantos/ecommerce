@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
+use App\Models\Attribute;
+use App\Models\AttributeValue;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -73,12 +76,16 @@ class ProductController extends Controller
     $categories = Category::all();
     $suppliers = Supplier::all();
     $product->load('productImages');
+    $colorAttributeId = Attribute::where('name', Str::lower('cor'))->first()->id;
+    $colors = AttributeValue::all()->where('attribute_id', $colorAttributeId);
 
     return Inertia::render('Products/index', [
       'brands' => $brands,
       'categories' => $categories,
       'suppliers' => $suppliers,
       'product' => new ProductResource($product->load('variations', 'defaultVariation')),
+      'colors' => $colors,
+      'colorAttributeId' => $colorAttributeId,
     ]);
   }
 

@@ -1,73 +1,57 @@
-import {
-  Dialog,
-  DialogPanel,
-  Transition,
-  TransitionChild,
-} from '@headlessui/react';
+import * as Dialog from '@radix-ui/react-dialog';
+import { ReactNode } from 'react';
 
 interface ModalProps {
-  children: React.ReactNode;
-  show?: boolean;
+  show: boolean;
+  onClose: () => void;
+  children: ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-  closeable?: boolean;
-  onClose?: () => void;
+  layer?: number; // 👈 controla a pilha
 }
 
 export default function Modal({
+  show,
+  onClose,
   children,
-  show = false,
   maxWidth = '2xl',
-  closeable = true,
-  onClose = () => {},
+  layer = 0,
 }: ModalProps) {
-  const close = () => {
-    if (closeable) {
-      onClose();
-    }
-  };
-
   const maxWidthClass = {
-    sm: 'sm:max-w-sm',
-    md: 'sm:max-w-md',
-    lg: 'sm:max-w-lg',
-    xl: 'sm:max-w-xl',
-    '2xl': 'sm:max-w-2xl',
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-lg',
+    xl: 'max-w-xl',
+    '2xl': 'max-w-2xl',
   }[maxWidth];
 
-  return (
-    <Transition show={show} leave="duration-200">
-      <Dialog
-        as="div"
-        id="modal"
-        className="fixed inset-0 z-50 flex transform items-center overflow-y-auto px-4 py-6 transition-all sm:px-0"
-        onClose={close}
-      >
-        <TransitionChild
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="absolute inset-0 bg-gray-500/75" />
-        </TransitionChild>
+  const baseZ = 100; // início do z-index
+  const overlayZ = baseZ + layer * 20; // cada layer aumenta o z-index em 20
+  const contentZ = overlayZ + 10; // conteúdo fica acima do overlay
 
-        <TransitionChild
-          enter="ease-out duration-300"
-          enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-          enterTo="opacity-100 translate-y-0 sm:scale-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-          leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+  return (
+    <Dialog.Root open={show} onOpenChange={(o) => !o && onClose()}>
+      <Dialog.Portal>
+        {/* Overlay */}
+        <Dialog.Overlay
+          style={{ zIndex: overlayZ }}
+          className="fixed inset-0 bg-black/50"
+        />
+
+        {/* Conteúdo */}
+        <Dialog.Content
+          style={{ zIndex: contentZ }}
+          className={`
+            fixed left-1/2 top-1/2
+            w-full ${maxWidthClass}
+            -translate-x-1/2 -translate-y-1/2
+            rounded-lg bg-white p-4 shadow-xl
+            max-h-[90vh] overflow-y-auto
+            focus:outline-none
+          `}
         >
-          <DialogPanel
-            className={`transform overflow-hidden rounded-lg bg-white p-4 shadow-xl transition-all sm:mx-auto sm:w-full max-h-[90vh] overflow-y-auto ${maxWidthClass}`}
-          >
-            {children}
-          </DialogPanel>
-        </TransitionChild>
-      </Dialog>
-    </Transition>
+          {children}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

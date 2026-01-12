@@ -22,12 +22,11 @@ export default function ProductFormPage() {
   const suppliers = usePage().props.suppliers as SupplierType[];
 
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [newForm, setNewForm] = useState(false);
+  const [openVariationFormModal, setOpenVariationFormModal] = useState(false);
   const [selectedVariation, setSelectedVariation] =
     useState<ProductVariationType | null>(null);
 
-  const disabledVariationButton =
-    !product || newForm || selectedVariation !== null;
+  const disabledVariationButton = !product || selectedVariation !== null;
 
   // ==================== Definir variação como padrão do produto no backend ====================
   const handleDefaultVariation = (variationId: number) => {
@@ -50,24 +49,18 @@ export default function ProductFormPage() {
       <GridContainer gap={6} className="mb-6">
         <GridItem size={8} mdSize={12}>
           <ProductForm brands={brands} categories={categories} />
-
-          {newForm && (
-            <ProductVariationForm
-              suppliers={suppliers}
-              setNewForm={setNewForm}
-              newForm={newForm}
-              handleCancelButton={() => setNewForm(false)}
-            />
-          )}
-          {selectedVariation && (
-            <ProductVariationForm
-              suppliers={suppliers}
-              variation={selectedVariation}
-              handleCancelButton={() => setSelectedVariation(null)}
-              setOpenConfirmDialog={setOpenConfirmDialog}
-              setSelectedVariation={setSelectedVariation}
-            />
-          )}
+          <ProductVariationForm
+            open={openVariationFormModal}
+            onClose={() => {
+              setOpenVariationFormModal(false);
+              setSelectedVariation(null);
+            }}
+            suppliers={suppliers}
+            variation={selectedVariation}
+            handleCancelButton={() => setSelectedVariation(null)}
+            setOpenConfirmDialog={setOpenConfirmDialog}
+            setSelectedVariation={setSelectedVariation}
+          />
         </GridItem>
         <GridItem size={4} mdSize={12}>
           {product && product.variations.length > 0 && (
@@ -124,8 +117,8 @@ export default function ProductFormPage() {
                           <PrimaryButton
                             outline
                             onClick={() => {
+                              setOpenVariationFormModal(true);
                               setSelectedVariation(variation);
-                              setNewForm(false);
                             }}
                           >
                             Editar tamanhos
@@ -146,7 +139,9 @@ export default function ProductFormPage() {
                 ? 'opacity-50'
                 : 'cursor-pointer hover:bg-gray-100'
             }`}
-            onClick={() => setNewForm(true)}
+            onClick={() => {
+              setOpenVariationFormModal(true);
+            }}
             disabled={disabledVariationButton}
             title={
               disabledVariationButton
