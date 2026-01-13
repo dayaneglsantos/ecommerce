@@ -21,7 +21,7 @@ export default function ConfirmDialog({
   cancelButtonText = 'Cancelar',
 }: ConfirmDialogProps) {
   return (
-    <Modal show={open} onClose={onClose}>
+    <Modal show={open} onClose={onClose} layer={99}>
       <h5 className="font-bold text-lg">{title}</h5>
       <p className="text-gray-700 my-3">{description}</p>
       <div className="flex gap-4 justify-end">

@@ -32,10 +32,10 @@ class AttributeValueController extends Controller
     try {
       $validatedData = $request->validated();
       AttributeValue::create($validatedData);
-      return redirect()->back()->with('success', 'Valor do atributo criado com sucesso!');
+      return redirect()->back()->with('success', 'Criado com sucesso!');
     } catch (\Exception $e) {
       dd($e->getMessage());
-      return redirect()->back()->with('error', 'Erro ao criar o valor do atributo!');
+      return redirect()->back()->with('error', 'Erro na criação');
     }
   }
 
@@ -68,6 +68,11 @@ class AttributeValueController extends Controller
    */
   public function destroy(AttributeValue $attributeValue)
   {
-    //
+    try {
+      $attributeValue->delete();
+      return redirect()->back()->with('success', 'Exclusão realizada com sucesso!');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro na exclusão');
+    }
   }
 }

@@ -77,7 +77,7 @@ class ProductController extends Controller
     $suppliers = Supplier::all();
     $product->load('productImages');
     $colorAttributeId = Attribute::where('name', Str::lower('cor'))->first()->id;
-    $colors = AttributeValue::all()->where('attribute_id', $colorAttributeId);
+    $colors = AttributeValue::all()->where('attribute_id', $colorAttributeId)->values();
 
     return Inertia::render('Products/index', [
       'brands' => $brands,

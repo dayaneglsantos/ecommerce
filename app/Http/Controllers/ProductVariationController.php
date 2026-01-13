@@ -148,10 +148,9 @@ class ProductVariationController extends Controller
 
       $productVariation->delete();
 
-      // permanacer na mesma rota e apenas enviar mensagem
       return redirect()->back()->with('success', 'Variação do produto excluída com sucesso!');
     } catch (\Exception $e) {
-      return redirect()->back()->with('error', 'Erro ao excluir a variação do produto.');
+      return redirect()->back()->with('error', 'Erro ao excluir variação do produto.');
     }
   }
 }

@@ -42,8 +42,6 @@ export default function ProductFormPage() {
     });
   };
 
-  console.log(product?.variations);
-
   return (
     <>
       <GridContainer gap={6} className="mb-6">
@@ -153,7 +151,7 @@ export default function ProductFormPage() {
           </button>
         </GridItem>
       </GridContainer>
-      {selectedVariation && (
+      {/* {selectedVariation && (
         <ConfirmDialog
           open={openConfirmDialog}
           title="Tem certeza que deseja remover esta variação?"
@@ -167,7 +165,7 @@ export default function ProductFormPage() {
             setSelectedVariation(null);
           }}
         />
-      )}
+      )} */}
     </>
   );
 }

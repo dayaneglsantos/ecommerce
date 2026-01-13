@@ -266,7 +266,7 @@ export default function ProductVariationForm({
             <h3 className="font-bold text-lg text-primary-dark">
               Variação do Produto
             </h3>
-            <form onSubmit={submit}>
+            <form>
               {variation && (
                 <div className="absolute top-4 right-4 flex items-center gap-3">
                   <button
@@ -316,13 +316,18 @@ export default function ProductVariationForm({
                     placeholder="Selecione uma cor"
                   />
                   <InputError className="mt-2" message={errors.color} />
-                  <p className="text-sm text-gray-600 mt-1">
-                    Não encontrou a cor? Adicione uma nova{' '}
-                    <FaPlusCircle
-                      className="text-primary cursor-pointer inline-block text-md"
+                  <div className="flex gap-1 items-center mt-1">
+                    <p className="text-sm text-gray-600">
+                      Não encontrou a cor? Adicione uma nova{' '}
+                    </p>
+                    <button
+                      type="button"
                       onClick={() => setOpenColorForm(true)}
-                    />
-                  </p>
+                      className="text-primary cursor-pointer text-md"
+                    >
+                      <FaPlusCircle />
+                    </button>
+                  </div>
                 </GridItem>
                 <GridItem size={6}>
                   <InputLabel
@@ -474,7 +479,9 @@ export default function ProductVariationForm({
                   Cancelar
                 </PrimaryButton>
 
-                <PrimaryButton type="submit">Salvar Variação</PrimaryButton>
+                <PrimaryButton type="button" onClick={submit}>
+                  Salvar Variação
+                </PrimaryButton>
               </div>
             </form>
           </Card>
