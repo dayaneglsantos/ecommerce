@@ -50,6 +50,10 @@ class ProductResource extends JsonResource
               'oldPrice' => $variation->old_price,
               'stockQuantity' => $variation->stock_quantity,
               'sku' => $variation->sku,
+              'pixDiscount' => [
+                'type' => $variation->pix_discount_type,
+                'value' => $variation->pix_discount_value,
+              ]
             ];
           }),
           'images' => $images?->filter(function ($img) use ($colorData) {

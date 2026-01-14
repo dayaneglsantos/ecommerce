@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\AttributeValue;
+use App\Models\ProductVariation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,15 +11,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProductVariationAttributeFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            //
-        ];
-    }
+  /**
+   * Define the model's default state.
+   *
+   * @return array<string, mixed>
+   */
+  public function definition(): array
+  {
+    return [
+      //
+    ];
+  }
 }

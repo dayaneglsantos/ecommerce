@@ -76,44 +76,45 @@ export default function ProductVariationForm({
     images_to_delete: [] as number[],
   });
 
-  // useEffect(() => {
-  //   if (variation) {
-  //     setData('color', variation.color);
-  //     setData('size', variation.size);
-  //     setData('price', parseFloat(variation.price.toString()).toFixed(2));
-  //     setData(
-  //       'old_price',
-  //       variation.oldPrice
-  //         ? parseFloat(variation.oldPrice.toString()).toFixed(2)
-  //         : ''
-  //     );
-  //     setData('stock_quantity', variation.stockQuantity.toString());
-  //     setData('sku', variation.sku);
-  //     setData('supplier_id', (variation?.supplier?.id as any) || '');
-  //     setData('pix_discount_type', variation.pixDiscountType || '');
-  //     setData(
-  //       'pix_discount_value',
-  //       variation.pixDiscountType === 'fixed'
-  //         ? parseFloat(variation?.pixDiscountValue?.toString() || '0').toFixed(
-  //             2
-  //           )
-  //         : variation?.pixDiscountValue?.toString() || ''
-  //     );
-  //     setData(
-  //       'images',
-  //       (variation?.images.map((image) => ({
-  //         id: image.id,
-  //         preview: image.url,
-  //         uid: crypto.randomUUID(),
-  //       })) as {
-  //         id?: number;
-  //         file?: File;
-  //         preview?: string;
-  //         uid?: string;
-  //       }[]) || []
-  //     );
-  //   }
-  // }, [variation]);
+  useEffect(() => {
+    if (selectedSize && variation) {
+      console.log(selectedSize);
+      setData('color', variation.color);
+      setData('size', selectedSize.size);
+      setData('price', parseFloat(selectedSize.price.toString()).toFixed(2));
+      setData(
+        'old_price',
+        selectedSize.oldPrice
+          ? parseFloat(selectedSize.oldPrice.toString()).toFixed(2)
+          : ''
+      );
+      setData('stock_quantity', selectedSize.stockQuantity.toString());
+      setData('sku', selectedSize.sku);
+      // setData('supplier_id', (variation?.supplier?.id as any) || '');
+      setData('pix_discount_type', selectedSize.pixDiscount.type || '');
+      setData(
+        'pix_discount_value',
+        selectedSize.pixDiscount.type === 'fixed'
+          ? parseFloat(
+              selectedSize?.pixDiscount.value?.toString() || '0'
+            ).toFixed(2)
+          : selectedSize?.pixDiscount.value?.toString() || ''
+      );
+      setData(
+        'images',
+        (variation?.images.map((image) => ({
+          id: image.id,
+          preview: image.url,
+          uid: crypto.randomUUID(),
+        })) as {
+          id?: number;
+          file?: File;
+          preview?: string;
+          uid?: string;
+        }[]) || []
+      );
+    }
+  }, [selectedSize]);
 
   // ==================== Envio do formulário para o backend ====================
   const submit = (e: React.FormEvent) => {
@@ -289,63 +290,54 @@ export default function ProductVariationForm({
                   </button>
                 </div>
               )}
-              {/* {newForm && (
-              <div className="flex items-center gap-3 absolute top-4 right-4">
-                <Checkbox
-                  onChange={(e) => setData('is_default', e.target.checked)}
-                  checked={data.is_default}
-                  disabled={product.variations.length === 0}
-                  id="defaultCheckbox"
-                />
-                <InputLabel
-                  htmlFor="defaultCheckbox"
-                  value="Produto principal"
-                  className={`${
-                    product.variations.length === 0 ? '!text-gray-400' : ''
-                  }`}
-                />
-              </div>
-            )} */}
               <GridContainer gap={3}>
-                <GridItem size={6}>
-                  <InputLabel htmlFor="color" value="Cor" className="mt-4" />
-                  <SelectInput
-                    options={colorOptions}
-                    value={data.color}
-                    onChange={(e) => setData('color', e)}
-                    placeholder="Selecione uma cor"
-                  />
-                  <InputError className="mt-2" message={errors.color} />
-                  <div className="flex gap-1 items-center mt-1">
-                    <p className="text-sm text-gray-600">
-                      Não encontrou a cor? Adicione uma nova{' '}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setOpenColorForm(true)}
-                      className="text-primary cursor-pointer text-md"
-                    >
-                      <FaPlusCircle />
-                    </button>
-                  </div>
-                </GridItem>
-                <GridItem size={6}>
-                  <InputLabel
-                    htmlFor="size"
-                    value="Tamanho"
-                    className="mt-4"
-                    icon={<IoMdInformationCircle />}
-                    iconText="De acordo com o tipo do produto. Ex: P, M, G... ou 35, 36 ,37..."
-                  />
-                  <TextInput
-                    id="size"
-                    type="text"
-                    className="mt-1 block w-full"
-                    value={data.size}
-                    onChange={(e) => setData('size', e.target.value)}
-                  />
-                  <InputError className="mt-2" message={errors.size} />
-                </GridItem>
+                {!selectedSize && (
+                  <>
+                    <GridItem size={6}>
+                      <InputLabel
+                        htmlFor="color"
+                        value="Cor"
+                        className="mt-4"
+                      />
+                      <SelectInput
+                        options={colorOptions}
+                        value={data.color}
+                        onChange={(e) => setData('color', e)}
+                        placeholder="Selecione uma cor"
+                      />
+                      <InputError className="mt-2" message={errors.color} />
+                      <div className="flex gap-1 items-center mt-1">
+                        <p className="text-sm text-gray-600">
+                          Não encontrou a cor? Adicione uma nova{' '}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setOpenColorForm(true)}
+                          className="text-primary cursor-pointer text-md"
+                        >
+                          <FaPlusCircle />
+                        </button>
+                      </div>
+                    </GridItem>
+                    <GridItem size={6}>
+                      <InputLabel
+                        htmlFor="size"
+                        value="Tamanho"
+                        className="mt-4"
+                        icon={<IoMdInformationCircle />}
+                        iconText="De acordo com o tipo do produto. Ex: P, M, G... ou 35, 36 ,37..."
+                      />
+                      <TextInput
+                        id="size"
+                        type="text"
+                        className="mt-1 block w-full"
+                        value={data.size}
+                        onChange={(e) => setData('size', e.target.value)}
+                      />
+                      <InputError className="mt-2" message={errors.size} />
+                    </GridItem>
+                  </>
+                )}
 
                 <GridItem size={6}>
                   <InputLabel

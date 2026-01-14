@@ -33,7 +33,7 @@ class ProductSeeder extends Seeder
         return [
           'attribute_id' => $attributesValues->random()->id,
         ];
-      }), 'images')
+      }), 'productImages')
       ->create()
       ->each(function (Product $product) {
         // Define a variação padrão como a primeira variação criada

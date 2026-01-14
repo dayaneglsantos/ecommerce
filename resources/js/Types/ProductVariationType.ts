@@ -13,8 +13,10 @@ export default interface ProductVariationType {
     oldPrice: number | null;
     price: number;
     stockQuantity: number;
-    pixDiscountType: string | null;
-    pixDiscountValue: string | null;
+    pixDiscount: {
+      type: string | null;
+      value: string | null;
+    };
     sku: string;
     supplier: SupplierType | null;
   }[];

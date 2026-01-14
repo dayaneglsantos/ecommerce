@@ -42,6 +42,8 @@ export default function ProductFormPage() {
     });
   };
 
+  console.log(product);
+
   return (
     <>
       <GridContainer gap={6} className="mb-6">
