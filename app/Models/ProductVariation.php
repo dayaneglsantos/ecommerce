@@ -12,7 +12,6 @@ class ProductVariation extends Model
 
   protected $hidden = [
     'product_id',
-    'supplier_id',
     'created_at',
     'updated_at',
   ];
@@ -29,7 +28,6 @@ class ProductVariation extends Model
     'pix_discount_value',
     'sku',
     'technical_specifications',
-    'supplier_id',
   ];
 
   protected $casts = [
@@ -37,8 +35,6 @@ class ProductVariation extends Model
     'price' => 'integer',
     'pix_discount_value' => 'integer',
   ];
-
-  protected $with = ['supplier', 'product'];
 
   public function product()
   {
@@ -48,11 +44,6 @@ class ProductVariation extends Model
   public function attributes()
   {
     return $this->belongsToMany(AttributeValue::class, 'product_variation_attributes', 'product_variation_id', 'attribute_value_id');
-  }
-
-  public function supplier()
-  {
-    return $this->belongsTo(Supplier::class);
   }
 
   public function getPriceFormattedAttribute(): float

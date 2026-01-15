@@ -9,6 +9,7 @@ interface ConfirmDialogProps {
   onClose: () => void;
   acceptButtonText?: string;
   cancelButtonText?: string;
+  width?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
 export default function ConfirmDialog({
@@ -19,9 +20,10 @@ export default function ConfirmDialog({
   onClose,
   acceptButtonText = 'Confirmar',
   cancelButtonText = 'Cancelar',
+  width = 'sm',
 }: ConfirmDialogProps) {
   return (
-    <Modal show={open} onClose={onClose} layer={99}>
+    <Modal show={open} onClose={onClose} layer={99} maxWidth={width}>
       <h5 className="font-bold text-lg">{title}</h5>
       <p className="text-gray-700 my-3">{description}</p>
       <div className="flex gap-4 justify-end">

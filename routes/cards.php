@@ -4,7 +4,7 @@ use App\Http\Controllers\CardController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')
-  ->prefix('cards')
+  ->prefix('cartoes')
   ->name('cards.')
   ->group(function () {
     Route::post('/', [CardController::class, 'store'])->name('store');

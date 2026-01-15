@@ -4,7 +4,7 @@ use App\Http\Controllers\AddressController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')
-  ->prefix('address')
+  ->prefix('endereco')
   ->name('address.')
   ->group(function () {
     Route::post('/user/{userId}', [AddressController::class, 'userStore'])->name('createUserAddress');

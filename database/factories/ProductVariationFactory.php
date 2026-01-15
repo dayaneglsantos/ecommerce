@@ -21,7 +21,7 @@ class ProductVariationFactory extends Factory
     return [
       'old_price' => fake()->numberBetween(20, 600),
       'price' => fake()->numberBetween(10, 500),
-      'stock_quantity' => fake()->numberBetween(0, 100),
+      'stock_quantity' => 0,
       'pix_discount_type' => fake()->randomElement(['percentage', 'fixed']),
       'pix_discount_value' => fake()->numberBetween(0, 50),
       'sku' => fake()->unique()->bothify('SKU-#####'),

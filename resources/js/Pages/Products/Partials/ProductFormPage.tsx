@@ -21,7 +21,6 @@ export default function ProductFormPage() {
   const categories = usePage().props.categories as CategoryType[];
   const suppliers = usePage().props.suppliers as SupplierType[];
 
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [openVariationFormModal, setOpenVariationFormModal] = useState(false);
   const [selectedVariation, setSelectedVariation] =
     useState<ProductVariationType | null>(null);
@@ -55,10 +54,8 @@ export default function ProductFormPage() {
               setOpenVariationFormModal(false);
               setSelectedVariation(null);
             }}
-            suppliers={suppliers}
             variation={selectedVariation}
             handleCancelButton={() => setSelectedVariation(null)}
-            setOpenConfirmDialog={setOpenConfirmDialog}
             setSelectedVariation={setSelectedVariation}
           />
         </GridItem>
@@ -153,21 +150,6 @@ export default function ProductFormPage() {
           </button>
         </GridItem>
       </GridContainer>
-      {/* {selectedVariation && (
-        <ConfirmDialog
-          open={openConfirmDialog}
-          title="Tem certeza que deseja remover esta variação?"
-          onAccept={() => {
-            selectedVariation.id &&
-              handleDeleteVariation(selectedVariation?.id);
-            setOpenConfirmDialog(false);
-          }}
-          onClose={() => {
-            setOpenConfirmDialog(false);
-            setSelectedVariation(null);
-          }}
-        />
-      )} */}
     </>
   );
 }

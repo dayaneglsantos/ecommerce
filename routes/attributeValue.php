@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('auth')
-  ->prefix('attribute-values')
+  ->prefix('valor-atributo')
   ->name('attributeValue.')
   ->group(function () {
     // Route::get('/', [AttributeValueController::class, 'index'])->name('index');

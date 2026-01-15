@@ -8,7 +8,6 @@ import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import ProductType from '@/Types/ProductType';
 import ProductVariationType from '@/Types/ProductVariationType';
-import SupplierType from '@/Types/SupplierType';
 import { router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { FaPlusCircle, FaTrashAlt } from 'react-icons/fa';
@@ -22,22 +21,18 @@ import Modal from '@/Components/Modal';
 import ColorForm from './ColorForm';
 
 interface ProductVariationFormProps {
-  suppliers: SupplierType[];
   variation: ProductVariationType | null;
   setNewForm?: (newForm: boolean) => void;
   handleCancelButton?: () => void;
-  setOpenConfirmDialog?: (open: boolean) => void;
   setSelectedVariation?: (variation: ProductVariationType | null) => void;
   open: boolean;
   onClose: () => void;
 }
 
 export default function ProductVariationForm({
-  suppliers,
   variation,
   setNewForm,
   handleCancelButton,
-  setOpenConfirmDialog,
   setSelectedVariation,
   open,
   onClose,
@@ -45,6 +40,7 @@ export default function ProductVariationForm({
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [selectedSize, setSelectedSize] = useState(variation?.sizes[0] || null);
   const [openColorForm, setOpenColorForm] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   const product = usePage().props?.product as ProductType;
   const colors = usePage().props?.colors as any[];
@@ -61,9 +57,7 @@ export default function ProductVariationForm({
     size: '',
     price: '',
     old_price: '',
-    stock_quantity: '',
     sku: '',
-    supplier_id: '',
     pix_discount_type: 'percentage',
     pix_discount_value: '',
     is_default: product.variations.length === 0 ? true : false,
@@ -78,7 +72,6 @@ export default function ProductVariationForm({
 
   useEffect(() => {
     if (selectedSize && variation) {
-      console.log(selectedSize);
       setData('color', variation.color);
       setData('size', selectedSize.size);
       setData('price', parseFloat(selectedSize.price.toString()).toFixed(2));
@@ -88,9 +81,7 @@ export default function ProductVariationForm({
           ? parseFloat(selectedSize.oldPrice.toString()).toFixed(2)
           : ''
       );
-      setData('stock_quantity', selectedSize.stockQuantity.toString());
       setData('sku', selectedSize.sku);
-      // setData('supplier_id', (variation?.supplier?.id as any) || '');
       setData('pix_discount_type', selectedSize.pixDiscount.type || '');
       setData(
         'pix_discount_value',
@@ -172,12 +163,6 @@ export default function ProductVariationForm({
     }
   };
 
-  // ==================== Opções de fornecedores para o select ====================
-  const suppliersOptions = suppliers?.map((supplier) => ({
-    value: supplier.id,
-    label: supplier.name,
-  }));
-
   // ==================== Definir variação como padrão do produto no backend ====================
   const handleDefaultVariation = (variationId: number) => {
     router.patch(route('products.updateDefaultVariation', product.id), {
@@ -221,6 +206,18 @@ export default function ProductVariationForm({
     }
   };
 
+  // ==================== Deletar tamanho  ====================
+  const handleDeleteSize = () => {
+    if (selectedSize) {
+      router.delete(route('productVariation.destroy', selectedSize.id), {
+        onSuccess: () => {
+          setSelectedSize(null);
+          setOpenConfirmDialog && setOpenConfirmDialog(false);
+        },
+      });
+    }
+  };
+
   console.log(variation);
   console.log('data', data);
   console.log(errors);
@@ -253,7 +250,11 @@ export default function ProductVariationForm({
                   <button
                     type="button"
                     className="absolute -right-2 -bottom-2 bg-red-900 rounded-full text-white text-[10px] p-0.5"
-                    onClick={() => setSelectedSize(size)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSize(size);
+                      setOpenConfirmDialog(true);
+                    }}
                   >
                     <IoClose />
                   </button>
@@ -262,34 +263,12 @@ export default function ProductVariationForm({
             </div>
           </div>
         )}
-        {((variation && selectedSize) || !variation) && (
+        {((variation && selectedSize && !openConfirmDialog) || !variation) && (
           <Card className="w-full relative">
             <h3 className="font-bold text-lg text-primary-dark">
               Variação do Produto
             </h3>
             <form>
-              {variation && (
-                <div className="absolute top-4 right-4 flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedVariation && setSelectedVariation(variation);
-                      setOpenConfirmDialog && setOpenConfirmDialog(true);
-                    }}
-                  >
-                    <FaTrashAlt
-                      data-tooltip-id="delete"
-                      className={`cursor-pointer text-gray-500 outline-none hover:text-red-600`}
-                    />
-                    <Tooltip
-                      id="delete"
-                      place="top"
-                      content="Excluir"
-                      className="!p-2 !text-[12px]"
-                    />
-                  </button>
-                </div>
-              )}
               <GridContainer gap={3}>
                 {!selectedSize && (
                   <>
@@ -357,38 +336,6 @@ export default function ProductVariationForm({
                   <InputError className="mt-2" message={errors.sku} />
                 </GridItem>
                 <GridItem size={6}>
-                  <InputLabel
-                    htmlFor="supplier_id"
-                    value="Fornecedor"
-                    className="mt-4"
-                  />
-                  <SelectInput
-                    options={suppliersOptions}
-                    value={data.supplier_id}
-                    onChange={(e) => setData('supplier_id', e)}
-                    placeholder="Selecione um fornecedor"
-                  />
-                  <InputError className="mt-2" message={errors.supplier_id} />
-                </GridItem>
-                <GridItem size={6}>
-                  <InputLabel
-                    htmlFor="stock_quantity"
-                    value="Quantidade em estoque"
-                    className="mt-4"
-                  />
-                  <TextInput
-                    id="stock_quantity"
-                    type="text"
-                    value={data.stock_quantity}
-                    className="mt-1 block w-full"
-                    onChange={(e) => setData('stock_quantity', e.target.value)}
-                  />
-                  <InputError
-                    className="mt-2"
-                    message={errors.stock_quantity}
-                  />
-                </GridItem>
-                <GridItem size={6}>
                   <InputLabel htmlFor="price" value="Preço" className="mt-4" />
                   <TextInput
                     id="price"
@@ -436,7 +383,7 @@ export default function ProductVariationForm({
                         message={errors.pix_discount_value}
                       />
                     </div>
-                    <div className="self-end mb-2 ml-3">
+                    <div className="self-end mb-2 ml-3 mt-1">
                       <div className="flex items-center gap-1">
                         <Checkbox
                           onChange={(e) => {
@@ -513,6 +460,19 @@ export default function ProductVariationForm({
         )} */}
       </Modal>
       <ColorForm open={openColorForm} onClose={() => setOpenColorForm(false)} />
+
+      <ConfirmDialog
+        open={openConfirmDialog}
+        title="Tem certeza que deseja remover este tamanho?"
+        onAccept={() => {
+          handleDeleteSize();
+          setOpenConfirmDialog(false);
+        }}
+        onClose={() => {
+          setOpenConfirmDialog(false);
+          setSelectedSize(null);
+        }}
+      />
     </>
   );
 }

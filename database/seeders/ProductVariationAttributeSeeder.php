@@ -7,6 +7,8 @@ use App\Models\ProductVariation;
 use App\Models\ProductVariationAttribute;
 use Illuminate\Database\Seeder;
 
+use function PHPSTORM_META\type;
+
 class ProductVariationAttributeSeeder extends Seeder
 {
   /**
@@ -17,13 +19,25 @@ class ProductVariationAttributeSeeder extends Seeder
     $variations = ProductVariation::all();
     $attributeValues = AttributeValue::all();
 
+    $colorValues = $attributeValues->filter(function ($item) {
+      return strtolower($item?->attribute?->name) === 'cor';
+    })->values();
+
+    $sizeValues = $attributeValues->filter(function ($item) {
+      return strtolower($item?->attribute?->name) === 'tamanho';
+    })->values();
+
     foreach ($variations as $variation) {
-      $variation->attributes()->createMany(
-        ProductVariationAttribute::factory(2)->create([
+      ProductVariationAttribute::factory()->createMany([
+        [
           'product_variation_id' => $variation->id,
-          'attribute_value_id' => $attributeValues->random()->id,
-        ])->toArray()
-      );
+          'attribute_value_id' => $colorValues->random()->id,
+        ],
+        [
+          'product_variation_id' => $variation->id,
+          'attribute_value_id' => $sizeValues->random()->id,
+        ],
+      ])->toArray();
     }
   }
 }

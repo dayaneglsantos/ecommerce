@@ -36,7 +36,6 @@ class CreateVariationRequest extends FormRequest
       'pix_discount_value' => ['nullable', 'numeric', 'min:0'],
       'sku' => ['required', 'string', 'max:255', 'unique:product_variations,sku'],
       'technical_specifications' => ['nullable', 'array'],
-      'supplier_id' => ['required', 'exists:suppliers,id'],
       'is_default' => ['nullable', 'boolean'],
       'images' => ['required', 'array'],
       'images.*.file' => ['required', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB

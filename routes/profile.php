@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')
-  ->prefix('profile')
+  ->prefix('perfil')
   ->name('profile.')
   ->group(function () {
     Route::get('/', [ProfileController::class, 'edit'])->name('edit');

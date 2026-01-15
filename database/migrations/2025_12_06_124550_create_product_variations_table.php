@@ -20,7 +20,6 @@ return new class extends Migration
       $table->enum('pix_discount_type', ['percentage', 'fixed'])->default('fixed')->nullable();
       $table->unsignedInteger('pix_discount_value')->default(0)->nullable();
       $table->string('sku')->unique();
-      $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('set null');
       $table->timestamps();
     });
   }

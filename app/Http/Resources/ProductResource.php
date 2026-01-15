@@ -23,9 +23,11 @@ class ProductResource extends JsonResource
     // ======= Agrupamento das variações por cor =======
     $groupedVariations = $variations->groupBy(function ($variation) {
 
-      $colorAttribute = $variation->attributeValues->first(function ($attrValue) {
-        return $attrValue?->attribute?->name === 'cor';
+
+      $colorAttribute = $variation->attributes->first(function ($attrValue) {
+        return strtolower($attrValue?->attribute?->name) === 'cor';
       }); // Obtém o valor do atributo de cor
+
 
       return $colorAttribute?->id;
     }) // Agrupa as variações pelo ID do atributo de cor
@@ -33,15 +35,16 @@ class ProductResource extends JsonResource
 
         $firstItem = $item->first(); // Pega a primeira variação para obter os dados da cor (que são os mesmos para todas as variações do grupo, por isso pegamos apenas a primeira)
 
-        $colorData = $firstItem->attributeValues->first(function ($attrValue) {
-          return $attrValue?->attribute?->name === 'cor';
+        $colorData = $firstItem->attributes->first(function ($attrValue) {
+          return strtolower($attrValue?->attribute?->name) === 'cor';
         }); // Obtém o valor do atributo de cor (nome e id)
+        // dd($colorData);
 
         return [
           'color' => $colorData?->value,
           'sizes' => $item->map(function ($variation) {
-            $sizeData = $variation->attributeValues->first(function ($attrValue) {
-              return $attrValue->attribute && strtolower($attrValue->attribute->name) === 'tamanho';
+            $sizeData = $variation->attributes->first(function ($attrValue) {
+              return strtolower($attrValue?->attribute?->name) === 'tamanho';
             }); // pega o valor do atributo de tamanho
             return [
               'id' => $variation->id,

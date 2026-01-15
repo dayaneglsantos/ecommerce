@@ -126,23 +126,22 @@ class ProductVariationController extends Controller
   public function destroy(ProductVariation $productVariation)
   {
     try {
+      // DB::transaction(function () use ($productVariation) {
+      //   $productVariations = $productVariation->product->variations;
+      //   // Definir a outra variação como padrão quando a variação padrão for excluída e houver apenas duas variações
+      //   if ($productVariations->count() === 2 && $productVariation->product->default_variation_id === $productVariation->id) {
+      //     $otherVariation = $productVariations->firstWhere('id', '!=', $productVariation->id);
+      //     $productVariation->product->default_variation_id = $otherVariation->id;
+      //     $productVariation->product->save();
+      //   }
 
-      DB::transaction(function () use ($productVariation) {
-        $productVariations = $productVariation->product->variations;
-        // Definir a outra variação como padrão quando a variação padrão for excluída e houver apenas duas variações
-        if ($productVariations->count() === 2 && $productVariation->product->default_variation_id === $productVariation->id) {
-          $otherVariation = $productVariations->firstWhere('id', '!=', $productVariation->id);
-          $productVariation->product->default_variation_id = $otherVariation->id;
-          $productVariation->product->save();
-        }
+      //   // 1. Deleta as imagens manualmente para disparar o Observer de cada imagem
+      //   foreach ($productVariation->images as $image) {
+      //     $image->delete();
+      //   }
 
-        // 1. Deleta as imagens manualmente para disparar o Observer de cada imagem
-        foreach ($productVariation->images as $image) {
-          $image->delete();
-        }
-
-        $productVariation->delete();
-      });
+      //   $productVariation->delete();
+      // });
 
 
 
@@ -150,6 +149,7 @@ class ProductVariationController extends Controller
 
       return redirect()->back()->with('success', 'Variação do produto excluída com sucesso!');
     } catch (\Exception $e) {
+      dd($e->getMessage());
       return redirect()->back()->with('error', 'Erro ao excluir variação do produto.');
     }
   }

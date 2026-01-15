@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('auth')
+  ->prefix('variacao-produto')
   ->name('productVariation.')
   ->group(function () {
     Route::post('/', [ProductVariationController::class, 'store'])->name('store');
