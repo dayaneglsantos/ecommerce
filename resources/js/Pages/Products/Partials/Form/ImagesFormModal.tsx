@@ -2,8 +2,11 @@ import InputError from '@/Components/InputError';
 import { useForm } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
 import SortableImages from './SortableImages';
+import Modal from '@/Components/Modal';
 
 interface ImagesFormProps {
+  open: boolean;
+  onClose: () => void;
   color?: {
     id: number;
     value: string;
@@ -11,7 +14,12 @@ interface ImagesFormProps {
   newColorId?: number;
 }
 
-export default function ImagesForm({ color, newColorId }: ImagesFormProps) {
+export default function ImagesFormModal({
+  color,
+  newColorId,
+  open,
+  onClose,
+}: ImagesFormProps) {
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const { data, errors, setData, reset } = useForm({
@@ -74,7 +82,7 @@ export default function ImagesForm({ color, newColorId }: ImagesFormProps) {
   console.log('color', color);
 
   return (
-    <>
+    <Modal show={open} onClose={onClose} layer={2}>
       <input
         type="file"
         multiple
@@ -83,15 +91,6 @@ export default function ImagesForm({ color, newColorId }: ImagesFormProps) {
         ref={imageInputRef}
         onChange={(e) => handleAddImage(e)}
       />
-      {data.images.length === 0 && (
-        <button
-          type="button"
-          className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold`}
-          onClick={() => imageInputRef.current?.click()}
-        >
-          Adicionar imagens
-        </button>
-      )}
       {errors.images && (
         <InputError
           className="mt-2"
@@ -99,19 +98,17 @@ export default function ImagesForm({ color, newColorId }: ImagesFormProps) {
         />
       )}
 
-      {data.images && data.images.length > 0 && (
-        <>
-          <h4 className="text-primary font-bold mt-5 ">
-            Imagens <span className="">{color?.value}</span>
-          </h4>
-          <SortableImages
-            images={data.images}
-            handleDelete={handleDeleteImage}
-            setImages={setData}
-            addImage={() => imageInputRef.current?.click()}
-          />
-        </>
-      )}
-    </>
+      <>
+        <h3 className="text-primary text-lg font-bold mt-5 ">
+          Imagens <span className="">{color?.value}</span>
+        </h3>
+        <SortableImages
+          images={data.images}
+          handleDelete={handleDeleteImage}
+          setImages={setData}
+          addImage={() => imageInputRef.current?.click()}
+        />
+      </>
+    </Modal>
   );
 }

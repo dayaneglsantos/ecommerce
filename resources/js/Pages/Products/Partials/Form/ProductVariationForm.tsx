@@ -16,8 +16,8 @@ import { IoClose } from 'react-icons/io5';
 import { GridContainer, GridItem } from '@/Components/Grid';
 import Modal from '@/Components/Modal';
 import ColorForm from './ColorForm';
-import ImagesForm from './ImagesForm';
-import Badge from '@/Components/Badge';
+import { FaCircleInfo } from 'react-icons/fa6';
+import ImagesFormModal from './ImagesFormModal';
 
 interface ProductVariationFormProps {
   variation: ProductVariationType | null;
@@ -39,6 +39,7 @@ export default function ProductVariationForm({
   const [selectedSize, setSelectedSize] = useState(variation?.sizes[0] || null);
   const [openColorForm, setOpenColorForm] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [openImagesModal, setOpenImagesModal] = useState(false);
 
   const product = usePage().props?.product as ProductType;
   const colors = usePage().props?.colors as any[];
@@ -248,8 +249,8 @@ export default function ProductVariationForm({
                     </GridItem>
                     <GridItem size={6}>
                       <InputLabel
-                        htmlFor="color"
-                        value="Cor"
+                        htmlFor="size"
+                        value="Tamanho"
                         className="mt-4"
                       />
                       <SelectInput
@@ -265,7 +266,7 @@ export default function ProductVariationForm({
                         </p>
                         <button
                           type="button"
-                          onClick={() => setOpenColorForm(true)}
+                          // onClick={() => setOpenColorForm(true)}
                           className="text-primary cursor-pointer text-md"
                         >
                           <FaPlusCircle />
@@ -376,14 +377,49 @@ export default function ProductVariationForm({
                 </PrimaryButton>
 
                 <PrimaryButton type="button" onClick={submit}>
-                  Salvar Variação
+                  Salvar cor
                 </PrimaryButton>
               </div>
             </form>
           </Card>
         )}
         {/* Imagens */}
-        <ImagesForm color={variation?.color} newColorId={data.color} />
+        <button
+          type="button"
+          className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold ${
+            !variation ? 'opacity-50' : 'cursor-pointer hover:bg-gray-100'
+          }`}
+          onClick={() => setOpenImagesModal(true)}
+          disabled={!variation}
+        >
+          Adicionar imagens
+        </button>
+        {!variation && (
+          <p className="mt-2 text-gray-500 text-sm text-center">
+            <FaCircleInfo className="inline-block mr-1" />
+            Você poderá adicionar as imagens após salvar a nova cor.
+          </p>
+        )}
+        {variation && variation?.images?.length > 0 && (
+          <GridContainer gap={3} className="mt-6">
+            <GridItem size={3} className="border border-gray-300 rounded-md">
+              {variation?.images.map((image) => (
+                <img
+                  key={image.id}
+                  src={image.url}
+                  alt={`Imagem da variação ${variation.color.value}`}
+                  className="w-full h-24 object-cover rounded-md"
+                />
+              ))}
+            </GridItem>
+          </GridContainer>
+        )}
+        <ImagesFormModal
+          open={openImagesModal}
+          onClose={() => setOpenImagesModal(false)}
+          color={variation?.color}
+          newColorId={data.color}
+        />
       </Modal>
 
       <ColorForm open={openColorForm} onClose={() => setOpenColorForm(false)} />
