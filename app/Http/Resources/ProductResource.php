@@ -23,7 +23,6 @@ class ProductResource extends JsonResource
     // ======= Agrupamento das variações por cor =======
     $groupedVariations = $variations->groupBy(function ($variation) {
 
-
       $colorAttribute = $variation->attributes->first(function ($attrValue) {
         return strtolower($attrValue?->attribute?->name) === 'cor';
       }); // Obtém o valor do atributo de cor
@@ -41,7 +40,10 @@ class ProductResource extends JsonResource
         // dd($colorData);
 
         return [
-          'color' => $colorData?->value,
+          'color' => [
+            'id' => $colorData?->id,
+            'value' => $colorData?->value,
+          ],
           'sizes' => $item->map(function ($variation) {
             $sizeData = $variation->attributes->first(function ($attrValue) {
               return strtolower($attrValue?->attribute?->name) === 'tamanho';
@@ -49,13 +51,13 @@ class ProductResource extends JsonResource
             return [
               'id' => $variation->id,
               'size' => $sizeData?->value,
-              'price' => $variation->price,
-              'oldPrice' => $variation->old_price,
+              'price' => $variation->price_formatted,
+              'oldPrice' => $variation->old_price_formatted,
               'stockQuantity' => $variation->stock_quantity,
               'sku' => $variation->sku,
               'pixDiscount' => [
                 'type' => $variation->pix_discount_type,
-                'value' => $variation->pix_discount_value,
+                'value' => $variation->pix_discount_value_formatted,
               ]
             ];
           }),

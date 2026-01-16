@@ -79,7 +79,7 @@ export default function SelectInput({
             <FaCaretDown className="text-gray-400" />
           </div>
         </ListboxButton>
-        {options.length > 0 && (
+        {options?.length > 0 ? (
           <ListboxOptions
             className={`absolute z-10 w-full bg-gray-100 p-2 rounded-b-md outline-none mt-1 transition duration-100 ease-out max-h-[200px] overflow-y-auto shadow-full`}
             modal={false}
@@ -100,6 +100,17 @@ export default function SelectInput({
                 </div>
               </ListboxOption>
             ))}
+          </ListboxOptions>
+        ) : (
+          <ListboxOptions
+            className={`absolute z-10 w-full bg-gray-100 p-2 rounded-b-md outline-none mt-1 transition duration-100 ease-out max-h-[200px] overflow-y-auto shadow-full`}
+            modal={false}
+          >
+            <ListboxOption className={`p-1 px-2 rounded-md`} value={''}>
+              <div className="flex items-center justify-between text-gray-400">
+                <span>Nenhuma opção disponível</span>
+              </div>
+            </ListboxOption>
           </ListboxOptions>
         )}
       </Listbox>

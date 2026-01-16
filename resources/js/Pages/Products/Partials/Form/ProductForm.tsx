@@ -10,12 +10,13 @@ import ProductType from '@/Types/ProductType';
 import { router, useForm, usePage } from '@inertiajs/react';
 import { Editor } from '@tinymce/tinymce-react';
 import { useEffect, useState } from 'react';
-import { FaTrashAlt } from 'react-icons/fa';
+import { FaPlusCircle, FaTrashAlt } from 'react-icons/fa';
 import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
 import { Tooltip } from 'react-tooltip';
 
 export default function ProductForm({ brands, categories }: any) {
   const product = usePage().props.product as ProductType;
+
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [specificationName, setSpecificationName] = useState('');
   const [specificationDescription, setSpecificationDescription] = useState('');
@@ -257,6 +258,7 @@ export default function ProductForm({ brands, categories }: any) {
           />
           <InputError className="mt-2" message={errors.full_description} />
         </div>
+
         <h4 className="font-bold mt-5  text-primary">
           Espeficicações técnicas
         </h4>

@@ -36,6 +36,6 @@ class AttributeValue extends Model
   // Possuem várias variações de produtos
   public function productVariations()
   {
-    return $this->belongsToMany(ProductVariationAttribute::class, 'product_variation_attributes');
+    return $this->belongsToMany(ProductVariationAttribute::class, 'attribute_value_id');
   }
 }

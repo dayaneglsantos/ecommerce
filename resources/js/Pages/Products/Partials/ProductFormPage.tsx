@@ -78,7 +78,7 @@ export default function ProductFormPage() {
                       <GridContainer gap={2}>
                         <GridItem size={6}>
                           <p className="font-bold">Cor:</p>
-                          <p>{variation.color}</p>
+                          <p>{variation.color.value}</p>
                         </GridItem>
 
                         <GridItem size={6}>

@@ -13,12 +13,11 @@ import { useEffect, useRef, useState } from 'react';
 import { FaPlusCircle, FaTrashAlt } from 'react-icons/fa';
 import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
 import { IoClose } from 'react-icons/io5';
-import { Tooltip } from 'react-tooltip';
-import SortableImages from './SortableImages';
-import { parse } from 'path';
 import { GridContainer, GridItem } from '@/Components/Grid';
 import Modal from '@/Components/Modal';
 import ColorForm from './ColorForm';
+import ImagesForm from './ImagesForm';
+import Badge from '@/Components/Badge';
 
 interface ProductVariationFormProps {
   variation: ProductVariationType | null;
@@ -37,42 +36,49 @@ export default function ProductVariationForm({
   open,
   onClose,
 }: ProductVariationFormProps) {
-  const imageInputRef = useRef<HTMLInputElement>(null);
   const [selectedSize, setSelectedSize] = useState(variation?.sizes[0] || null);
   const [openColorForm, setOpenColorForm] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   const product = usePage().props?.product as ProductType;
   const colors = usePage().props?.colors as any[];
+  const sizes = usePage().props?.sizes as any[];
 
-  const colorOptions = colors?.map((color) => ({
-    value: color.id,
-    label: color.value,
+  const productColorIds = product?.variations.map(
+    (variation) => variation.color.id
+  );
+
+  // Opção de cores excluindo as cores já adicionadas ao produto
+  const colorOptions = colors
+    .filter((color) => {
+      return !productColorIds.includes(color.id);
+    })
+    .map((color) => ({
+      value: color.id,
+      label: color.value,
+    }));
+
+  const sizeOptions = sizes?.map((size) => ({
+    value: size.id,
+    label: size.value,
   }));
 
   // ==================== Configuração do formulário ====================
   const { data, setData, reset, post, errors, patch, setError } = useForm({
-    product_id: product.id || '',
-    color: '',
+    product_id: product.id,
+    color: 0,
     size: '',
     price: '',
     old_price: '',
     sku: '',
     pix_discount_type: 'percentage',
     pix_discount_value: '',
-    is_default: product.variations.length === 0 ? true : false,
-    images: [] as {
-      id?: number;
-      file?: File;
-      preview?: string;
-      uid?: string;
-    }[],
-    images_to_delete: [] as number[],
+    is_default: product?.variations?.length === 0 ? true : false,
   });
 
   useEffect(() => {
     if (selectedSize && variation) {
-      setData('color', variation.color);
+      setData('color', variation.color.id);
       setData('size', selectedSize.size);
       setData('price', parseFloat(selectedSize.price.toString()).toFixed(2));
       setData(
@@ -91,19 +97,6 @@ export default function ProductVariationForm({
             ).toFixed(2)
           : selectedSize?.pixDiscount.value?.toString() || ''
       );
-      setData(
-        'images',
-        (variation?.images.map((image) => ({
-          id: image.id,
-          preview: image.url,
-          uid: crypto.randomUUID(),
-        })) as {
-          id?: number;
-          file?: File;
-          preview?: string;
-          uid?: string;
-        }[]) || []
-      );
     }
   }, [selectedSize]);
 
@@ -111,27 +104,19 @@ export default function ProductVariationForm({
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const imagesWithPosition = data.images.map((img, index) => ({
-      ...img,
-      position: index + 1,
-    }));
-
-    const payload = {
-      ...data,
-      images: imagesWithPosition,
-    };
-
-    if (variation) {
+    if (selectedSize) {
       router.post(
-        route('productVariation.update', variation.id),
+        route('productVariation.update', selectedSize.id),
         {
-          ...payload,
+          ...data,
           _method: 'PATCH',
         },
         {
           preserveScroll: true,
           onSuccess: () => {
             setSelectedVariation && setSelectedVariation(null);
+            onClose();
+            reset();
           },
           onError: (errors) => {
             Object.keys(errors).forEach((key: any) => {
@@ -143,13 +128,13 @@ export default function ProductVariationForm({
     } else {
       router.post(
         route('productVariation.store'),
-        { ...payload },
+        { ...data },
         {
           preserveScroll: true,
           onSuccess: () => {
             if (!variation && handleCancelButton) {
               handleCancelButton();
-              setNewForm && setNewForm(false);
+              onClose();
               reset();
             }
           },
@@ -170,42 +155,6 @@ export default function ProductVariationForm({
     });
   };
 
-  // ==================== Adicionar nova imagem ao formulário ====================
-  const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    const filesArray = Array.from(files);
-
-    filesArray.forEach((file: File, index: number) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setData('images', [
-          ...data.images,
-          { file, preview: reader.result as string, uid: crypto.randomUUID() },
-        ]);
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  // ==================== Deletar imagem do formulário ====================
-  const handleDeleteImage = (image: any) => {
-    // Adicionar ao formulário o id para deletar no backend
-    if (image.id) {
-      setData('images_to_delete', [...data.images_to_delete, image.id]);
-      setData(
-        'images',
-        data.images.filter((img: any) => img.id !== image.id)
-      );
-    } else {
-      // Remover do formulário de novas imagens
-      setData(
-        'images',
-        data.images.filter((img: any) => image.file.name !== img.file.name)
-      );
-    }
-  };
-
   // ==================== Deletar tamanho  ====================
   const handleDeleteSize = () => {
     if (selectedSize) {
@@ -218,10 +167,6 @@ export default function ProductVariationForm({
     }
   };
 
-  console.log(variation);
-  console.log('data', data);
-  console.log(errors);
-
   return (
     <>
       <Modal
@@ -233,6 +178,9 @@ export default function ProductVariationForm({
         }}
         layer={0}
       >
+        <div className="flex justify-center bg-gray-200 rounded-md text-md font-medium mb-3 py-1 text-gray-600 shadow-full">
+          {variation ? `Cor: ${variation?.color.value}` : 'Nova cor'}
+        </div>
         {variation && (
           <div className="mb-5">
             <h4 className="mb-1 font-medium">Qual tamanho quer editar?</h4>
@@ -287,7 +235,7 @@ export default function ProductVariationForm({
                       <InputError className="mt-2" message={errors.color} />
                       <div className="flex gap-1 items-center mt-1">
                         <p className="text-sm text-gray-600">
-                          Não encontrou a cor? Adicione uma nova{' '}
+                          Não encontrou a cor? Adicionar nova{' '}
                         </p>
                         <button
                           type="button"
@@ -300,20 +248,29 @@ export default function ProductVariationForm({
                     </GridItem>
                     <GridItem size={6}>
                       <InputLabel
-                        htmlFor="size"
-                        value="Tamanho"
+                        htmlFor="color"
+                        value="Cor"
                         className="mt-4"
-                        icon={<IoMdInformationCircle />}
-                        iconText="De acordo com o tipo do produto. Ex: P, M, G... ou 35, 36 ,37..."
                       />
-                      <TextInput
-                        id="size"
-                        type="text"
-                        className="mt-1 block w-full"
+                      <SelectInput
+                        options={sizeOptions}
                         value={data.size}
-                        onChange={(e) => setData('size', e.target.value)}
+                        onChange={(e) => setData('size', e)}
+                        placeholder="Selecione um tamanho"
                       />
                       <InputError className="mt-2" message={errors.size} />
+                      <div className="flex gap-1 items-center mt-1">
+                        <p className="text-sm text-gray-600">
+                          Não encontrou o tamanho? Adicionar novo
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setOpenColorForm(true)}
+                          className="text-primary cursor-pointer text-md"
+                        >
+                          <FaPlusCircle />
+                        </button>
+                      </div>
                     </GridItem>
                   </>
                 )}
@@ -425,40 +382,10 @@ export default function ProductVariationForm({
             </form>
           </Card>
         )}
-        {/* ======================== IMAGENS ======================== */}
-        <input
-          type="file"
-          multiple
-          className="hidden"
-          accept="image/*"
-          ref={imageInputRef}
-          onChange={(e) => handleAddImage(e)}
-        />
-        <button
-          type="button"
-          className={`w-full p-2 border border-dashed border-gray-400 rounded-2xl mt-6 text-center text-gray-500 font-bold`}
-          onClick={() => imageInputRef.current?.click()}
-        >
-          Adicionar imagem
-        </button>
-        {errors.images && (
-          <InputError
-            className="mt-2"
-            message="Você deve adicionar pelo menos uma imagem."
-          />
-        )}
-
-        {/* {data.images && data.images.length > 0 && (
-          <>
-            <h4 className="text-primary font-bold mt-5 ">Imagens</h4>
-            <SortableImages
-              images={data.images}
-              handleDelete={handleDeleteImage}
-              setImages={setData}
-            />
-          </>
-        )} */}
+        {/* Imagens */}
+        <ImagesForm color={variation?.color} newColorId={data.color} />
       </Modal>
+
       <ColorForm open={openColorForm} onClose={() => setOpenColorForm(false)} />
 
       <ConfirmDialog

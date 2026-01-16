@@ -26,20 +26,16 @@ class CreateVariationRequest extends FormRequest
   {
     return [
       'product_id' => ['required', 'exists:products,id'],
-      'color' => ['required', 'string', 'max:255'],
-      'color_code' => ['required', 'string', 'max:7'],
-      'size' => ['required', 'string', 'max:10'],
+      'color' => ['required', 'exists:attribute_values,id'],
+      'size' => ['required', 'exists:attribute_values,id'],
       'price' => ['required', 'numeric', 'min:0'],
       'old_price' => ['nullable', 'numeric', 'min:0'],
-      'stock_quantity' => ['required', 'integer', 'min:0'],
       'pix_discount_type' => ['nullable', 'string', 'in:percentage,fixed'],
       'pix_discount_value' => ['nullable', 'numeric', 'min:0'],
       'sku' => ['required', 'string', 'max:255', 'unique:product_variations,sku'],
-      'technical_specifications' => ['nullable', 'array'],
-      'is_default' => ['nullable', 'boolean'],
-      'images' => ['required', 'array'],
-      'images.*.file' => ['required', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
-      'images.*.position' => ['required', 'integer', 'min:1'], // posição da imagem na ordem
+      // 'images' => ['required', 'array'],
+      // 'images.*.file' => ['required', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
+      // 'images.*.position' => ['required', 'integer', 'min:1'], // posição da imagem na ordem
     ];
   }
 

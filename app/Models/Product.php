@@ -29,6 +29,7 @@ class Product extends Model
     'full_description',
     'brand_id',
     'category_id',
+    'technical_specifications',
   ];
 
   protected $with = ['brand', 'category'];

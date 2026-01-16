@@ -25,22 +25,17 @@ class EditVariationRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'color' => ['required', 'string', 'max:255'],
-      'color_code' => ['required', 'string', 'max:7'],
-      'size' => ['required', 'string', 'max:10'],
       'price' => ['required', 'numeric', 'min:0'],
       'old_price' => ['nullable', 'numeric', 'min:0'],
-      'stock_quantity' => ['required', 'integer', 'min:0'],
       'pix_discount_type' => ['nullable', 'string', 'in:percentage,fixed'],
       'pix_discount_value' => ['nullable', 'numeric', 'min:0'],
       'sku' => ['required', 'string', 'max:255', Rule::unique('product_variations', 'sku')->ignore($this->productVariation)],
-      'technical_specifications' => ['nullable', 'array'],
-      'images' => ['required', 'array'],
-      'images.*.file' => ['nullable', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
-      'images.*.position' => ['required', 'integer', 'min:1'], // posição da imagem na ordem
-      'images.*.id' => ['nullable', 'integer', 'exists:product_images,id'], // id da imagem existente
-      'images_to_delete' => ['nullable', 'array'],
-      'images_to_delete.*' => ['integer', 'exists:product_images,id'],
+      // 'images' => ['required', 'array'],
+      // 'images.*.file' => ['nullable', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
+      // 'images.*.position' => ['required', 'integer', 'min:1'], // posição da imagem na ordem
+      // 'images.*.id' => ['nullable', 'integer', 'exists:product_images,id'], // id da imagem existente
+      // 'images_to_delete' => ['nullable', 'array'],
+      // 'images_to_delete.*' => ['integer', 'exists:product_images,id'],
     ];
   }
 

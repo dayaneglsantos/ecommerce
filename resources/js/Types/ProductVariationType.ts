@@ -5,7 +5,10 @@ import SupplierType from './SupplierType';
 export default interface ProductVariationType {
   id: number;
   product: ProductType;
-  color: string;
+  color: {
+    id: number;
+    value: string;
+  };
   images: ProductImagesType[];
   sizes: {
     id: number;

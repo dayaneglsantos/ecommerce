@@ -74,6 +74,8 @@ class ProductController extends Controller
     $product->load('productImages');
     $colorAttributeId = Attribute::where('name', Str::lower('cor'))->first()->id;
     $colors = AttributeValue::all()->where('attribute_id', $colorAttributeId)->values();
+    $sizeAttributeId = Attribute::where('name', Str::lower('tamanho'))->first()->id;
+    $sizes = AttributeValue::all()->where('attribute_id', $sizeAttributeId)->values();
 
     return Inertia::render('Products/index', [
       'brands' => $brands,
@@ -81,6 +83,8 @@ class ProductController extends Controller
       'product' => new ProductResource($product->load('variations', 'defaultVariation')),
       'colors' => $colors,
       'colorAttributeId' => $colorAttributeId,
+      'sizes' => $sizes,
+      'sizeAttributeId' => $sizeAttributeId,
     ]);
   }
 

@@ -73,7 +73,7 @@ export default function ColorForm({ open, onClose }: ColorFormProps) {
       </form>
       <h5 className="mt-12">Cores disponíveis:</h5>
       <div className="flex gap-2 flex-wrap mt-2">
-        {colors.map((color) => (
+        {colors?.map((color) => (
           <div className="p-1 bg-gray-200 rounded-full w-fit flex items-center gap-2">
             <span>{color.value}</span>
 

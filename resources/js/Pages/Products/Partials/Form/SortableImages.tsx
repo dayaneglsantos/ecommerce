@@ -15,12 +15,14 @@ interface SortableImagesProps {
   images: ReceivedImageType[];
   handleDelete: (image: ReceivedImageType) => void;
   setImages: any;
+  addImage?: () => void;
 }
 
 export default function SortableImages({
   images,
   handleDelete,
   setImages,
+  addImage,
 }: SortableImagesProps) {
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
@@ -44,6 +46,12 @@ export default function SortableImages({
               handleDelete={handleDelete}
             />
           ))}
+          <div
+            className="col-span-2 relative shadow-full rounded-lg h-40 flex items-center justify-center border-2 border-dashed border-gray-300 text-[24px] text-gray-400 cursor-pointer"
+            onClick={addImage}
+          >
+            +
+          </div>
         </div>
       </SortableContext>
     </DndContext>

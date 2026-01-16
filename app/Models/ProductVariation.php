@@ -58,7 +58,7 @@ class ProductVariation extends Model
       : null;
   }
 
-  public function getPixDiscountFormattedAttribute(): ?float
+  public function getPixDiscountValueFormattedAttribute(): ?float
   {
     if ($this->pix_discount_type !== 'fixed') {
       return $this->pix_discount_value;

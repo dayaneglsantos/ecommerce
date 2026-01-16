@@ -1,13 +1,13 @@
 interface BadgeProps {
   children: React.ReactNode;
-  type: 'success' | 'warning' | 'error' | 'info';
+  type?: 'default' | 'success' | 'warning' | 'error' | 'info';
   className?: string;
   size?: 'sm' | 'md' | 'lg';
 }
 
 export default function Badge({
   children,
-  type,
+  type = 'default',
   className = '',
   size = 'md',
   ...props
@@ -17,6 +17,7 @@ export default function Badge({
     warning: 'bg-orange-100 text-orange-800',
     error: 'bg-red-100 text-red-800',
     info: 'bg-cyan-100 text-cyan-800',
+    default: 'bg-gray-200 text-gray-800',
   };
   const sizeClasses = {
     sm: 'text-[11px] px-1 py-0.5',
@@ -27,7 +28,7 @@ export default function Badge({
   return (
     <span
       className={
-        'rounded-xl ' +
+        'rounded-xl inline-block ' +
         sizeClasses[size] +
         ' ' +
         className +
