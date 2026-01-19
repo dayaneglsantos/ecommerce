@@ -18,7 +18,7 @@ class ProductResource extends JsonResource
   {
 
     $variations = $this->whenLoaded('variations'); // Carrega as variações do produto passadas pelo controller
-    $images = $this->whenLoaded('productImages'); // Carrega as imagens do produto passadas pelo controller
+    $images = $this->whenLoaded('images'); // Carrega as imagens do produto passadas pelo controller
 
     // ======= Agrupamento das variações por cor =======
     $groupedVariations = $variations->groupBy(function ($variation) {

@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-class EditVariationRequest extends FormRequest
+class UpdateVariationRequest extends FormRequest
 {
   // Determina quem pode fazer esta requisição
   public function authorize(): bool
@@ -30,12 +30,7 @@ class EditVariationRequest extends FormRequest
       'pix_discount_type' => ['nullable', 'string', 'in:percentage,fixed'],
       'pix_discount_value' => ['nullable', 'numeric', 'min:0'],
       'sku' => ['required', 'string', 'max:255', Rule::unique('product_variations', 'sku')->ignore($this->productVariation)],
-      // 'images' => ['required', 'array'],
-      // 'images.*.file' => ['nullable', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
-      // 'images.*.position' => ['required', 'integer', 'min:1'], // posição da imagem na ordem
-      // 'images.*.id' => ['nullable', 'integer', 'exists:product_images,id'], // id da imagem existente
-      // 'images_to_delete' => ['nullable', 'array'],
-      // 'images_to_delete.*' => ['integer', 'exists:product_images,id'],
+
     ];
   }
 

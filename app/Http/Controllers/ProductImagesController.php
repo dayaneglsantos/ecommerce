@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductImage\CreateProductImageRequest;
+use App\Http\Requests\ProductImage\UpdateProductImageRequest;
+use App\Models\Product;
 use App\Models\ProductImages;
-use App\Models\ProductVariation;
-use Illuminate\Http\Request;
 
 class ProductImagesController extends Controller
 {
@@ -27,13 +28,20 @@ class ProductImagesController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request, ProductVariation $variation)
+  public function store(CreateProductImageRequest $request, Product $product)
   {
-    dd($request->all());
     try {
-      // Lógica para salvar a imagem do produto
-      return redirect()->back();
+      $validated = $request->validated();
+
+      foreach ($validated['images'] as $imageData) {
+        if (isset($imageData['file'])) {
+          $path = $imageData['file']->store('product-images', 'public');
+          $product->images()->create(['path' => $path, 'position' => $imageData['position'], 'attribute_id' => $validated['attribute_id']]);
+        }
+      }
+      return redirect()->back()->with('success', 'Imagem do produto adicionada com sucesso!');
     } catch (\Exception $e) {
+      dd($e->getMessage());
       return redirect()->back()->with('error', 'Erro ao adicionar a imagem do produto.');
     }
   }
@@ -57,9 +65,39 @@ class ProductImagesController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, ProductImages $productImages)
+  public function update(UpdateProductImageRequest $request, ProductImages $productImages)
   {
-    //
+    dd($request->all());
+    try {
+      $validated = $request->validated();
+
+      // Exclusão de imagens
+      if (isset($validated['images_to_delete'])) {
+        foreach ($validated['images_to_delete'] as $imageId) {
+          $image = $productImages->images()->find($imageId);
+          if ($image) {
+            $image->delete(); // Excluir o registro do banco de dados
+          }
+        }
+      }
+
+      // Inclusão e atualização de imagens
+      foreach ($validated['images'] as $imageData) {
+        if (isset($imageData['file'])) { // Nova imagem para upload
+          $path = $imageData['file']->store('product-images', 'public');
+          $productImages->images()->create(['path' => $path, 'position' => $imageData['position']]);
+        } else if (isset($imageData['id'])) { // Atualizar a posição da imagem existente
+          $image = $productImages->images()->find($imageData['id']);
+          if ($image) {
+            $image->position = $imageData['position'];
+            $image->save();
+          }
+        }
+      }
+      return redirect()->back()->with('success', 'Imagem do produto atualizada com sucesso!');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao atualizar a imagem do produto.');
+    }
   }
 
   /**

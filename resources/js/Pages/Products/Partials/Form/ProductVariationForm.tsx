@@ -383,6 +383,26 @@ export default function ProductVariationForm({
             </form>
           </Card>
         )}
+
+        {variation && variation?.images?.length > 0 && (
+          <div className="mt-6">
+            <h4 className="text-lg text-primary-dark mb-2 font-medium">
+              Imagens
+            </h4>
+            <GridContainer gap={3}>
+              <GridItem size={4} className="border border-gray-300 rounded-md">
+                {variation?.images.map((image) => (
+                  <img
+                    key={image.id}
+                    src={image.url}
+                    alt={`Imagem da variação ${variation.color.value}`}
+                    className="w-full h-32 object-cover rounded-md"
+                  />
+                ))}
+              </GridItem>
+            </GridContainer>
+          </div>
+        )}
         {/* Imagens */}
         <button
           type="button"
@@ -400,25 +420,12 @@ export default function ProductVariationForm({
             Você poderá adicionar as imagens após salvar a nova cor.
           </p>
         )}
-        {variation && variation?.images?.length > 0 && (
-          <GridContainer gap={3} className="mt-6">
-            <GridItem size={3} className="border border-gray-300 rounded-md">
-              {variation?.images.map((image) => (
-                <img
-                  key={image.id}
-                  src={image.url}
-                  alt={`Imagem da variação ${variation.color.value}`}
-                  className="w-full h-24 object-cover rounded-md"
-                />
-              ))}
-            </GridItem>
-          </GridContainer>
-        )}
         <ImagesFormModal
           open={openImagesModal}
           onClose={() => setOpenImagesModal(false)}
           color={variation?.color}
           newColorId={data.color}
+          images={variation?.images || []}
         />
       </Modal>
 

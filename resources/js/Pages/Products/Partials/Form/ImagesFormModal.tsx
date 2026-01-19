@@ -1,8 +1,10 @@
 import InputError from '@/Components/InputError';
-import { useForm } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
 import SortableImages from './SortableImages';
 import Modal from '@/Components/Modal';
+import PrimaryButton from '@/Components/PrimaryButton';
+import ProductType from '@/Types/ProductType';
 
 interface ImagesFormProps {
   open: boolean;
@@ -12,6 +14,7 @@ interface ImagesFormProps {
     value: string;
   };
   newColorId?: number;
+  images?: any[];
 }
 
 export default function ImagesFormModal({
@@ -19,8 +22,10 @@ export default function ImagesFormModal({
   newColorId,
   open,
   onClose,
+  images,
 }: ImagesFormProps) {
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const product = usePage().props.product as ProductType;
 
   const { data, errors, setData, reset } = useForm({
     images: [] as {
@@ -30,18 +35,24 @@ export default function ImagesFormModal({
       uid?: string;
     }[],
     images_to_delete: [] as number[],
+    attribute_id: 0,
   });
 
   useEffect(() => {
     if (!color) {
       reset();
+    } else {
+      setData('attribute_id', color.id);
+      setData(
+        'images',
+        images?.map((img) => ({
+          id: img.id,
+          preview: img.url,
+          uid: crypto.randomUUID(),
+        })) || []
+      );
     }
   }, [color]);
-
-  // const imagesWithPosition = data.images.map((img, index) => ({
-  //   ...img,
-  //   position: index + 1,
-  // }));
 
   // ==================== Adicionar nova imagem ao formulário ====================
   const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,10 +90,43 @@ export default function ImagesFormModal({
     }
   };
 
-  console.log('color', color);
+  const submitProductImages = () => {
+    const imagesWithPosition = data.images.map((img, index) => ({
+      ...img,
+      position: index + 1,
+    }));
+
+    // Ajustar lógica de envio conforme necessário (criação ou atualização)
+
+    if (images && images?.length > 0) {
+      // Atualizar imagens de uma variação existente
+    } else {
+      router.post(
+        route('productImages.store', product.id),
+        {
+          ...data,
+          images: imagesWithPosition,
+        },
+        {
+          preserveScroll: true,
+          onSuccess: () => {
+            onClose();
+            reset();
+          },
+        }
+      );
+    }
+  };
 
   return (
-    <Modal show={open} onClose={onClose} layer={2}>
+    <Modal
+      show={open}
+      onClose={() => {
+        onClose();
+        reset();
+      }}
+      layer={2}
+    >
       <input
         type="file"
         multiple
@@ -109,6 +153,18 @@ export default function ImagesFormModal({
           addImage={() => imageInputRef.current?.click()}
         />
       </>
+      <div className="flex justify-end gap-3">
+        <PrimaryButton
+          outline
+          onClick={() => {
+            onClose();
+            reset();
+          }}
+        >
+          Cancelar
+        </PrimaryButton>
+        <PrimaryButton onClick={submitProductImages}>Salvar</PrimaryButton>
+      </div>
     </Modal>
   );
 }

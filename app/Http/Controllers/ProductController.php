@@ -62,7 +62,7 @@ class ProductController extends Controller
   public function show(Product $product)
   {
     return Inertia::render('Products/index', [
-      'product' => new ProductResource($product->load('variations', 'defaultVariation', 'productImages')),
+      'product' => new ProductResource($product->load('variations', 'defaultVariation', 'images')),
     ]);
   }
 
@@ -71,7 +71,7 @@ class ProductController extends Controller
   {
     $brands = Brand::all();
     $categories = Category::all();
-    $product->load('productImages');
+    $product->load('images');
     $colorAttributeId = Attribute::where('name', Str::lower('cor'))->first()->id;
     $colors = AttributeValue::all()->where('attribute_id', $colorAttributeId)->values();
     $sizeAttributeId = Attribute::where('name', Str::lower('tamanho'))->first()->id;

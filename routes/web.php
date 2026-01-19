@@ -29,3 +29,4 @@ require __DIR__ . '/productVariation.php';
 require __DIR__ . '/supplier.php';
 require __DIR__ . '/brands.php';
 require __DIR__ . '/attributeValue.php';
+require __DIR__ . '/productImages.php';

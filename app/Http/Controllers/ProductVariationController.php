@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Http\Requests\ProductVariation\CreateVariationRequest;
-use App\Http\Requests\ProductVariation\EditVariationRequest;
+use App\Http\Requests\ProductVariation\UpdateVariationRequest;
 use App\Models\ProductVariation;
 use App\Models\ProductVariationAttribute;
 use Illuminate\Support\Facades\DB;
@@ -60,12 +60,6 @@ class ProductVariationController extends Controller
         //   $variation->product->save();
         // }
 
-        // foreach ($validated['images'] as $imageData) {
-        //   if (isset($imageData['file'])) {
-        //     $path = $imageData['file']->store('product-images', 'public');
-        //     $variation->images()->create(['path' => $path, 'position' => $imageData['position']]);
-        //   }
-        // }
       });
       return redirect()->back()->with('success', 'Variação do produto criada com sucesso!');
     } catch (\Exception $e) {
@@ -93,7 +87,7 @@ class ProductVariationController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(EditVariationRequest $request, ProductVariation $productVariation)
+  public function update(UpdateVariationRequest $request, ProductVariation $productVariation)
   {
     try {
       DB::transaction(function () use ($request, $productVariation) {
@@ -106,30 +100,6 @@ class ProductVariationController extends Controller
         }
 
         $productVariation->update($validated);
-
-        // Exclusão de imagens
-        // if (isset($validated['images_to_delete'])) {
-        //   foreach ($validated['images_to_delete'] as $imageId) {
-        //     $image = $productVariation->images()->find($imageId);
-        //     if ($image) {
-        //       $image->delete(); // Excluir o registro do banco de dados
-        //     }
-        //   }
-        // }
-
-        // Inclusão e atualização de imagens
-        // foreach ($validated['images'] as $imageData) {
-        //   if (isset($imageData['file'])) { // Nova imagem para upload
-        //     $path = $imageData['file']->store('product-images', 'public');
-        //     $productVariation->images()->create(['path' => $path, 'position' => $imageData['position']]);
-        //   } else if (isset($imageData['id'])) { // Atualizar a posição da imagem existente
-        //     $image = $productVariation->images()->find($imageData['id']);
-        //     if ($image) {
-        //       $image->position = $imageData['position'];
-        //       $image->save();
-        //     }
-        //   }
-        // }
       });
       return redirect()->back()->with('success', 'Variação do produto atualizada com sucesso!');
     } catch (\Exception $e) {

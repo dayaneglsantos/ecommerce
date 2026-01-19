@@ -9,6 +9,7 @@ interface ReceivedImageType {
   id?: number;
   uid?: string;
   preview?: string;
+  url?: string;
 }
 
 interface SortableImagesProps {
