@@ -27,7 +27,7 @@ export default function ImagesFormModal({
   const imageInputRef = useRef<HTMLInputElement>(null);
   const product = usePage().props.product as ProductType;
 
-  const { data, errors, setData, reset } = useForm({
+  const { data, errors, setData, reset, setError, clearErrors } = useForm({
     images: [] as {
       id?: number;
       file?: File;
@@ -103,6 +103,11 @@ export default function ImagesFormModal({
 
     // Ajustar lógica de envio conforme necessário (criação ou atualização)
 
+    if (data.images.length === 0) {
+      setError('images', 'O produto não pode ficar sem imagens.');
+      return;
+    }
+
     if (images && images?.length > 0) {
       router.post(
         route('productImages.update', product.id),
@@ -140,14 +145,20 @@ export default function ImagesFormModal({
     }
   };
 
-  console.log('data', data);
-
   return (
     <Modal
       show={open}
       onClose={() => {
         onClose();
-        reset();
+        clearErrors();
+        setData(
+          'images',
+          images?.map((img) => ({
+            id: img.id,
+            preview: img.url,
+            uid: crypto.randomUUID(),
+          })) || []
+        );
       }}
       layer={2}
     >
@@ -159,16 +170,13 @@ export default function ImagesFormModal({
         ref={imageInputRef}
         onChange={(e) => handleAddImage(e)}
       />
-      {errors.images && (
-        <InputError
-          className="mt-2"
-          message="Você deve adicionar pelo menos uma imagem."
-        />
-      )}
 
       <>
-        <h3 className="text-primary text-lg font-bold mt-5 ">
-          Imagens <span className="">{color?.value}</span>
+        <h3 className="text-gray-600 text-lg font-bold mt-5 ">
+          Imagens do produto na cor:{' '}
+          <span className="border-b border-gray-400">
+            {color?.value.toLocaleLowerCase()}
+          </span>
         </h3>
         <SortableImages
           images={data.images}
@@ -177,6 +185,7 @@ export default function ImagesFormModal({
           addImage={() => imageInputRef.current?.click()}
         />
       </>
+      {errors.images && <InputError className="mt-2" message={errors.images} />}
       <div className="flex justify-end gap-3">
         <PrimaryButton
           outline

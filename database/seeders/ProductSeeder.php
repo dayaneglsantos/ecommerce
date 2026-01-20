@@ -18,6 +18,10 @@ class ProductSeeder extends Seeder
     $brands = Brand::all();
     $attributesValues = AttributeValue::all();
 
+    $colors = $attributesValues->filter(function ($attrValue) {
+      return strtolower($attrValue->attribute->name) === 'cor';
+    });
+
 
     Product::factory(10)
       ->recycle($brands)
@@ -33,12 +37,11 @@ class ProductSeeder extends Seeder
         return [
           'attribute_id' => $attributesValues->random()->id,
         ];
-      }), 'productImages')
+      }), 'images')
       ->create()
-      ->each(function (Product $product) {
-        // Define a variação padrão como a primeira variação criada
-        $defaultVariation = $product->variations->first();
-        $product->default_variation_id = $defaultVariation->id;
+      ->each(function (Product $product) use ($colors) {
+        // Define uma cor padrão aleatória para o produto
+        $product->default_color_id = $colors->random()->id;
         $product->save();
       });
   }

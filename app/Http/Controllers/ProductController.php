@@ -19,7 +19,7 @@ class ProductController extends Controller
   // Listagem de Produtos
   public function index()
   {
-    $products = Product::all()->load('defaultVariation', 'variations', 'productImages');
+    $products = Product::all()->load('defaultColor', 'variations', 'productImages');
     $brands = Brand::all();
     $categories = Category::all();
 
@@ -35,10 +35,18 @@ class ProductController extends Controller
   {
     $brands = Brand::all();
     $categories = Category::all();
+    $colorAttributeId = Attribute::where('name', Str::lower('cor'))->first()->id;
+    $colors = AttributeValue::all()->where('attribute_id', $colorAttributeId)->values();
+    $sizeAttributeId = Attribute::where('name', Str::lower('tamanho'))->first()->id;
+    $sizes = AttributeValue::all()->where('attribute_id', $sizeAttributeId)->values();
 
     return Inertia::render('Products/index', [
       'brands' => $brands,
       'categories' => $categories,
+      'colors' => $colors,
+      'colorAttributeId' => $colorAttributeId,
+      'sizes' => $sizes,
+      'sizeAttributeId' => $sizeAttributeId,
     ]);
   }
 
@@ -62,7 +70,7 @@ class ProductController extends Controller
   public function show(Product $product)
   {
     return Inertia::render('Products/index', [
-      'product' => new ProductResource($product->load('variations', 'defaultVariation', 'images')),
+      'product' => new ProductResource($product->load('variations', 'defaultColor', 'images')),
     ]);
   }
 
@@ -80,7 +88,7 @@ class ProductController extends Controller
     return Inertia::render('Products/index', [
       'brands' => $brands,
       'categories' => $categories,
-      'product' => new ProductResource($product->load('variations', 'defaultVariation')),
+      'product' => new ProductResource($product->load('variations', 'defaultColor')),
       'colors' => $colors,
       'colorAttributeId' => $colorAttributeId,
       'sizes' => $sizes,
@@ -101,20 +109,20 @@ class ProductController extends Controller
     }
   }
 
-  // Atualização da Variação Padrão do Produto
-  public function updateDefaultVariation(Request $request, Product $product)
+  // Atualização da Cor Padrão do Produto
+  public function updateDefaultColor(Request $request, Product $product)
   {
     try {
       $validatedData = $request->validate([
-        'default_variation_id' => 'required|exists:product_variations,id',
+        'default_color_id' => 'required|exists:product_variations,id',
       ]);
-      $product->default_variation_id = $validatedData['default_variation_id'];
+      $product->default_color_id = $validatedData['default_color_id'];
       $product->save();
 
-      return redirect()->back()->with('success', 'Variação definida como principal!');
+      return redirect()->back()->with('success', 'Cor definida como principal!');
     } catch (\Exception $e) {
       dd($e->getMessage());
-      return redirect()->back()->with('error', 'Erro ao definir a variação principal.');
+      return redirect()->back()->with('error', 'Erro ao definir cor principal.');
     }
   }
 

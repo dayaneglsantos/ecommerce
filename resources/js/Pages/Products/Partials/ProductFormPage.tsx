@@ -5,7 +5,7 @@ import CategoryType from '@/Types/CategoryType';
 import SupplierType from '@/Types/SupplierType';
 import ProductType from '@/Types/ProductType';
 import { router, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Sidebar from '@/Components/Aside';
 import Card from '@/Components/Card';
 import Carousel from '@/Components/Carousel';
@@ -14,28 +14,37 @@ import ProductVariationType from '@/Types/ProductVariationType';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import { GridContainer, GridItem } from '@/Components/Grid';
 import { Grid } from 'swiper/modules';
+import ImagesFormModal from './Form/ImagesFormModal';
+import { FaTrashAlt } from 'react-icons/fa';
+import { Tooltip } from 'react-tooltip';
 
 export default function ProductFormPage() {
   const product = usePage().props.product as ProductType | null;
   const brands = usePage().props.brands as BrandType[];
   const categories = usePage().props.categories as CategoryType[];
-  const suppliers = usePage().props.suppliers as SupplierType[];
+  const [openImagesModal, setOpenImagesModal] = useState(false);
 
   const [openVariationFormModal, setOpenVariationFormModal] = useState(false);
-  const [selectedVariationId, setSelectedVariationId] = useState<number | null>(
-    null
-  );
+  const [selectedVariation, setSelectedVariation] =
+    useState<ProductVariationType | null>(null);
 
-  const disabledVariationButton = !product || selectedVariationId !== null;
+  const disabledVariationButton = !product || selectedVariation !== null;
 
-  const selectedVariation = product?.variations.find(
-    (variation) => variation.id === selectedVariationId
-  ) as ProductVariationType | null;
+  // Atualizar a variação quando o produto for alterado (após editar as imagens não estava atualizando)
+  useEffect(() => {
+    if (selectedVariation) {
+      const selectedVariationId = selectedVariation.id;
+      const updatedVariation = product?.variations.find(
+        (variation) => variation.id === selectedVariationId
+      );
+      setSelectedVariation(updatedVariation || null);
+    }
+  }, [product]);
 
   // ==================== Definir variação como padrão do produto no backend ====================
-  const handleDefaultVariation = (variationId: number) => {
-    router.patch(route('products.updateDefaultVariation', product?.id), {
-      default_variation_id: variationId,
+  const handleDefaultColor = (colorId: number) => {
+    router.patch(route('products.updateDefaultColor', product?.id), {
+      default_color_id: colorId,
     });
   };
 
@@ -45,7 +54,6 @@ export default function ProductFormPage() {
       preserveScroll: true,
     });
   };
-
   console.log(product);
 
   return (
@@ -53,15 +61,17 @@ export default function ProductFormPage() {
       <GridContainer gap={6} className="mb-6">
         <GridItem size={8} mdSize={12}>
           <ProductForm brands={brands} categories={categories} />
-          <ProductVariationForm
-            open={openVariationFormModal}
-            onClose={() => {
-              setOpenVariationFormModal(false);
-              setSelectedVariationId(null);
-            }}
-            variation={selectedVariation}
-            handleCancelButton={() => setSelectedVariationId(null)}
-          />
+          {product && (
+            <ProductVariationForm
+              open={openVariationFormModal}
+              onClose={() => {
+                setOpenVariationFormModal(false);
+                setSelectedVariation(null);
+              }}
+              variation={selectedVariation}
+              handleCancelButton={() => setSelectedVariation(null)}
+            />
+          )}
         </GridItem>
         <GridItem size={4} mdSize={12}>
           {product && product.variations.length > 0 && (
@@ -76,9 +86,11 @@ export default function ProductFormPage() {
               </div>
               <GridContainer gap={3}>
                 {product.variations.map((variation) => (
-                  <GridItem key={variation.id} size={12}>
-                    <Card className="w-full mb-3" key={variation.id}>
-                      <Carousel images={variation.images} />
+                  <GridItem key={variation.id} size={12} mdSize={6}>
+                    <Card className="relative w-full mb-3" key={variation.id}>
+                      {/* <div className="h-[220px]">
+                        <Carousel images={variation.images} />
+                      </div> */}
                       <GridContainer gap={2}>
                         <GridItem size={6}>
                           <p className="font-bold">Cor:</p>
@@ -95,36 +107,53 @@ export default function ProductFormPage() {
                         </GridItem>
                       </GridContainer>
                       <div
-                        className={`w-24 border border-primary p-1 text-[12px] rounded-full px-2 mt-2 text-primary-dark  ${
-                          variation.id === product?.defaultVariation?.id
+                        className={` w-fit border border-primary p-1 text-[12px] rounded-full px-2 mt-2 text-primary-dark  ${
+                          variation.color.id === product?.defaultColor?.id
                             ? 'bg-gray-200 font-bold'
                             : 'bg-gray-50 '
                         }`}
                       >
                         <button
                           type="button"
-                          onClick={() => handleDefaultVariation(variation.id)}
+                          onClick={() => handleDefaultColor(variation.color.id)}
                         >
-                          {variation.id === product?.defaultVariation?.id
+                          {variation.color.id === product?.defaultColor?.id
                             ? 'Cor principal'
                             : 'Definir cor principal'}
                         </button>
                       </div>
                       <div className="flex items-center gap-3 mt-4 justify-between">
-                        <div className="flex gap-3">
-                          <PrimaryButton onClick={() => {}}>
+                        <div className="flex gap-2">
+                          <PrimaryButton
+                            onClick={() => {
+                              setOpenImagesModal(true);
+                              setSelectedVariation(variation);
+                            }}
+                          >
                             Imagens
                           </PrimaryButton>
                           <PrimaryButton
                             outline
                             onClick={() => {
                               setOpenVariationFormModal(true);
-                              setSelectedVariationId(variation.id);
+                              setSelectedVariation(variation);
                             }}
                           >
-                            Editar tamanhos
+                            Tamanhos
                           </PrimaryButton>
                         </div>
+                      </div>
+                      <div className="z-20 absolute -top-2 -right-2 rounded-full p-2 bg-gray-200">
+                        <FaTrashAlt
+                          data-tooltip-id={`delete-${variation.id}`}
+                          className={`cursor-pointer text-gray-500 outline-none hover:text-red-600`}
+                        />
+                        <Tooltip
+                          id={`delete-${variation.id}`}
+                          place="top"
+                          content="Excluir"
+                          className="!p-2 !text-[12px]"
+                        />
                       </div>
                     </Card>
                   </GridItem>
@@ -154,6 +183,15 @@ export default function ProductFormPage() {
           </button>
         </GridItem>
       </GridContainer>
+      <ImagesFormModal
+        open={openImagesModal}
+        onClose={() => {
+          setOpenImagesModal(false);
+          setSelectedVariation(null);
+        }}
+        color={selectedVariation?.color}
+        images={selectedVariation?.images || []}
+      />
     </>
   );
 }

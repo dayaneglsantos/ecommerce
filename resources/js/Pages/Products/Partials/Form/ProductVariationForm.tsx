@@ -29,7 +29,6 @@ interface ProductVariationFormProps {
 
 export default function ProductVariationForm({
   variation,
-  setNewForm,
   handleCancelButton,
   open,
   onClose,
@@ -38,6 +37,7 @@ export default function ProductVariationForm({
   const [openColorForm, setOpenColorForm] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [openImagesModal, setOpenImagesModal] = useState(false);
+  const [newSize, setNewSize] = useState(false);
 
   const product = usePage().props?.product as ProductType;
   const colors = usePage().props?.colors as any[];
@@ -146,13 +146,6 @@ export default function ProductVariationForm({
     }
   };
 
-  // ==================== Definir variação como padrão do produto no backend ====================
-  const handleDefaultVariation = (variationId: number) => {
-    router.patch(route('products.updateDefaultVariation', product.id), {
-      default_variation_id: variationId,
-    });
-  };
-
   // ==================== Deletar tamanho  ====================
   const handleDeleteSize = () => {
     if (selectedSize) {
@@ -180,33 +173,40 @@ export default function ProductVariationForm({
           {variation ? `Cor: ${variation?.color.value}` : 'Nova cor'}
         </div>
         {variation && (
-          <div className="mb-5">
-            <h4 className="mb-1 font-medium">Qual tamanho quer editar?</h4>
-            <div className="flex gap-4">
-              {variation?.sizes.map((size) => (
-                <div className="relative w-fit">
-                  <span
-                    className={`p-1.5 bg-gray-200 cursor-pointer font-medium rounded-sm ${
-                      selectedSize === size ? 'border border-primary-dark' : ''
-                    }`}
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    {size.size}
-                  </span>
-                  <button
-                    type="button"
-                    className="absolute -right-2 -bottom-2 bg-red-900 rounded-full text-white text-[10px] p-0.5"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedSize(size);
-                      setOpenConfirmDialog(true);
-                    }}
-                  >
-                    <IoClose />
-                  </button>
-                </div>
-              ))}
+          <div className="flex justify-between items-center">
+            <div className="mb-5">
+              <h4 className="mb-1 font-medium">Qual tamanho quer editar?</h4>
+              <div className="flex gap-4">
+                {variation?.sizes.map((size) => (
+                  <div className="relative w-fit">
+                    <span
+                      className={`p-1.5 bg-gray-200 cursor-pointer font-medium rounded-sm ${
+                        selectedSize === size
+                          ? 'border border-primary-dark'
+                          : ''
+                      }`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size.size}
+                    </span>
+                    <button
+                      type="button"
+                      className="absolute -right-2 -bottom-2 bg-red-900 rounded-full text-white text-[10px] p-0.5"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSize(size);
+                        setOpenConfirmDialog(true);
+                      }}
+                    >
+                      <IoClose />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
+            <PrimaryButton outline onClick={() => setNewSize(true)}>
+              Novo tamanho
+            </PrimaryButton>
           </div>
         )}
         {((variation && selectedSize && !openConfirmDialog) || !variation) && (

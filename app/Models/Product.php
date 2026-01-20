@@ -13,7 +13,7 @@ class Product extends Model
   protected $hidden = [
     'created_at',
     'updated_at',
-    'default_variation_id',
+    'default_color_id',
     'brand_id',
     'category_id',
   ];
@@ -30,6 +30,7 @@ class Product extends Model
     'brand_id',
     'category_id',
     'technical_specifications',
+    'default_color_id',
   ];
 
   protected $with = ['brand', 'category'];
@@ -49,9 +50,9 @@ class Product extends Model
     return $this->hasMany(ProductVariation::class, 'product_id');
   }
 
-  public function defaultVariation()
+  public function defaultColor()
   {
-    return $this->belongsTo(ProductVariation::class, 'default_variation_id');
+    return $this->belongsTo(AttributeValue::class, 'default_color_id');
   }
 
   public function images()

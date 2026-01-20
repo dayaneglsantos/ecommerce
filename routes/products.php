@@ -26,8 +26,8 @@ Route::middleware('auth')
     // Atualizar produto - BACKEND
     Route::patch('/{product}', [ProductController::class, 'update'])->name('update');
 
-    // Atualizar variação padrão do produto - BACKEND
-    Route::patch('/{product}/defaultVariation', [ProductController::class, 'updateDefaultVariation'])->name('updateDefaultVariation');
+    // Atualizar cor padrão do produto - BACKEND
+    Route::patch('/{product}/defaultColor', [ProductController::class, 'updateDefaultColor'])->name('updateDefaultColor');
 
     // Deletar produto - BACKEND
     Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');

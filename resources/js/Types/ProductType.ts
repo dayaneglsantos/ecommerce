@@ -10,7 +10,7 @@ export default interface ProductType {
   fullDescription: string;
   brand: BrandType;
   category: CategoryType;
-  defaultVariation: ProductVariationType;
+  defaultColor: { color: string; id: number } | null;
   variations: ProductVariationType[];
   technicalSpecifications: JSON | null;
 }

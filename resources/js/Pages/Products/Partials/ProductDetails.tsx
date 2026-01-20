@@ -8,9 +8,7 @@ import { useState } from 'react';
 export default function ProductDetails() {
   const product = usePage().props.product as ProductType;
   const [selectedVariation, setSelectedVariation] =
-    useState<ProductVariationType>(product.defaultVariation);
-
-  console.log(product);
+    useState<ProductVariationType>();
 
   return (
     <div className="flex">
@@ -20,14 +18,14 @@ export default function ProductDetails() {
           <Carousel images={selectedVariation.images} />
         </div> */}
         <div className="w-full flex justify-center gap-2">
-          {product.variations.map((variation) => (
+          {/* {product.variations.map((variation) => (
             <button
               className="w-8 cursor-pointer"
               onClick={() => setSelectedVariation(variation)}
             >
               <img src={variation?.images[0]?.url} alt={variation?.color} />
             </button>
-          ))}
+          ))} */}
         </div>
         <p className="text-lg font-medium mt-2">{product.name}</p>
         <p

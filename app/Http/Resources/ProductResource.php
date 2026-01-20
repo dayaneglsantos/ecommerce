@@ -86,7 +86,7 @@ class ProductResource extends JsonResource
       'description' => $this->description,
       'fullDescription' => $this->full_description,
       'slug' => $this->slug,
-      // 'defaultVariation' => new ProductVariationResource($this->whenLoaded('defaultVariation')),
+      'defaultColor' => $this->whenLoaded('defaultColor'),
       'brand' => new BrandResource($this->whenLoaded('brand')),
       'category' => new CategoryResource($this->whenLoaded('category')),
       'variations' => $groupedVariations,

@@ -95,7 +95,7 @@ class ProductImagesController extends Controller
       }
       return redirect()->route('products.edit', $product->id)->with('success', 'Imagens do produto atualizadas com sucesso!');
     } catch (\Exception $e) {
-      dd($e->getMessage());
+
       return redirect()->back()->with('error', 'Erro ao atualizar a imagens do produto.');
     }
   }

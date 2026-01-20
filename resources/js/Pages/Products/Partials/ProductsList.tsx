@@ -61,12 +61,12 @@ export default function ProductsList() {
         {products.map((product: ProductType) => (
           <GridItem key={product.id} size={4} smSize={12} mdSize={6}>
             <Card key={product.id} className="relative w-full">
-              <Carousel images={product.defaultVariation.images} />
+              {/* <Carousel images={product.defaultVariation.images} /> */}
               <p>{product.name}</p>
 
               <span className="font-bold">Preço atual: </span>
               <span className="text-primary font-bold">
-                R${product.defaultVariation.price}
+                {/* R${product.defaultVariation.price} */}
               </span>
 
               <p className="text-sm">
