@@ -22,10 +22,15 @@ export default function ProductFormPage() {
   const suppliers = usePage().props.suppliers as SupplierType[];
 
   const [openVariationFormModal, setOpenVariationFormModal] = useState(false);
-  const [selectedVariation, setSelectedVariation] =
-    useState<ProductVariationType | null>(null);
+  const [selectedVariationId, setSelectedVariationId] = useState<number | null>(
+    null
+  );
 
-  const disabledVariationButton = !product || selectedVariation !== null;
+  const disabledVariationButton = !product || selectedVariationId !== null;
+
+  const selectedVariation = product?.variations.find(
+    (variation) => variation.id === selectedVariationId
+  ) as ProductVariationType | null;
 
   // ==================== Definir variação como padrão do produto no backend ====================
   const handleDefaultVariation = (variationId: number) => {
@@ -52,11 +57,10 @@ export default function ProductFormPage() {
             open={openVariationFormModal}
             onClose={() => {
               setOpenVariationFormModal(false);
-              setSelectedVariation(null);
+              setSelectedVariationId(null);
             }}
             variation={selectedVariation}
-            handleCancelButton={() => setSelectedVariation(null)}
-            setSelectedVariation={setSelectedVariation}
+            handleCancelButton={() => setSelectedVariationId(null)}
           />
         </GridItem>
         <GridItem size={4} mdSize={12}>
@@ -115,7 +119,7 @@ export default function ProductFormPage() {
                             outline
                             onClick={() => {
                               setOpenVariationFormModal(true);
-                              setSelectedVariation(variation);
+                              setSelectedVariationId(variation.id);
                             }}
                           >
                             Editar tamanhos

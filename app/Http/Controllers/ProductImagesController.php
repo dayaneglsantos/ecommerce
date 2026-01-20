@@ -65,16 +65,15 @@ class ProductImagesController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(UpdateProductImageRequest $request, ProductImages $productImages)
+  public function update(UpdateProductImageRequest $request, Product $product)
   {
-    dd($request->all());
     try {
       $validated = $request->validated();
 
       // Exclusão de imagens
       if (isset($validated['images_to_delete'])) {
         foreach ($validated['images_to_delete'] as $imageId) {
-          $image = $productImages->images()->find($imageId);
+          $image = $product->images()->find($imageId);
           if ($image) {
             $image->delete(); // Excluir o registro do banco de dados
           }
@@ -85,18 +84,19 @@ class ProductImagesController extends Controller
       foreach ($validated['images'] as $imageData) {
         if (isset($imageData['file'])) { // Nova imagem para upload
           $path = $imageData['file']->store('product-images', 'public');
-          $productImages->images()->create(['path' => $path, 'position' => $imageData['position']]);
+          $product->images()->create(['path' => $path, 'position' => $imageData['position'], 'attribute_id' => $validated['attribute_id']]);
         } else if (isset($imageData['id'])) { // Atualizar a posição da imagem existente
-          $image = $productImages->images()->find($imageData['id']);
+          $image = $product->images()->find($imageData['id']);
           if ($image) {
             $image->position = $imageData['position'];
             $image->save();
           }
         }
       }
-      return redirect()->back()->with('success', 'Imagem do produto atualizada com sucesso!');
+      return redirect()->route('products.edit', $product->id)->with('success', 'Imagens do produto atualizadas com sucesso!');
     } catch (\Exception $e) {
-      return redirect()->back()->with('error', 'Erro ao atualizar a imagem do produto.');
+      dd($e->getMessage());
+      return redirect()->back()->with('error', 'Erro ao atualizar a imagens do produto.');
     }
   }
 

@@ -13,5 +13,5 @@ Route::middleware('auth')
     Route::post('/{product}', [ProductImagesController::class, 'store'])->name('store');
 
     // Atualizar imagens de um produto específico
-    Route::put('/{product}', [ProductImagesController::class, 'update'])->name('update');
+    Route::patch('/{product}', [ProductImagesController::class, 'update'])->name('update');
   });

@@ -23,7 +23,6 @@ interface ProductVariationFormProps {
   variation: ProductVariationType | null;
   setNewForm?: (newForm: boolean) => void;
   handleCancelButton?: () => void;
-  setSelectedVariation?: (variation: ProductVariationType | null) => void;
   open: boolean;
   onClose: () => void;
 }
@@ -32,7 +31,6 @@ export default function ProductVariationForm({
   variation,
   setNewForm,
   handleCancelButton,
-  setSelectedVariation,
   open,
   onClose,
 }: ProductVariationFormProps) {
@@ -115,7 +113,6 @@ export default function ProductVariationForm({
         {
           preserveScroll: true,
           onSuccess: () => {
-            setSelectedVariation && setSelectedVariation(null);
             onClose();
             reset();
           },
@@ -390,16 +387,19 @@ export default function ProductVariationForm({
               Imagens
             </h4>
             <GridContainer gap={3}>
-              <GridItem size={4} className="border border-gray-300 rounded-md">
-                {variation?.images.map((image) => (
+              {variation?.images.map((image) => (
+                <GridItem
+                  size={4}
+                  className="border border-gray-300 rounded-md"
+                >
                   <img
                     key={image.id}
                     src={image.url}
                     alt={`Imagem da variação ${variation.color.value}`}
                     className="w-full h-32 object-cover rounded-md"
                   />
-                ))}
-              </GridItem>
+                </GridItem>
+              ))}
             </GridContainer>
           </div>
         )}
@@ -412,7 +412,8 @@ export default function ProductVariationForm({
           onClick={() => setOpenImagesModal(true)}
           disabled={!variation}
         >
-          Adicionar imagens
+          {variation && variation?.images?.length > 0 ? 'Editar' : 'Adicionar'}{' '}
+          imagens
         </button>
         {!variation && (
           <p className="mt-2 text-gray-500 text-sm text-center">

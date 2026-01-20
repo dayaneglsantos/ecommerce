@@ -96,27 +96,51 @@ export default function ImagesFormModal({
       position: index + 1,
     }));
 
+    const payload = {
+      ...data,
+      images: imagesWithPosition,
+    };
+
     // Ajustar lógica de envio conforme necessário (criação ou atualização)
 
     if (images && images?.length > 0) {
-      // Atualizar imagens de uma variação existente
+      router.post(
+        route('productImages.update', product.id),
+        {
+          ...payload,
+          _method: 'PATCH',
+        },
+        {
+          preserveScroll: true,
+          onSuccess: () => {
+            router.reload({ only: ['product'] });
+            onClose();
+            reset();
+          },
+          onError: (e) => {
+            console.log('Erro ao enviar imagens:', e);
+          },
+        }
+      );
     } else {
       router.post(
         route('productImages.store', product.id),
         {
-          ...data,
-          images: imagesWithPosition,
+          ...payload,
         },
         {
           preserveScroll: true,
           onSuccess: () => {
             onClose();
             reset();
+            router.reload({ only: ['product'] });
           },
         }
       );
     }
   };
+
+  console.log('data', data);
 
   return (
     <Modal
