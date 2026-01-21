@@ -14,7 +14,7 @@ const GridContainer = ({
   className,
 }: GridContainerProps) => {
   return (
-    <div className={`grid grid-cols-12 gap-${gap} ${className}`}>
+    <div className={`grid grid-cols-12 gap-${gap} ` + className}>
       {children}
     </div>
   );
@@ -93,7 +93,7 @@ const GridItem = ({
   const lgClass = lgColSpans[size as keyof typeof lgColSpans];
 
   return (
-    <div className={`${smClass} ${mdClass} ${lgClass} ${className}`} {...props}>
+    <div className={`${smClass} ${mdClass} ${lgClass}` + className} {...props}>
       {children}
     </div>
   );

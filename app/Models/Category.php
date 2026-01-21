@@ -22,4 +22,14 @@ class Category extends Model
     'status',
     'parent_id',
   ];
+
+  public function subCategories()
+  {
+    return $this->hasMany(Category::class, 'parent_id');
+  }
+
+  public function childrenRecursive()
+  {
+    return $this->subCategories()->with('childrenRecursive');
+  }
 }

@@ -4,5 +4,5 @@ export default interface CategoryType {
   slug: string;
   status: string;
   description: string;
-  parentId: number | null;
+  subCategories?: CategoryType[];
 }
