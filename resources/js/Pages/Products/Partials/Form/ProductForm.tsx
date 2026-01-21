@@ -10,7 +10,7 @@ import ProductType from '@/Types/ProductType';
 import { router, useForm, usePage } from '@inertiajs/react';
 import { Editor } from '@tinymce/tinymce-react';
 import { useEffect, useState } from 'react';
-import { FaPlusCircle, FaTrashAlt } from 'react-icons/fa';
+import { FaTrashAlt } from 'react-icons/fa';
 import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
 import { Tooltip } from 'react-tooltip';
 

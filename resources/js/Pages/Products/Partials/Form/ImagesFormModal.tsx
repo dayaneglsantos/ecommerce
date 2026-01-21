@@ -122,9 +122,6 @@ export default function ImagesFormModal({
             onClose();
             reset();
           },
-          onError: (e) => {
-            console.log('Erro ao enviar imagens:', e);
-          },
         }
       );
     } else {

@@ -11,4 +11,5 @@ Route::middleware('auth')
     Route::post('/', [ProductVariationController::class, 'store'])->name('store');
     Route::patch('/{productVariation}', [ProductVariationController::class, 'update'])->name('update');
     Route::delete('/{productVariation}', [ProductVariationController::class, 'destroy'])->name('destroy');
+    Route::post('/destroyColor', [ProductVariationController::class, 'destroyColor'])->name('destroyColor');
   });

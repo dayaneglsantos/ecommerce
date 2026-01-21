@@ -30,11 +30,9 @@ export default function SuppliersPage() {
     });
   };
 
-  console.log(suppliers);
-
   return (
     <AuthenticatedLayout>
-      <Head title="Criar produto" />
+      <Head title="Criar Fornecedor" />
 
       <div className="mx-auto max-w-7xl space-y-6 px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">

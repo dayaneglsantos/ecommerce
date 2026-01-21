@@ -23,6 +23,7 @@ export default function ProductFormPage() {
   const brands = usePage().props.brands as BrandType[];
   const categories = usePage().props.categories as CategoryType[];
   const [openImagesModal, setOpenImagesModal] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   const [openVariationFormModal, setOpenVariationFormModal] = useState(false);
   const [selectedVariation, setSelectedVariation] =
@@ -49,12 +50,16 @@ export default function ProductFormPage() {
   };
 
   // ==================== Deletar variação do produto no backend ====================
-  const handleDeleteVariation = (variationId: number) => {
-    router.delete(route('productVariation.destroy', variationId), {
-      preserveScroll: true,
-    });
+  const handleDeleteColorVariation = () => {
+    const variationIds = selectedVariation?.sizes.map((size) => size.id);
+    router.post(
+      route('productVariation.destroyColor'),
+      { ids: variationIds },
+      {
+        preserveScroll: true,
+      }
+    );
   };
-  console.log(product);
 
   return (
     <>
@@ -142,18 +147,22 @@ export default function ProductFormPage() {
                             Tamanhos
                           </PrimaryButton>
                         </div>
-                      </div>
-                      <div className="z-20 absolute -top-2 -right-2 rounded-full p-2 bg-gray-200">
-                        <FaTrashAlt
-                          data-tooltip-id={`delete-${variation.id}`}
-                          className={`cursor-pointer text-gray-500 outline-none hover:text-red-600`}
-                        />
-                        <Tooltip
-                          id={`delete-${variation.id}`}
-                          place="top"
-                          content="Excluir"
-                          className="!p-2 !text-[12px]"
-                        />
+                        <div className="flex items-center">
+                          <FaTrashAlt
+                            data-tooltip-id={`delete-${variation.id}`}
+                            className={`cursor-pointer text-gray-400 outline-none hover:text-red-600`}
+                            onClick={() => {
+                              setSelectedVariation(variation);
+                              setOpenConfirmDialog(true);
+                            }}
+                          />
+                          <Tooltip
+                            id={`delete-${variation.id}`}
+                            place="top"
+                            content="Excluir"
+                            className="!p-2 !text-[12px]"
+                          />
+                        </div>
                       </div>
                     </Card>
                   </GridItem>
@@ -191,6 +200,20 @@ export default function ProductFormPage() {
         }}
         color={selectedVariation?.color}
         images={selectedVariation?.images || []}
+      />
+
+      <ConfirmDialog
+        open={openConfirmDialog}
+        title="Tem certeza que deseja remover o produto com esta cor?"
+        description="Todos os tamanhos e imagens associados a esta cor serão removidos. Esta ação não pode ser desfeita."
+        onAccept={() => {
+          handleDeleteColorVariation();
+          setOpenConfirmDialog(false);
+        }}
+        onClose={() => {
+          setOpenConfirmDialog(false);
+          setSelectedVariation(null);
+        }}
       />
     </>
   );

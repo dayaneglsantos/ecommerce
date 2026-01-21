@@ -9,9 +9,9 @@ import TextInput from '@/Components/TextInput';
 import ProductType from '@/Types/ProductType';
 import ProductVariationType from '@/Types/ProductVariationType';
 import { router, useForm, usePage } from '@inertiajs/react';
-import { useEffect, useRef, useState } from 'react';
-import { FaPlusCircle, FaTrashAlt } from 'react-icons/fa';
-import { IoIosAddCircle, IoMdInformationCircle } from 'react-icons/io';
+import { useEffect, useState } from 'react';
+import { FaPlusCircle } from 'react-icons/fa';
+import { IoMdInformationCircle } from 'react-icons/io';
 import { IoClose } from 'react-icons/io5';
 import { GridContainer, GridItem } from '@/Components/Grid';
 import Modal from '@/Components/Modal';
@@ -99,6 +99,12 @@ export default function ProductVariationForm({
     }
   }, [selectedSize]);
 
+  useEffect(() => {
+    if (newSize && variation) {
+      setData('color', variation.color.id);
+    }
+  }, [newSize]);
+
   // ==================== Envio do formulário para o backend ====================
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,10 +136,12 @@ export default function ProductVariationForm({
         {
           preserveScroll: true,
           onSuccess: () => {
+            reset();
+            setNewSize(false);
+            setSelectedSize(null);
             if (!variation && handleCancelButton) {
               handleCancelButton();
               onClose();
-              reset();
             }
           },
           onError: (errors) => {
@@ -209,7 +217,8 @@ export default function ProductVariationForm({
             </PrimaryButton>
           </div>
         )}
-        {((variation && selectedSize && !openConfirmDialog) || !variation) && (
+        {((variation && (selectedSize || newSize) && !openConfirmDialog) ||
+          !variation) && (
           <Card className="w-full relative">
             <h3 className="font-bold text-lg text-primary-dark">
               Variação do Produto
@@ -218,32 +227,35 @@ export default function ProductVariationForm({
               <GridContainer gap={3}>
                 {!selectedSize && (
                   <>
-                    <GridItem size={6}>
-                      <InputLabel
-                        htmlFor="color"
-                        value="Cor"
-                        className="mt-4"
-                      />
-                      <SelectInput
-                        options={colorOptions}
-                        value={data.color}
-                        onChange={(e) => setData('color', e)}
-                        placeholder="Selecione uma cor"
-                      />
-                      <InputError className="mt-2" message={errors.color} />
-                      <div className="flex gap-1 items-center mt-1">
-                        <p className="text-sm text-gray-600">
-                          Não encontrou a cor? Adicionar nova{' '}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => setOpenColorForm(true)}
-                          className="text-primary cursor-pointer text-md"
-                        >
-                          <FaPlusCircle />
-                        </button>
-                      </div>
-                    </GridItem>
+                    {!newSize && (
+                      <GridItem size={6}>
+                        <InputLabel
+                          htmlFor="color"
+                          value="Cor"
+                          className="mt-4"
+                        />
+                        <SelectInput
+                          options={colorOptions}
+                          value={data.color}
+                          onChange={(e) => setData('color', e)}
+                          placeholder="Selecione uma cor"
+                        />
+                        <InputError className="mt-2" message={errors.color} />
+                        <div className="flex gap-1 items-center mt-1">
+                          <p className="text-sm text-gray-600">
+                            Não encontrou a cor? Adicionar nova{' '}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setOpenColorForm(true)}
+                            className="text-primary cursor-pointer text-md"
+                          >
+                            <FaPlusCircle />
+                          </button>
+                        </div>
+                      </GridItem>
+                    )}
+
                     <GridItem size={6}>
                       <InputLabel
                         htmlFor="size"
@@ -270,6 +282,11 @@ export default function ProductVariationForm({
                         </button>
                       </div>
                     </GridItem>
+                    {newSize && (
+                      <GridItem size={6}>
+                        <div></div>
+                      </GridItem>
+                    )}
                   </>
                 )}
 
@@ -374,7 +391,7 @@ export default function ProductVariationForm({
                 </PrimaryButton>
 
                 <PrimaryButton type="button" onClick={submit}>
-                  Salvar cor
+                  Salvar
                 </PrimaryButton>
               </div>
             </form>

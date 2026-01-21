@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductVariation\CreateVariationRequest;
 use App\Http\Requests\ProductVariation\UpdateVariationRequest;
+use App\Models\AttributeValue;
 use App\Models\ProductVariation;
 use App\Models\ProductVariationAttribute;
+use Attribute;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductVariationController extends Controller
@@ -109,9 +112,7 @@ class ProductVariationController extends Controller
     }
   }
 
-  /**
-   * Remove the specified resource from storage.
-   */
+  // Remove uma variação específica do produto
   public function destroy(ProductVariation $productVariation)
   {
     try {
@@ -122,6 +123,22 @@ class ProductVariationController extends Controller
     } catch (\Exception $e) {
       dd($e->getMessage());
       return redirect()->back()->with('error', 'Erro ao excluir variação do produto.');
+    }
+  }
+
+
+  // Remove todas as variações de uma cor específica
+  public function destroyColor(Request $request)
+  {
+    try {
+      $ids = $request->input('ids'); // IDs das variações a serem deletadas
+
+      // Deleta todas as variações cujos IDs estão na lista fornecida
+      ProductVariation::whereIn('id', $ids)->delete();
+      return redirect()->back()->with('success', 'Cor do produto excluída com sucesso!');
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return redirect()->back()->with('error', 'Erro ao excluir cor do produto.');
     }
   }
 }
