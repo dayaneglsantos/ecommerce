@@ -1,9 +1,20 @@
 import Card from '@/Components/Card';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 import { GridContainer, GridItem } from '@/Components/Grid';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CategoryType from '@/Types/CategoryType';
+import {
+  Dialog,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+} from '@headlessui/react';
 import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
+import { SlOptionsVertical } from 'react-icons/sl';
+import CategoryFormModal from './CategoryFormModal';
 
 export default function CategoriesPage() {
   const categories = usePage().props.categories as CategoryType[];
@@ -11,18 +22,26 @@ export default function CategoriesPage() {
   const [selectedCategories, setSelectedCategories] = useState<CategoryType[]>(
     []
   );
+  const [openFormModal, setOpenFormModal] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<CategoryType | null>(null);
 
   const primaryCategories = categories.filter(
     (category: any) => !category.parent_id
   );
 
-  console.log(categories);
-
+  // Seleciona uma categoria e atualiza a lista de categorias selecionadas
   const handleSelectCategory = (category: CategoryType, level: number) => {
     const categories = selectedCategories.slice(0, level); // Pega todas as categorias até o nível selecionado
     categories[level] = category; // Coloca a categoria selecionada sendo a do nível atual
     setSelectedCategories(categories);
   };
+
+  const handleDeleteCategory = () => {
+    // Lógica para deletar a categoria selecionada
+  };
+
+  console.log(selectedItem);
 
   return (
     <AuthenticatedLayout>
@@ -30,14 +49,54 @@ export default function CategoriesPage() {
 
       <div className="mx-auto max-w-[95%] space-y-6 px-3 sm:px-6 lg:px-8 ">
         <div className="flex gap-2 h-[calc(100vh-130px)]">
-          <Card className="w-64">
+          <Card className="!w-64">
             <div className="flex flex-col gap-2">
               {primaryCategories.map((category) => (
                 <div
-                  className="rounded-md shadow-full p-1 cursor-pointer"
+                  className="rounded-md shadow-full p-1 cursor-pointer flex justify-between items-center"
                   onClick={() => handleSelectCategory(category, 0)}
                 >
                   <span>{category.name}</span>
+                  <Menu as="div">
+                    <MenuButton
+                      className="focus:outline-none p-1 rounded-full bg-gray-50 hover:bg-gray-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <SlOptionsVertical className="text-sm" />
+                    </MenuButton>
+                    <MenuItems
+                      transition
+                      anchor="bottom end"
+                      className="w-20 bg-gray-100 rounded-xl p-1 focus:outline-none"
+                    >
+                      <MenuItem>
+                        <button
+                          className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full"
+                          onClick={() => {
+                            setSelectedItem(category);
+                            setOpenFormModal(true);
+                          }}
+                        >
+                          <span className="text-sm">Editar</span>{' '}
+                          <FaPencilAlt className="text-sm" />
+                        </button>
+                      </MenuItem>
+                      <MenuItem>
+                        <button
+                          className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full"
+                          onClick={() => {
+                            setSelectedItem(category);
+                            setOpenConfirmDialog(true);
+                          }}
+                        >
+                          <span className="text-sm">Excluir</span>{' '}
+                          <FaTrashAlt className="text-sm" />
+                        </button>
+                      </MenuItem>
+                    </MenuItems>
+                  </Menu>
                 </div>
               ))}
             </div>
@@ -57,16 +116,47 @@ export default function CategoriesPage() {
                 );
 
               return (
-                <Card className="border border-dashed border-primary-light w-[250px] shrink-0">
-                  {subs?.map((sub) => (
-                    <div
-                      className={`p-1 rounded-md shadow-full mb-2 cursor-pointer`}
-                      key={sub.id}
-                      onClick={() => handleSelectCategory(sub, index + 1)}
-                    >
-                      {sub.name}
-                    </div>
-                  ))}
+                <Card className="flex flex-col gap-2 border border-dashed border-primary-light w-[250px] shrink-0 ">
+                  {subs?.map((sub) => {
+                    return (
+                      <div className="flex justify-between items-center gap-2 p-1 rounded-md shadow-full cursor-pointer !relative">
+                        <div
+                          key={sub.id}
+                          onClick={() => handleSelectCategory(sub, index + 1)}
+                        >
+                          {sub.name}
+                        </div>
+                        <Menu as="div">
+                          <MenuButton
+                            className="focus:outline-none"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          >
+                            <SlOptionsVertical className="text-sm" />
+                          </MenuButton>
+                          <MenuItems
+                            transition
+                            anchor="bottom end"
+                            className="w-20 bg-gray-100 rounded-xl p-1 transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95 data-closed:opacity-0"
+                          >
+                            <MenuItem>
+                              <button className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full">
+                                <span className="text-sm">Editar</span>{' '}
+                                <FaPencilAlt className="text-sm" />
+                              </button>
+                            </MenuItem>
+                            <MenuItem>
+                              <button className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full">
+                                <span className="text-sm">Excluir</span>{' '}
+                                <FaTrashAlt className="text-sm" />
+                              </button>
+                            </MenuItem>
+                          </MenuItems>
+                        </Menu>
+                      </div>
+                    );
+                  })}
                 </Card>
               );
             })}
@@ -78,6 +168,26 @@ export default function CategoriesPage() {
           </Card>
         </div>
       </div>
+      <CategoryFormModal
+        open={openFormModal}
+        onClose={() => {
+          setOpenFormModal(false);
+          setSelectedItem(null);
+        }}
+      />
+      <ConfirmDialog
+        open={openConfirmDialog}
+        title="Tem certeza que deseja remover essa categoria?"
+        description="Todas as subcategorias vinculadas a esta também serão removidas."
+        onAccept={() => {
+          setOpenConfirmDialog(false);
+          handleDeleteCategory();
+        }}
+        onClose={() => {
+          setOpenConfirmDialog(false);
+          setSelectedItem(null);
+        }}
+      />
     </AuthenticatedLayout>
   );
 }
