@@ -20,7 +20,7 @@ class CategoryFactory extends Factory
       'name' => fake()->word(),
       'slug' => fake()->unique()->slug(),
       'description' => fake()->sentence(),
-      'status' => fake()->boolean(80),
+      'active' => fake()->boolean(80),
       'parent_id' => null,
     ];
   }

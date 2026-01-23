@@ -69,7 +69,7 @@ export default function CategoriesPage() {
                     <MenuItems
                       transition
                       anchor="bottom end"
-                      className="w-20 bg-gray-100 rounded-xl p-1 focus:outline-none"
+                      className="w-20 bg-gray-100 rounded-xl p-1 focus:outline-none shadow-full border border-gray-200"
                     >
                       <MenuItem>
                         <button
@@ -80,7 +80,7 @@ export default function CategoriesPage() {
                           }}
                         >
                           <span className="text-sm">Editar</span>{' '}
-                          <FaPencilAlt className="text-sm" />
+                          <FaPencilAlt className="text-xs" />
                         </button>
                       </MenuItem>
                       <MenuItem>
@@ -92,7 +92,7 @@ export default function CategoriesPage() {
                           }}
                         >
                           <span className="text-sm">Excluir</span>{' '}
-                          <FaTrashAlt className="text-sm" />
+                          <FaTrashAlt className="text-xs" />
                         </button>
                       </MenuItem>
                     </MenuItems>
@@ -126,7 +126,7 @@ export default function CategoriesPage() {
                         >
                           {sub.name}
                         </div>
-                        <Menu as="div">
+                        <Menu as="div" className="p-1">
                           <MenuButton
                             className="focus:outline-none"
                             onClick={(e) => {
@@ -174,6 +174,7 @@ export default function CategoriesPage() {
           setOpenFormModal(false);
           setSelectedItem(null);
         }}
+        category={selectedItem}
       />
       <ConfirmDialog
         open={openConfirmDialog}

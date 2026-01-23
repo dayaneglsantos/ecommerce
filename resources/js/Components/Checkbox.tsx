@@ -15,7 +15,7 @@ export default function Checkbox({
       onChange={onChange}
       type="checkbox"
       className={
-        'rounded border-gray-300 text-primary shadow-sm focus:ring-primary ' +
+        'cursor-pointer rounded border-gray-300 text-primary shadow-sm focus:outline-none focus:ring-0 focus:ring-offset-0 ' +
         className
       }
     />
