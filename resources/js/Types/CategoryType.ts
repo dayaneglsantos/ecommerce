@@ -5,5 +5,5 @@ export default interface CategoryType {
   active: boolean;
   description: string;
   subCategories?: CategoryType[];
-  parent_id?: number | null;
+  parent?: CategoryType | null;
 }

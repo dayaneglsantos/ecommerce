@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -35,9 +36,15 @@ class CategoryController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request)
+  public function store(CategoryRequest $request)
   {
-    //
+    try {
+      $validated = $request->validated();
+      Category::create($validated);
+      return redirect()->back()->with('success', 'Categoria criada com sucesso');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao criar categoria');
+    }
   }
 
   /**
@@ -59,9 +66,15 @@ class CategoryController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, Category $category)
+  public function update(CategoryRequest $request, Category $category)
   {
-    //
+    try {
+      $validated = $request->validated();
+      $category->update($validated);
+      return redirect()->back()->with('success', 'Categoria atualizada com sucesso');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao atualizar categoria');
+    }
   }
 
   /**
@@ -69,6 +82,13 @@ class CategoryController extends Controller
    */
   public function destroy(Category $category)
   {
-    //
+    try {
+      $category->delete();
+
+
+      return redirect()->back()->with('success', 'Categoria deletada com sucesso');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao deletar categoria');
+    }
   }
 }

@@ -33,7 +33,7 @@ export default function SelectInput({
       .map((option) => option.label);
 
   const getSelectedOptions = () => {
-    if (value.length === 0) {
+    if (value?.length === 0 || value === null || value === undefined) {
       return <span className="text-gray-400">{placeholder}</span>;
     }
     if (multiple && selectedLabels) {

@@ -10,11 +10,12 @@ import {
   MenuItem,
   MenuItems,
 } from '@headlessui/react';
-import { Head, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { SlOptionsVertical } from 'react-icons/sl';
 import CategoryFormModal from './CategoryFormModal';
+import PrimaryButton from '@/Components/PrimaryButton';
 
 export default function CategoriesPage() {
   const categories = usePage().props.categories as CategoryType[];
@@ -38,16 +39,66 @@ export default function CategoriesPage() {
   };
 
   const handleDeleteCategory = () => {
-    // Lógica para deletar a categoria selecionada
+    if (!selectedItem) return;
+
+    router.delete(route('categories.destroy', selectedItem.id), {
+      onSuccess: () => {
+        setSelectedCategories((prevCategories) =>
+          prevCategories.filter((category) => category.id !== selectedItem.id)
+        );
+        setSelectedItem(null);
+      },
+    });
   };
 
-  console.log(selectedItem);
+  // =========== Atualiza a lista de categorias selecionadas quando a lista global de categorias muda ==========
+  useEffect(() => {
+    // Função para encontrar a categoria atualizada dentro da árvore
+    const findCategory = (
+      list: CategoryType[],
+      id: number
+    ): CategoryType | null => {
+      for (const cat of list) {
+        if (cat.id === id) return cat;
+        if (cat.subCategories) {
+          const found = findCategory(cat.subCategories, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    const newPath: CategoryType[] = []; // Nova lista de categorias selecionadas
+    let currentList = categories; // Começa com a lista completa de categorias principais
+
+    // Reconstrói o caminho das categorias selecionadas
+    for (const selected of selectedCategories) {
+      const updated = findCategory(currentList, selected.id);
+      if (updated) {
+        newPath.push(updated);
+        currentList = updated.subCategories || []; // Atualiza a lista atual para as subcategorias da categoria atualizada
+      } else {
+        // Se uma categoria não for encontrada (foi deletada), então paramos e não adicionamos mais nada
+        break;
+      }
+    }
+
+    setSelectedCategories(newPath);
+  }, [categories]); // Dispara sempre que a lista global do servidor mudar
+
+  console.log('selected categories', selectedCategories);
+  console.log('categories', categories);
 
   return (
     <AuthenticatedLayout>
       <Head title="Categorias" />
 
       <div className="mx-auto max-w-[95%] space-y-6 px-3 sm:px-6 lg:px-8 ">
+        <div className="flex justify-end">
+          <PrimaryButton onClick={() => setOpenFormModal(true)}>
+            Nova categoria
+          </PrimaryButton>
+        </div>
         <div className="flex gap-2 h-[calc(100vh-130px)]">
           <Card className="!w-64">
             <div className="flex flex-col gap-2">
@@ -141,13 +192,25 @@ export default function CategoriesPage() {
                             className="w-20 bg-gray-100 rounded-xl p-1 transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95 data-closed:opacity-0"
                           >
                             <MenuItem>
-                              <button className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full">
+                              <button
+                                className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full"
+                                onClick={() => {
+                                  setSelectedItem(sub);
+                                  setOpenFormModal(true);
+                                }}
+                              >
                                 <span className="text-sm">Editar</span>{' '}
                                 <FaPencilAlt className="text-sm" />
                               </button>
                             </MenuItem>
                             <MenuItem>
-                              <button className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full">
+                              <button
+                                className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full"
+                                onClick={() => {
+                                  setSelectedItem(sub);
+                                  setOpenConfirmDialog(true);
+                                }}
+                              >
                                 <span className="text-sm">Excluir</span>{' '}
                                 <FaTrashAlt className="text-sm" />
                               </button>

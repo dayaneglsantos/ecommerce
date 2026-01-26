@@ -22,6 +22,7 @@ class CategoryResource extends JsonResource
       'active' => $this->active,
       'description' => $this->description,
       'subCategories' => CategoryResource::collection($this->whenLoaded('childrenRecursive')),
+      'parent' => new CategoryResource($this->whenLoaded('parentCategory')),
     ];
   }
 }

@@ -31,11 +31,11 @@ export default function CategoryFormModal({
     label: category.name,
   }));
 
-  const { data, setData, errors, post } = useForm({
+  const { data, setData, errors, post, patch, reset } = useForm({
     name: '',
     slug: '',
     description: '',
-    parent_id: 0,
+    parent_id: null as number | null,
     active: true,
   });
 
@@ -44,10 +44,10 @@ export default function CategoryFormModal({
       setData('name', category.name || '');
       setData('slug', category.slug || '');
       setData('description', category.description || '');
-      setData('parent_id', category.parent_id || 0);
+      setData('parent_id', category.parent?.id || null);
       setData('active', category.active || false);
 
-      setIsSubcategory(!!category.parent_id);
+      setIsSubcategory(!!category.parent);
     }
   }, [category]);
 
@@ -55,16 +55,32 @@ export default function CategoryFormModal({
     e.preventDefault();
 
     if (category) {
-      // Lógica para atualizar a categoria existente
+      patch(route('categories.update', category.id), {
+        onSuccess: () => {
+          reset();
+          onClose();
+        },
+      });
     } else {
-      // Lógica para criar uma nova categoria
+      post(route('categories.store'), {
+        onSuccess: () => {
+          reset();
+          onClose();
+        },
+      });
     }
   };
 
   console.log('category data', data);
 
   return (
-    <Modal show={open} onClose={onClose}>
+    <Modal
+      show={open}
+      onClose={() => {
+        onClose();
+        reset();
+      }}
+    >
       <div className="flex gap-2 justify-end items-center mb-4">
         <span>{data.active ? 'Ativo' : 'Inativo'}</span>
         <Switch

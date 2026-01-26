@@ -19,8 +19,12 @@ class Category extends Model
     'name',
     'slug',
     'description',
-    'status',
+    'active',
     'parent_id',
+  ];
+
+  protected $casts = [
+    'active' => 'boolean',
   ];
 
   public function subCategories()
@@ -30,6 +34,11 @@ class Category extends Model
 
   public function childrenRecursive()
   {
-    return $this->subCategories()->with('childrenRecursive');
+    return $this->subCategories()->with(['childrenRecursive', 'parentCategory']);
+  }
+
+  public function parentCategory()
+  {
+    return $this->belongsTo(Category::class, 'parent_id');
   }
 }
