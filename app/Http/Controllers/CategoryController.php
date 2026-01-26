@@ -20,8 +20,11 @@ class CategoryController extends Controller
       ->with('childrenRecursive')
       ->get();
 
+    $allCategories = Category::all();
+
     return Inertia::render('Categories/index', [
       'categories' => CategoryResource::collection($categories),
+      'allCategories' => CategoryResource::collection($allCategories),
     ]);
   }
 

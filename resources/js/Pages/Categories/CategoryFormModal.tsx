@@ -16,17 +16,20 @@ interface CategoryFormModalProps {
   open: boolean;
   onClose: () => void;
   category?: CategoryType | null;
+  parentId?: number | null;
 }
 
 export default function CategoryFormModal({
   open,
   onClose,
   category,
+  parentId,
 }: CategoryFormModalProps) {
   const [isSubcategory, setIsSubcategory] = useState(false);
 
-  const categories = usePage().props.categories as CategoryType[];
-  const categoriesOptions = categories.map((category: CategoryType) => ({
+  const allCategories = usePage().props.allCategories as CategoryType[];
+
+  const categoriesOptions = allCategories.map((category: CategoryType) => ({
     value: category.id,
     label: category.name,
   }));
@@ -51,6 +54,13 @@ export default function CategoryFormModal({
     }
   }, [category]);
 
+  useEffect(() => {
+    if (parentId) {
+      setIsSubcategory(true);
+      setData('parent_id', parentId);
+    }
+  }, [parentId]);
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -71,8 +81,8 @@ export default function CategoryFormModal({
     }
   };
 
-  console.log('category data', data);
-
+  console.log(parentId);
+  console.log(data);
   return (
     <Modal
       show={open}

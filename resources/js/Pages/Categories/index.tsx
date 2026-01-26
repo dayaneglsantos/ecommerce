@@ -12,7 +12,7 @@ import {
 } from '@headlessui/react';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
+import { FaPencilAlt, FaPlusCircle, FaTrashAlt } from 'react-icons/fa';
 import { SlOptionsVertical } from 'react-icons/sl';
 import CategoryFormModal from './CategoryFormModal';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -26,6 +26,7 @@ export default function CategoriesPage() {
   const [openFormModal, setOpenFormModal] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<CategoryType | null>(null);
+  const [selectedParentId, setSelectedParentId] = useState<number | null>(null);
 
   const primaryCategories = categories.filter(
     (category: any) => !category.parent_id
@@ -119,8 +120,8 @@ export default function CategoriesPage() {
                     </MenuButton>
                     <MenuItems
                       transition
-                      anchor="bottom end"
-                      className="w-20 bg-gray-100 rounded-xl p-1 focus:outline-none shadow-full border border-gray-200"
+                      anchor="left start"
+                      className="w-50 bg-gray-100 rounded-xl p-1 focus:outline-none shadow-full border border-gray-200"
                     >
                       <MenuItem>
                         <button
@@ -132,6 +133,20 @@ export default function CategoriesPage() {
                         >
                           <span className="text-sm">Editar</span>{' '}
                           <FaPencilAlt className="text-xs" />
+                        </button>
+                      </MenuItem>
+                      <MenuItem>
+                        <button
+                          className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full"
+                          onClick={() => {
+                            setSelectedParentId(category.id);
+                            setOpenFormModal(true);
+                          }}
+                        >
+                          <span className="text-sm">
+                            Adicionar subcategoria
+                          </span>{' '}
+                          <FaPlusCircle className="text-sm" />
                         </button>
                       </MenuItem>
                       <MenuItem>
@@ -167,13 +182,15 @@ export default function CategoriesPage() {
                 );
 
               return (
-                <Card className="flex flex-col gap-2 border border-dashed border-primary-light w-[250px] shrink-0 ">
+                <Card className="flex flex-col gap-2 border border-dashed border-primary-light max-w-[250px]">
                   {subs?.map((sub) => {
                     return (
-                      <div className="flex justify-between items-center gap-2 p-1 rounded-md shadow-full cursor-pointer !relative">
+                      <div className="flex justify-between items-center gap-2 p-1 rounded-md shadow-full cursor-pointer !relative ">
                         <div
                           key={sub.id}
                           onClick={() => handleSelectCategory(sub, index + 1)}
+                          className="whitespace-nowrap overflow-hidden text-ellipsis"
+                          title={sub.name}
                         >
                           {sub.name}
                         </div>
@@ -188,12 +205,12 @@ export default function CategoriesPage() {
                           </MenuButton>
                           <MenuItems
                             transition
-                            anchor="bottom end"
-                            className="w-20 bg-gray-100 rounded-xl p-1 transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95 data-closed:opacity-0"
+                            anchor="left start"
+                            className="w-50 bg-gray-100 rounded-xl p-1 transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95 data-closed:opacity-0"
                           >
                             <MenuItem>
                               <button
-                                className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full"
+                                className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full "
                                 onClick={() => {
                                   setSelectedItem(sub);
                                   setOpenFormModal(true);
@@ -201,6 +218,20 @@ export default function CategoriesPage() {
                               >
                                 <span className="text-sm">Editar</span>{' '}
                                 <FaPencilAlt className="text-sm" />
+                              </button>
+                            </MenuItem>
+                            <MenuItem>
+                              <button
+                                className="flex items-center justify-between gap-2 p-1 hover:bg-gray-200 rounded-md w-full"
+                                onClick={() => {
+                                  setSelectedParentId(sub.id);
+                                  setOpenFormModal(true);
+                                }}
+                              >
+                                <span className="text-sm">
+                                  Adicionar subcategoria
+                                </span>{' '}
+                                <FaPlusCircle className="text-sm" />
                               </button>
                             </MenuItem>
                             <MenuItem>
@@ -236,8 +267,10 @@ export default function CategoriesPage() {
         onClose={() => {
           setOpenFormModal(false);
           setSelectedItem(null);
+          setSelectedParentId(null);
         }}
         category={selectedItem}
+        parentId={selectedParentId}
       />
       <ConfirmDialog
         open={openConfirmDialog}
