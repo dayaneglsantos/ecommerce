@@ -46,6 +46,13 @@ class ProductVariation extends Model
     return $this->belongsToMany(AttributeValue::class, 'product_variation_attributes', 'product_variation_id', 'attribute_value_id');
   }
 
+  public function entries()
+  {
+    return $this->hasMany(ProductStockEntrie::class, 'product_variation_id');
+  }
+
+  // ========== Ajuste de valores retornados ==========
+
   public function getPriceFormattedAttribute(): float
   {
     return $this->price / 100;

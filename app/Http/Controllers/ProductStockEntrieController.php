@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductStockEntrieRequest;
 use App\Models\Product;
 use App\Models\ProductStockEntrie;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 
 class ProductStockEntrieController extends Controller
@@ -30,7 +31,21 @@ class ProductStockEntrieController extends Controller
    */
   public function store(ProductStockEntrieRequest $request, Product $product)
   {
-    //
+    try {
+      $validated = $request->validated();
+
+      $validated->items->foreach(function ($item) use ($product) {
+        $product->stockEntries()->create([
+          'unit_cost' => $item->unit_cost,
+          'quantity' => $item->quantity,
+          'product_variation_id' => $item->product_variation_id,
+          'supplier_id' => $item->supplier_id
+        ]);
+      });
+      return redirect()->back()->with('success', 'Entradas de estoque adicionadas com sucesso.');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao adicionar entradas de estoque.');
+    }
   }
 
   /**

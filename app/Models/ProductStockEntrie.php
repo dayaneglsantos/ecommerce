@@ -16,4 +16,9 @@ class ProductStockEntrie extends Model
     'quantity',
     'unit_cost',
   ];
+
+  public function productVariation()
+  {
+    return $this->belongsTo(ProductVariation::class, 'product_variation_id');
+  }
 }
