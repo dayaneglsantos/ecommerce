@@ -1,10 +1,10 @@
 import InputError from '@/Components/InputError';
 import { router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
-import SortableImages from './SortableImages';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import ProductType from '@/Types/ProductType';
+import SortableImages from '@/Components/SortableImages';
 
 interface ImagesFormProps {
   open: boolean;

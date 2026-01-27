@@ -16,6 +16,7 @@ interface SelectInputProps {
   onChange?: (value: any) => void;
   placeholder?: string;
   resetSelected?: () => void;
+  disabled?: boolean;
 }
 
 export default function SelectInput({
@@ -25,6 +26,7 @@ export default function SelectInput({
   onChange,
   placeholder = 'Selecione...',
   resetSelected,
+  disabled = false,
 }: SelectInputProps) {
   const selectedLabels =
     Array.isArray(value) &&
@@ -59,7 +61,12 @@ export default function SelectInput({
 
   return (
     <div className="relative w-full">
-      <Listbox multiple={multiple} onChange={onChange} value={value}>
+      <Listbox
+        multiple={multiple}
+        onChange={onChange}
+        value={value}
+        disabled={disabled}
+      >
         <ListboxButton
           className={
             'w-full p-2 flex items-center justify-between bg-white border border-gray-300 rounded-md shadow-sm focus-within:border-primary-light focus-within:ring-1 focus-within:ring-primary-light outline-none '

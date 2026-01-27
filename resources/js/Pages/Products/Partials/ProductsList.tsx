@@ -10,6 +10,7 @@ import { UserType } from '@/Types/UserType';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { Grid, Navigation, Pagination } from 'swiper/modules';
+import ProductEntrieModal from './Forms/ProductEntrieFormModal';
 
 export default function ProductsList() {
   const currentUser = usePage().props.auth.user as UserType;
@@ -17,7 +18,10 @@ export default function ProductsList() {
   const brands = usePage().props.brands as BrandType[];
   const categories = usePage().props.categories as CategoryType[];
 
-  const isAdmin = currentUser?.profile === 'admin';
+  const [openEntrieModal, setOpenEntrieModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(
+    null
+  );
   const [filters, setFilters] = useState({
     brand: [],
     category: [],
@@ -78,10 +82,28 @@ export default function ProductsList() {
                   Ver detalhes
                 </Link>
               </PrimaryButton>
+              <PrimaryButton
+                onClick={() => {
+                  setSelectedProduct(product);
+                  setOpenEntrieModal(true);
+                }}
+              >
+                Incluir entrada
+              </PrimaryButton>
             </Card>
           </GridItem>
         ))}
       </GridContainer>
+      {selectedProduct && (
+        <ProductEntrieModal
+          open={openEntrieModal}
+          onClose={() => {
+            setOpenEntrieModal(false);
+            setSelectedProduct(null);
+          }}
+          product={selectedProduct}
+        />
+      )}
     </>
   );
 }

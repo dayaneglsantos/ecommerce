@@ -1,6 +1,6 @@
 import BrandType from '@/Types/BrandType';
-import ProductForm from './Form/ProductForm';
-import ProductVariationForm from './Form/ProductVariationForm';
+import ProductForm from './Forms/ProductForm';
+import ProductVariationForm from './Forms/ProductVariationForm';
 import CategoryType from '@/Types/CategoryType';
 import SupplierType from '@/Types/SupplierType';
 import ProductType from '@/Types/ProductType';
@@ -14,7 +14,7 @@ import ProductVariationType from '@/Types/ProductVariationType';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import { GridContainer, GridItem } from '@/Components/Grid';
 import { Grid } from 'swiper/modules';
-import ImagesFormModal from './Form/ImagesFormModal';
+import ImagesFormModal from './Forms/ImagesFormModal';
 import { FaTrashAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 
