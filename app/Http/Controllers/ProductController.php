@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\SupplierResource;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -19,14 +21,16 @@ class ProductController extends Controller
   // Listagem de Produtos
   public function index()
   {
-    $products = Product::all()->load('defaultColor', 'variations', 'productImages');
+    $products = Product::all()->load('defaultColor', 'variations', 'images');
     $brands = Brand::all();
     $categories = Category::all();
+    $suppliers = Supplier::all();
 
     return Inertia::render('Products/index', [
       'products' => ProductResource::collection($products),
       'brands' => $brands,
       'categories' => CategoryResource::collection($categories),
+      'suppliers' => SupplierResource::collection($suppliers),
     ]);
   }
 

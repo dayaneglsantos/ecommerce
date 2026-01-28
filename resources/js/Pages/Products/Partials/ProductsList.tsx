@@ -11,6 +11,9 @@ import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { Grid, Navigation, Pagination } from 'swiper/modules';
 import ProductEntrieModal from './Forms/ProductEntrieFormModal';
+import { GiHandTruck } from 'react-icons/gi';
+import { Tooltip } from 'react-tooltip';
+import { LuPackagePlus } from 'react-icons/lu';
 
 export default function ProductsList() {
   const currentUser = usePage().props.auth.user as UserType;
@@ -76,20 +79,31 @@ export default function ProductsList() {
               <p className="text-sm">
                 Variações cadastradas: <b>{product?.variations.length}</b>
               </p>
-
-              <PrimaryButton outline className="mt-2 w-full justify-center">
-                <Link href={route('products.show', product.id)}>
-                  Ver detalhes
-                </Link>
-              </PrimaryButton>
-              <PrimaryButton
-                onClick={() => {
-                  setSelectedProduct(product);
-                  setOpenEntrieModal(true);
-                }}
-              >
-                Incluir entrada
-              </PrimaryButton>
+              <div className="flex justify-between gap-2 items-center">
+                <PrimaryButton outline className="mt-2 w-full justify-center">
+                  <Link href={route('products.show', product.id)}>
+                    Ver detalhes
+                  </Link>
+                </PrimaryButton>
+                <button
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setOpenEntrieModal(true);
+                  }}
+                  className="rounded-full p-1 bg-gray-100"
+                >
+                  <Tooltip
+                    id="product-entrie"
+                    place="top"
+                    content="Registrar entrada"
+                    className="!p-2 !text-[12px]"
+                  />
+                  <LuPackagePlus
+                    data-tooltip-id="product-entrie"
+                    className="text-xl"
+                  />
+                </button>
+              </div>
             </Card>
           </GridItem>
         ))}
