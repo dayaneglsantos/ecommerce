@@ -17,8 +17,24 @@ class ProductStockEntrie extends Model
     'unit_cost',
   ];
 
+  protected $casts = [
+    'unit_cost' => 'integer',
+  ];
+
   public function productVariation()
   {
     return $this->belongsTo(ProductVariation::class, 'product_variation_id');
+  }
+
+  public function supplier()
+  {
+    return $this->belongsTo(Supplier::class, 'supplier_id');
+  }
+
+  public function getUnitCostFormattedAttribute(): string
+  {
+    $formated = number_format($this->unit_cost / 100, 2, ',', '.');
+
+    return $formated;
   }
 }

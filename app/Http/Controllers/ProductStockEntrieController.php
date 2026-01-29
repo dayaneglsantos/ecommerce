@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductStockEntrieRequest;
+use App\Http\Resources\ProductStockEntrieResource;
 use App\Models\Product;
 use App\Models\ProductStockEntrie;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ProductStockEntrieController extends Controller
 {
@@ -15,7 +17,11 @@ class ProductStockEntrieController extends Controller
    */
   public function index()
   {
-    //
+    $productStockEntries = ProductStockEntrie::with(['productVariation', 'supplier'])->get();
+
+    return Inertia::render('ProductStockEntrie/index', [
+      'productStockEntries' => ProductStockEntrieResource::collection($productStockEntries),
+    ]);
   }
 
   /**

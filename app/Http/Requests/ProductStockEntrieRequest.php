@@ -30,4 +30,21 @@ class ProductStockEntrieRequest extends FormRequest
       'items.*.product_variation_id' => ['nullable', 'integer', 'exists:product_variations,id'],
     ];
   }
+
+  protected function prepareForValidation()
+  {
+    if ($this->has('items') && is_array($this->items)) { // Verifica se 'items' existe e é um array
+      $formattedItems = array_map(function ($item) {
+        if (isset($item['unit_cost'])) { // Verifica se 'unit_cost' está definido
+          $item['unit_cost'] = (int) round(str_replace(',', '.', $item['unit_cost']) * 100); // Converte para centavos
+        }
+        return $item;
+      }, $this->items);
+
+      // Atualiza a entrada 'items' com os valores formatados
+      $this->merge([
+        'items' => $formattedItems,
+      ]);
+    }
+  }
 }

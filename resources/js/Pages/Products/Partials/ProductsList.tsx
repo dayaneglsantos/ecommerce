@@ -10,7 +10,7 @@ import { UserType } from '@/Types/UserType';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { Grid, Navigation, Pagination } from 'swiper/modules';
-import ProductEntrieModal from './Forms/ProductEntrieFormModal';
+import ProductEntrieModal from '../../ProductStockEntrie/ProductEntrieFormModal';
 import { GiHandTruck } from 'react-icons/gi';
 import { Tooltip } from 'react-tooltip';
 import { LuPackagePlus } from 'react-icons/lu';

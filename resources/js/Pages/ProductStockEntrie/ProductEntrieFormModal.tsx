@@ -1,6 +1,5 @@
 import Card from '@/Components/Card';
 import { GridContainer, GridItem } from '@/Components/Grid';
-import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -89,6 +88,8 @@ export default function ProductEntrieModal({
           value: size.id,
         };
       });
+
+  console.log(data);
 
   return (
     <Modal

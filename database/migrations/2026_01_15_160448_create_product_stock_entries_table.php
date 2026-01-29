@@ -16,7 +16,7 @@ return new class extends Migration
       $table->foreignId('product_variation_id')->constrained('product_variations');
       $table->foreignId('supplier_id')->constrained('suppliers');
       $table->integer('quantity');
-      $table->decimal('unit_cost', 10, 2); // Custo unitário do item
+      $table->unsignedInteger('unit_cost');
       $table->timestamps();
     });
   }
