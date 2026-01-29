@@ -29,21 +29,21 @@ class ProductStockEntrieController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(ProductStockEntrieRequest $request, Product $product)
+  public function store(ProductStockEntrieRequest $request)
   {
     try {
       $validated = $request->validated();
-
-      $validated->items->foreach(function ($item) use ($product) {
-        $product->stockEntries()->create([
-          'unit_cost' => $item->unit_cost,
-          'quantity' => $item->quantity,
-          'product_variation_id' => $item->product_variation_id,
-          'supplier_id' => $item->supplier_id
+      foreach ($validated['items'] as $item) {
+        ProductStockEntrie::create([
+          'product_variation_id' => $item['product_variation_id'],
+          'supplier_id' => $item['supplier_id'],
+          'unit_cost' => $item['unit_cost'],
+          'quantity' => $item['quantity'],
         ]);
-      });
+      }
       return redirect()->back()->with('success', 'Entradas de estoque adicionadas com sucesso.');
     } catch (\Exception $e) {
+      dd($e->getMessage());
       return redirect()->back()->with('error', 'Erro ao adicionar entradas de estoque.');
     }
   }

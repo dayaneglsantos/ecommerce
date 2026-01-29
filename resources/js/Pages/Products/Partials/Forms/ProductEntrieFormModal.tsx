@@ -59,8 +59,10 @@ export default function ProductEntrieModal({
     setSelectedColor(null);
   };
 
-  const handleSubmit = () => {
-    post(route('products.entries.store', product.id), {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    post(route('productStockEntries.store'), {
       onSuccess: () => {
         onClose();
         setSelectedColor(null);
@@ -87,8 +89,6 @@ export default function ProductEntrieModal({
           value: size.id,
         };
       });
-
-  console.log(currentItem);
 
   return (
     <Modal
@@ -195,30 +195,59 @@ export default function ProductEntrieModal({
               "Adicionar na lista".
             </div>
           ) : (
-            data.items.map((item, index) => (
-              <Card>
-                <GridContainer>
-                  <GridItem size={4}>
-                    <b>Cor: </b>
-                  </GridItem>
-                  <GridItem size={4}>
-                    <b>Tamanho: </b>
-                  </GridItem>
-                  <GridItem size={4}>
-                    <b>Valor: </b>
-                    {item.unit_cost}
-                  </GridItem>
-                  <GridItem size={4}>
-                    <b>Quantidade: </b>
-                    {item.quantity}
-                  </GridItem>
-                  <GridItem size={4}>
-                    <b>Fornecedor ID: </b>
-                    {item.supplier_id}
-                  </GridItem>
-                </GridContainer>
-              </Card>
-            ))
+            <GridContainer gap={3}>
+              {data.items.map((item, index) => (
+                <GridItem size={6}>
+                  <Card className="w-full">
+                    <GridContainer>
+                      <GridItem size={6}>
+                        <b>Cor: </b>{' '}
+                        <p>
+                          {' '}
+                          {
+                            product.variations.find((variation) =>
+                              variation.sizes.some(
+                                (size) => size.id === item.product_variation_id
+                              )
+                            )?.color.value
+                          }
+                        </p>
+                      </GridItem>
+                      <GridItem size={6}>
+                        <b>Tamanho: </b>{' '}
+                        <p>
+                          {' '}
+                          {
+                            product.variations
+                              .find((variation) =>
+                                variation.sizes.some(
+                                  (size) =>
+                                    size.id === item.product_variation_id
+                                )
+                              )
+                              ?.sizes.find(
+                                (size) => size.id === item.product_variation_id
+                              )?.size
+                          }
+                        </p>
+                      </GridItem>
+                      <GridItem size={6}>
+                        <b>Valor unitário: </b>
+                        <p>{item.unit_cost}</p>
+                      </GridItem>
+                      <GridItem size={6}>
+                        <b>Quantidade: </b>
+                        <p>{item.quantity}</p>
+                      </GridItem>
+                      <GridItem size={12}>
+                        <b>Fornecedor: </b>
+                        <p>{item.supplier_id}</p>
+                      </GridItem>
+                    </GridContainer>
+                  </Card>
+                </GridItem>
+              ))}
+            </GridContainer>
           )}
         </div>
         <PrimaryButton
