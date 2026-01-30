@@ -10,7 +10,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ProductStockEntrieType from '@/Types/ProductStockEntrieType';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import dayjs from 'dayjs';
-import { useEffect, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { FaFileExcel } from 'react-icons/fa6';
 
 interface ProductStockEntries {
@@ -40,6 +40,7 @@ export default function ProductEntriesList() {
     endDate: serverFilters?.endDate || '',
     search: serverFilters?.search || '',
   });
+  const [debbouncedSearch, setDebouncedSearch] = useState(filters.search);
 
   const isFirstRender = useRef(true);
 
@@ -80,6 +81,17 @@ export default function ProductEntriesList() {
     });
   }, [filters]);
 
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        search: debbouncedSearch,
+      }));
+    }, 500); // Ajuste o tempo de debounce conforme necessário
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [debbouncedSearch]);
+
   return (
     <AuthenticatedLayout>
       <Head title="Entradas de Produtos" />
@@ -102,10 +114,8 @@ export default function ProductEntriesList() {
             />
             <TextInput
               id="search"
-              value={filters.search}
-              onChange={(e) =>
-                setFilters({ ...filters, search: e.target.value })
-              }
+              value={debbouncedSearch}
+              onChange={(e) => setDebouncedSearch(e.target.value)}
               placeholder="Buscar por produto"
             />
           </GridItem>
@@ -142,10 +152,7 @@ export default function ProductEntriesList() {
         </div>
 
         {data.length === 0 ? (
-          <EmptyContent
-            title="Nenhuma entrada de produto encontrada"
-            description="Tente realizar a busca novamente mais tarde."
-          />
+          <EmptyContent title="Nenhuma entrada de produto encontrada" description={(filters.search || filters.startDate || filters.endDate) && 'Filtros aplicados não retornaram resultados.'}/>
         ) : (
           <div>
             <Table columns={columns} data={tableData} />

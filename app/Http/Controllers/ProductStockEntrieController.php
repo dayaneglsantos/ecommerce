@@ -24,6 +24,11 @@ class ProductStockEntrieController extends Controller
       ->when($request->endDate, function ($query, $endDate) {
         $query->whereDate('created_at', '<=', $endDate);
       })
+      ->when($request->search, function ($query, $search) {
+        $query->whereHas('productVariation.product', function ($q) use ($search) {
+          $q->where('name', 'like', '%' . $search . '%');
+        });
+      })
       ->latest()
       ->paginate(10)
       ->withQueryString();
