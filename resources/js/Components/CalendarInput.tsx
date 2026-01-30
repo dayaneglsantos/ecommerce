@@ -5,17 +5,17 @@ import 'react-day-picker/style.css';
 import dayjs from 'dayjs';
 import { ptBR } from 'react-day-picker/locale';
 
-interface DateSelectProps {
+interface CalendarInputProps {
   value: string;
   onChange: (date: string) => void;
   placeholder?: string;
 }
 
-export default function DateSelect({
+export default function CalendarInput({
   value,
   onChange,
   placeholder,
-}: DateSelectProps) {
+}: CalendarInputProps) {
   const [showCalendar, setShowCalendar] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,7 +39,7 @@ export default function DateSelect({
   return (
     <div ref={containerRef}>
       <div
-        className="min-w-44 flex items-center justify-between gap-3 px-3 py-2 border border-primary-light rounded cursor-pointer"
+        className="min-w-44 flex items-center justify-between gap-3 px-3 py-2 border bg-white border-gray-300 shadow-sm rounded cursor-pointer"
         onClick={() => setShowCalendar(!showCalendar)}
       >
         <span className="text-gray-500">

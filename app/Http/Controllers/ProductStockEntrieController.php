@@ -15,12 +15,22 @@ class ProductStockEntrieController extends Controller
   /**
    * Display a listing of the resource.
    */
-  public function index()
+  public function index(Request $request)
   {
-    $productStockEntries = ProductStockEntrie::with(['productVariation', 'supplier'])->get();
+    $entries = ProductStockEntrie::query()->with(['productVariation', 'supplier'])
+      ->when($request->startDate, function ($query, $startDate) {
+        $query->whereDate('created_at', '>=', $startDate);
+      })
+      ->when($request->endDate, function ($query, $endDate) {
+        $query->whereDate('created_at', '<=', $endDate);
+      })
+      ->latest()
+      ->paginate(10)
+      ->withQueryString();
 
     return Inertia::render('ProductStockEntrie/index', [
-      'productStockEntries' => ProductStockEntrieResource::collection($productStockEntries),
+      'productStockEntries' => ProductStockEntrieResource::collection($entries),
+      'filters' => $request->only(['startDate', 'endDate']),
     ]);
   }
 

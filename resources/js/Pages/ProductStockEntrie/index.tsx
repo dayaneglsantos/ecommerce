@@ -1,20 +1,47 @@
-import DateSelect from '@/Components/DateSelect';
+import CalendarInput from '@/Components/CalendarInput';
 import EmptyContent from '@/Components/EmptyContent';
+import { GridContainer, GridItem } from '@/Components/Grid';
+import InputLabel from '@/Components/InputLabel';
+import Pagination from '@/Components/Pagination';
+import PrimaryButton from '@/Components/PrimaryButton';
 import Table from '@/Components/Table';
+import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ProductStockEntrieType from '@/Types/ProductStockEntrieType';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { FaFileExcel } from 'react-icons/fa6';
+
+interface ProductStockEntries {
+  data: ProductStockEntrieType[];
+  meta: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    links: {
+      label: string;
+      page: number | null;
+      url: string | null;
+      active: boolean;
+    }[];
+    total: number;
+  };
+}
 
 export default function ProductEntriesList() {
-  const productStockEntries = usePage().props
-    .productStockEntries as ProductStockEntrieType[];
+  const { data, meta } = usePage().props
+    .productStockEntries as ProductStockEntries;
+
+  const { filters: serverFilters } = usePage().props as any;
 
   const [filters, setFilters] = useState({
-    startDate: '',
-    endDate: '',
+    startDate: serverFilters?.startDate || '',
+    endDate: serverFilters?.endDate || '',
+    search: serverFilters?.search || '',
   });
+
+  const isFirstRender = useRef(true);
 
   const columns = [
     { label: 'Produto', id: 'product' },
@@ -25,7 +52,7 @@ export default function ProductEntriesList() {
     { label: 'Data de Criação', id: 'createdAt' },
   ];
 
-  const data = productStockEntries.map((entry: ProductStockEntrieType) => ({
+  const tableData = data?.map((entry: ProductStockEntrieType) => ({
     product: entry.productVariation.product.name,
     color: entry.productVariation.color,
     size: entry.productVariation.size,
@@ -39,7 +66,19 @@ export default function ProductEntriesList() {
     ),
   }));
 
-  console.log(filters);
+  useEffect(() => {
+    // Evita a chamada na primeira renderização
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    router.get(route('productStockEntries.index'), filters, {
+      preserveState: true, // Mantém o que o usuário digitou
+      replace: true, // Não cria um novo histórico no navegador a cada filtro
+      only: ['productStockEntries'], // Performance: pede apenas os dados da tabela
+    });
+  }, [filters]);
 
   return (
     <AuthenticatedLayout>
@@ -50,30 +89,70 @@ export default function ProductEntriesList() {
           Entradas de Produtos
         </h3>
 
-        <div className="flex flex-col gap-1">
-          <span className="font-bold text-gray-600">Período</span>
-          <div className="flex gap-3">
-            <DateSelect
-              value={filters.startDate}
-              onChange={(date) => setFilters({ ...filters, startDate: date })}
-              placeholder="Data inicial"
+        {/* ============= Filtros ============= */}
+        <GridContainer
+          gap={3}
+          className="p-3 py-5 rounded-md shadow-xl border border-gray-200"
+        >
+          <GridItem size={4}>
+            <InputLabel
+              htmlFor="search"
+              value="Buscar por produto"
+              className="mb-1 font-medium text-lg"
             />
-            <DateSelect
-              value={filters.endDate}
-              onChange={(date) => setFilters({ ...filters, endDate: date })}
-              placeholder="Data final"
+            <TextInput
+              id="search"
+              value={filters.search}
+              onChange={(e) =>
+                setFilters({ ...filters, search: e.target.value })
+              }
+              placeholder="Buscar por produto"
             />
-          </div>
+          </GridItem>
+          <GridItem size={8}>
+            <InputLabel value="Período" className="mb-1 font-medium text-lg" />
+            <div className="flex gap-3 items-center">
+              <CalendarInput
+                value={filters.startDate}
+                onChange={(date) => setFilters({ ...filters, startDate: date })}
+                placeholder="Data inicial"
+              />
+              <CalendarInput
+                value={filters.endDate}
+                onChange={(date) => setFilters({ ...filters, endDate: date })}
+                placeholder="Data final"
+              />
+              <PrimaryButton
+                outline
+                onClick={() =>
+                  setFilters({ startDate: '', endDate: '', search: '' })
+                }
+              >
+                Limpar filtros
+              </PrimaryButton>
+            </div>
+          </GridItem>
+        </GridContainer>
+        {/* ========================== */}
+
+        <div className="flex justify-end">
+          <PrimaryButton className="flex items-center">
+            <span>Exportar</span> <FaFileExcel className="text-lg ml-2" />
+          </PrimaryButton>
         </div>
 
-        {productStockEntries.length === 0 ? (
+        {data.length === 0 ? (
           <EmptyContent
             title="Nenhuma entrada de produto encontrada"
             description="Tente realizar a busca novamente mais tarde."
           />
         ) : (
-          <Table columns={columns} data={data} />
+          <div>
+            <Table columns={columns} data={tableData} />
+          </div>
         )}
+
+        <Pagination links={meta.links} />
       </div>
     </AuthenticatedLayout>
   );

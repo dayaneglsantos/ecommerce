@@ -13,7 +13,7 @@ export default function Table({ columns, data }: TableProps) {
   return (
     <div className="w-full overflow-x-auto border border-gray-300 rounded-sm">
       <table className="w-full min-w-max text-sm">
-        <thead className="bg-gray-100 border-b border-gray-300">
+        <thead className="bg-gray-200 border-b border-gray-300">
           <tr>
             {columns.map((column) => (
               <th
