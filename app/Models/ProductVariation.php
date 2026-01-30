@@ -53,24 +53,24 @@ class ProductVariation extends Model
 
   // ========== Ajuste de valores retornados ==========
 
-  public function getPriceFormattedAttribute(): float
+  public function getPriceFormattedAttribute(): string
   {
-    return $this->price / 100;
+    return number_format($this->price / 100, 2, ',', '.');
   }
 
-  public function getOldPriceFormattedAttribute(): ?float
+  public function getOldPriceFormattedAttribute(): ?string
   {
     return $this->old_price !== null
-      ? $this->old_price / 100
+      ? number_format($this->old_price / 100, 2, ',', '.')
       : null;
   }
 
-  public function getPixDiscountValueFormattedAttribute(): ?float
+  public function getPixDiscountValueFormattedAttribute(): ?string
   {
     if ($this->pix_discount_type !== 'fixed') {
       return $this->pix_discount_value;
     }
 
-    return $this->pix_discount_value / 100;
+    return number_format($this->pix_discount_value / 100, 2, ',', '.');
   }
 }

@@ -6,17 +6,13 @@ import SelectInput from '@/Components/SelectInput';
 import BrandType from '@/Types/BrandType';
 import CategoryType from '@/Types/CategoryType';
 import ProductType from '@/Types/ProductType';
-import { UserType } from '@/Types/UserType';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { Grid, Navigation, Pagination } from 'swiper/modules';
 import ProductEntrieModal from '../../ProductStockEntrie/ProductEntrieFormModal';
-import { GiHandTruck } from 'react-icons/gi';
 import { Tooltip } from 'react-tooltip';
 import { LuPackagePlus } from 'react-icons/lu';
 
 export default function ProductsList() {
-  const currentUser = usePage().props.auth.user as UserType;
   const products = usePage().props.products as ProductType[];
   const brands = usePage().props.brands as BrandType[];
   const categories = usePage().props.categories as CategoryType[];

@@ -36,7 +36,6 @@ class ProductVariationController extends Controller
    */
   public function store(CreateVariationRequest $request)
   {
-    dd($request->all());
     try {
       // Transaction garante que ou todas as operações sejam concluídas com sucesso ou nenhuma seja aplicada em caso de falha
       DB::transaction(function () use ($request) {

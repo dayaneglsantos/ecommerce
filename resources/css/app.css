@@ -27,3 +27,60 @@
 .swiper-button-prev {
   left: 0 !important;
 }
+
+/* ============= Calendário ============= */
+.rdp-root {
+  position: absolute !important;
+}
+
+.rdp-selected,
+.rdp-caption_label {
+  color: theme('colors.primary') !important;
+}
+
+.rdp-today {
+  color: theme('colors.primary-light') !important;
+  font-weight: bold;
+  border-radius: 50% !important;
+}
+
+.rdp-day {
+  width: 30px !important;
+  height: 30px !important;
+  padding: 4px !important;
+}
+
+.rdp-day_button {
+  width: 30px !important;
+  height: 30px !important;
+  padding: 4px !important;
+}
+
+.rdp-day_button:hover {
+  background-color: theme('colors.primary-light') !important;
+  border-radius: 50% !important;
+  cursor: pointer;
+  padding: 4px !important;
+}
+
+.rdp-selected .rdp-day_button {
+  border: 1px solid theme('colors.primary') !important;
+}
+
+.rdp-chevron {
+  fill: theme('colors.primary') !important;
+}
+
+.rdp-button_next,
+.rdp-button_previous,
+.rdp-day_button {
+  transition: all 0.2s ease-in-out !important;
+  padding: 4px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.rdp-button_next:hover,
+.rdp-button_previous:hover {
+  background: var('') !important;
+}

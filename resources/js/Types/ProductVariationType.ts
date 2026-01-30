@@ -13,8 +13,8 @@ export default interface ProductVariationType {
   sizes: {
     id: number;
     size: string;
-    oldPrice: number | null;
-    price: number;
+    oldPrice: string | null;
+    price: string;
     stockQuantity: number;
     pixDiscount: {
       type: string | null;

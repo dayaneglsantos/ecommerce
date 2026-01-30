@@ -79,23 +79,11 @@ export default function ProductVariationForm({
     if (selectedSize && variation) {
       setData('color', variation.color.id);
       setData('size', selectedSize.size);
-      setData('price', parseFloat(selectedSize.price.toString()).toFixed(2));
-      setData(
-        'old_price',
-        selectedSize.oldPrice
-          ? parseFloat(selectedSize.oldPrice.toString()).toFixed(2)
-          : ''
-      );
+      setData('price', selectedSize.price || '');
+      setData('old_price', selectedSize.oldPrice ? selectedSize.oldPrice : '');
       setData('sku', selectedSize.sku);
       setData('pix_discount_type', selectedSize.pixDiscount.type || '');
-      setData(
-        'pix_discount_value',
-        selectedSize.pixDiscount.type === 'fixed'
-          ? parseFloat(
-              selectedSize?.pixDiscount.value?.toString() || '0'
-            ).toFixed(2)
-          : selectedSize?.pixDiscount.value?.toString() || ''
-      );
+      setData('pix_discount_value', selectedSize?.pixDiscount?.value || '');
     }
   }, [selectedSize]);
 
