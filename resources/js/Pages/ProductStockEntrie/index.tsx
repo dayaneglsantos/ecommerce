@@ -10,7 +10,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ProductStockEntrieType from '@/Types/ProductStockEntrieType';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import dayjs from 'dayjs';
-import { use, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { FaFileExcel } from 'react-icons/fa6';
 
 interface ProductStockEntries {
@@ -92,6 +93,23 @@ export default function ProductEntriesList() {
     return () => clearTimeout(delayDebounceFn);
   }, [debbouncedSearch]);
 
+  const handleExport = () => {
+    if (!filters.startDate || !filters.endDate) {
+      toast.error('Selecione o período para exportar os dados.');
+      return;
+    }
+
+    const query = new URLSearchParams({
+      startDate: filters.startDate,
+      endDate: filters.endDate,
+      search: filters.search,
+    }).toString();
+
+    window.location.href = `${route('productStockEntries.export')}?${query}`;
+
+    toast.success('Exportação iniciada. Verifique seus downloads.');
+  };
+
   return (
     <AuthenticatedLayout>
       <Head title="Entradas de Produtos" />
@@ -146,13 +164,19 @@ export default function ProductEntriesList() {
         {/* ========================== */}
 
         <div className="flex justify-end">
-          <PrimaryButton className="flex items-center">
+          <PrimaryButton className="flex items-center" onClick={handleExport}>
             <span>Exportar</span> <FaFileExcel className="text-lg ml-2" />
           </PrimaryButton>
         </div>
 
         {data.length === 0 ? (
-          <EmptyContent title="Nenhuma entrada de produto encontrada" description={(filters.search || filters.startDate || filters.endDate) && 'Filtros aplicados não retornaram resultados.'}/>
+          <EmptyContent
+            title="Nenhuma entrada de produto encontrada"
+            description={
+              (filters.search || filters.startDate || filters.endDate) &&
+              'Filtros aplicados não retornaram resultados.'
+            }
+          />
         ) : (
           <div>
             <Table columns={columns} data={tableData} />

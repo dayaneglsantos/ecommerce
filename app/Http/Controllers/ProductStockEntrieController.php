@@ -9,6 +9,7 @@ use App\Models\ProductStockEntrie;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProductStockEntrieController extends Controller
 {
@@ -37,6 +38,64 @@ class ProductStockEntrieController extends Controller
       'productStockEntries' => ProductStockEntrieResource::collection($entries),
       'filters' => $request->only(['startDate', 'endDate']),
     ]);
+  }
+
+  public function export(Request $request)
+  {
+
+    try {
+      $startDate = $request->startDate;
+      $endDate = $request->endDate;
+
+      $response = new StreamedResponse(function () use ($startDate, $endDate) {
+        $handle = fopen('php://output', 'w'); // Abrir o fluxo de saída, ou seja, o download do arquivo
+
+        // Definir o cabeçalho do arquivo CSV
+        fputcsv($handle, [
+          'Produto',
+          'Cor',
+          'Tamanho',
+          'Fornecedor',
+          'Custo Unitário',
+          'Quantidade',
+          'Data de Criação',
+        ]);
+
+        ProductStockEntrie::query()
+          ->with(['productVariation.product', 'productVariation.attributes.attribute', 'supplier'])
+          // Filtro por período
+          ->when($startDate, function ($query, $startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
+          })
+          ->when($endDate, function ($query, $endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+          })
+          // Processa em lotes para evitar sobrecarga de memória (carregando 100 registros por vez)
+          ->chunk(100, function ($entries) use ($handle) {
+            foreach ($entries as $entry) {
+              fputcsv($handle, [
+                $entry->productVariation->product->name,
+                $entry->productVariation->attributes->where('attribute.name', 'Cor')->first()?->value ?? '',
+                $entry->productVariation->attributes->where('attribute.name', 'Tamanho')->first()?->value ?? '',
+                $entry->supplier->name,
+                $entry->unit_cost_formatted,
+                $entry->quantity,
+                $entry->created_at->format('d/m/Y H:i:s'),
+              ]);
+            }
+          });
+
+        fclose($handle); // Fechar o fluxo de saída
+      });
+
+      $response->headers->set('Content-Type', 'text/csv');
+      $response->headers->set('Content-Disposition', 'attachment; filename="entradas_estoque.csv"');
+
+      return $response;
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return redirect()->back()->with('error', 'Erro ao exportar entradas de estoque.');
+    }
   }
 
   /**

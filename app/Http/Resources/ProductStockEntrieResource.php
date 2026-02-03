@@ -39,7 +39,7 @@ class ProductStockEntrieResource extends JsonResource
           ]
         ];
       }),
-      'createdAt' => $this->created_at->toDateTimeString(),
+      'createdAt' => $this->created_at,
     ];
   }
 }
