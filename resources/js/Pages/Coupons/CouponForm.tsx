@@ -4,9 +4,12 @@ import { GridContainer, GridItem } from '@/Components/Grid';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import Modal from '@/Components/Modal';
+import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
+import dayjs from 'dayjs';
+import { useState } from 'react';
 import { LuClock } from 'react-icons/lu';
 
 interface CouponFormModalProps {
@@ -18,6 +21,9 @@ export default function CouponFormModal({
   open,
   onClose,
 }: CouponFormModalProps) {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
   const { data, setData, reset, errors } = useForm({
     type: '',
     code: '',
@@ -29,6 +35,13 @@ export default function CouponFormModal({
     available_per_user: '',
     minimum_order_value: '',
   });
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // ajustar
+  };
+
+  console.log('form data:', data);
 
   return (
     <Modal show={open} onClose={onClose}>
@@ -113,21 +126,95 @@ export default function CouponFormModal({
             </div>
           </GridItem>
           <GridItem size={6}>
-            <CalendarInput value={''} onChange={() => {}} />
+            <CalendarInput value={startDate} onChange={setStartDate} />
             <TextInput
-              mask={'00.000-000'}
-              id="zip_code"
+              mask={'00:00'}
               className="mt-1 block w-full"
               value={''}
-              // onChange={(e) => {
-              //   if (editingAddressId === null) return;
-              //   setData('zip_code', e.target.value.replace(/\D/g, ''));
-              // }}
+              onChange={(e) => {
+                const time = e.target.value;
+                setData(
+                  'start_date',
+                  dayjs(`${startDate} ${time}`)
+                    .startOf('minute')
+                    .format('YYYY-MM-DD HH:mm')
+                );
+              }}
               required
               icon={<LuClock />}
+              disabled={!startDate}
+            />
+          </GridItem>
+          <GridItem size={6}>
+            <CalendarInput value={endDate} onChange={setEndDate} />
+            <TextInput
+              mask={'00:00'}
+              className="mt-1 block w-full"
+              value={''}
+              onChange={(e) => {
+                const time = e.target.value;
+                setData(
+                  'end_date',
+                  dayjs(`${endDate} ${time}`)
+                    .endOf('minute')
+                    .format('YYYY-MM-DD HH:mm')
+                );
+              }}
+              required
+              icon={<LuClock />}
+              disabled={!endDate}
+            />
+          </GridItem>
+          <GridItem size={6}>
+            <InputLabel
+              htmlFor="available_quantity"
+              value="Quantidade disponível"
+              className="mt-4"
+            />
+            <TextInput
+              id="available_quantity"
+              type="number"
+              value={data.available_quantity}
+              className="mt-1 block w-full"
+              onChange={(e) => setData('available_quantity', e.target.value)}
+            />
+          </GridItem>
+          <GridItem size={6}>
+            <InputLabel
+              htmlFor="available_per_user"
+              value="Quantidade disponível por usuário"
+              className="mt-4"
+            />
+            <TextInput
+              id="available_per_user"
+              type="number"
+              value={data.available_per_user}
+              className="mt-1 block w-full"
+              onChange={(e) => setData('available_per_user', e.target.value)}
+            />
+          </GridItem>
+          <GridItem size={6}>
+            <InputLabel
+              htmlFor="minimum_order_value"
+              value="Valor mínimo da compra"
+              className="mt-4"
+            />
+            <TextInput
+              id="minimum_order_value"
+              type="number"
+              typeNumber="decimal"
+              value={data.minimum_order_value}
+              className="mt-1 block w-full"
+              onChange={(e) => setData('minimum_order_value', e.target.value)}
             />
           </GridItem>
         </GridContainer>
+        <div className="flex gap-2 justify-end">
+          <PrimaryButton outline onClick={close}>
+            Cancelar
+          </PrimaryButton>
+          <PrimaryButton onClick={submit}>Salvar</PrimaryButton>
+        </div>
       </form>
     </Modal>
   );

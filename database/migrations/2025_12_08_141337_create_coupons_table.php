@@ -14,8 +14,8 @@ return new class extends Migration
     Schema::create('coupons', function (Blueprint $table) {
       $table->id();
       $table->string('type'); // Produto ou frete
-      $table->integer('discount_percentage')->nullable(); // Percentual de desconto OU
-      $table->decimal('discount_value', 8, 2)->nullable(); // Valor do desconto
+      $table->enum('discount_type', ['percentage', 'fixed'])->default('fixed')->nullable();
+      $table->unsignedInteger('discount_value')->default(0)->nullable();
       $table->string('code')->unique(); // Código único do cupom
       $table->string('status'); // Ex: active, inactive, expired
       $table->date('start_date'); // Data de início da validade do cupom
