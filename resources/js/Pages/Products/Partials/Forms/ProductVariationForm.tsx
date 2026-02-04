@@ -352,7 +352,7 @@ export default function ProductVariationForm({
                           }}
                           checked={data.pix_discount_type === 'percentage'}
                         />
-                        <InputLabel htmlFor="color" value="Porcentagem (%)" />
+                        <InputLabel value="Porcentagem (%)" />
                       </div>
                       <div className="flex items-center gap-1">
                         <Checkbox
@@ -362,7 +362,7 @@ export default function ProductVariationForm({
                           }}
                           checked={data.pix_discount_type === 'fixed'}
                         />
-                        <InputLabel htmlFor="color" value="Valor fixo" />
+                        <InputLabel value="Valor fixo" />
                       </div>
                     </div>
                   </div>

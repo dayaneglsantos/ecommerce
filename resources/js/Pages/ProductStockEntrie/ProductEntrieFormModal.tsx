@@ -89,8 +89,6 @@ export default function ProductEntrieModal({
         };
       });
 
-  console.log(data);
-
   return (
     <Modal
       show={open}

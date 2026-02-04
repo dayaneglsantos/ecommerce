@@ -73,6 +73,7 @@ class ProductStockEntrieController extends Controller
           // Processa em lotes para evitar sobrecarga de memória (carregando 100 registros por vez)
           ->chunk(100, function ($entries) use ($handle) {
             foreach ($entries as $entry) {
+              // Escrever cada linha de dados no arquivo CSV
               fputcsv($handle, [
                 $entry->productVariation->product->name,
                 $entry->productVariation->attributes->where('attribute.name', 'Cor')->first()?->value ?? '',
