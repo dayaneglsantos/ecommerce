@@ -93,7 +93,7 @@ const GridItem = ({
   const lgClass = lgColSpans[size as keyof typeof lgColSpans];
 
   return (
-    <div className={`${smClass} ${mdClass} ${lgClass}` + className} {...props}>
+    <div className={`${smClass} ${mdClass} ${lgClass} ` + className} {...props}>
       {children}
     </div>
   );

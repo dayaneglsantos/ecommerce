@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CouponRequest;
 use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -27,9 +28,16 @@ class CouponController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request)
+  public function store(CouponRequest $request)
   {
-    //
+    try {
+      $validated = $request->validated();
+
+      Coupon::create($validated);
+      return redirect()->route('coupons.index')->with('success', 'Cupom criado com sucesso');
+    } catch (\Exception $e) {
+      return redirect()->back()->with('error', 'Erro ao criar cupom');
+    }
   }
 
   /**

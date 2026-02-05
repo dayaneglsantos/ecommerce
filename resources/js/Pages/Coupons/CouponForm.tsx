@@ -7,9 +7,10 @@ import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
+import { Input } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LuClock } from 'react-icons/lu';
 
 interface CouponFormModalProps {
@@ -22,9 +23,11 @@ export default function CouponFormModal({
   onClose,
 }: CouponFormModalProps) {
   const [startDate, setStartDate] = useState('');
+  const [startTime, setStartTime] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [endTime, setEndTime] = useState('');
 
-  const { data, setData, reset, errors } = useForm({
+  const { data, setData, reset, errors, setError, clearErrors } = useForm({
     type: '',
     code: '',
     discount_type: '',
@@ -43,26 +46,112 @@ export default function CouponFormModal({
 
   console.log('form data:', data);
 
+  useEffect(() => {
+    if (endDate && dayjs(startDate).isAfter(endDate)) {
+      setError(
+        'start_date',
+        'A data de início não pode ser posterior à data de término'
+      );
+    } else if (dayjs(startDate).isBefore(dayjs().startOf('day'))) {
+      setError(
+        'start_date',
+        'A data de início não pode ser anterior à data atual'
+      );
+    } else {
+      clearErrors('start_date');
+      if (startTime.length === 5) {
+        setData(
+          'start_date',
+          dayjs(`${startDate} ${startTime}`)
+            .startOf('minute')
+            .format('YYYY-MM-DD HH:mm')
+        );
+      }
+    }
+  }, [startDate]);
+
+  useEffect(() => {
+    if (startTime.length === 5) {
+      const isValid = dayjs(startTime, 'HH:mm', true).isValid();
+
+      if (!isValid) {
+        setError('start_date', 'Hora inválida');
+      } else {
+        clearErrors('start_date');
+        setData(
+          'start_date',
+          dayjs(`${startDate} ${startTime}`)
+            .startOf('minute')
+            .format('YYYY-MM-DD HH:mm')
+        );
+      }
+    }
+  }, [startTime]);
+
+  useEffect(() => {
+    if (dayjs(endDate).isBefore(startDate)) {
+      setError(
+        'end_date',
+        'A data de término não pode ser anterior à data de início'
+      );
+    } else {
+      clearErrors('end_date');
+    }
+  }, [endDate]);
+
+  useEffect(() => {
+    if (endTime.length === 5) {
+      const isValid = dayjs(endTime, 'HH:mm', true).isValid();
+
+      if (!isValid) {
+        setError('end_date', 'Hora inválida');
+      } else if (
+        endDate === startDate &&
+        !dayjs(endTime, 'HH:mm').isAfter(dayjs(startTime, 'HH:mm'))
+      ) {
+        setError(
+          'end_date',
+          'A hora de término não pode ser anterior à hora de início'
+        );
+      } else {
+        clearErrors('end_date');
+        setData(
+          'end_date',
+          dayjs(`${endDate} ${endTime}`)
+            .endOf('minute')
+            .format('YYYY-MM-DD HH:mm')
+        );
+      }
+    }
+  }, [endTime]);
+
   return (
-    <Modal show={open} onClose={onClose}>
-      <h3 className="font-bold text-lg text-primary-dark">Novo cupom</h3>
+    <Modal
+      show={open}
+      onClose={() => {
+        onClose();
+        reset();
+      }}
+      maxWidth="3xl"
+    >
+      <h3 className="font-bold text-lg text-primary-dark mb-6">Novo cupom</h3>
 
       <form>
         <GridContainer gap={3}>
-          <GridItem size={12}>
-            <InputLabel htmlFor="type" value="Tipo de cupom" className="mt-4" />
+          <GridItem size={6}>
+            <InputLabel htmlFor="type" value="Tipo de cupom" className="mb-1" />
             <SelectInput
               options={[
                 { label: 'Produto', value: 'product' },
                 { label: 'Entrega', value: 'shipping' },
               ]}
               value={data.type}
-              onChange={(e) => setData('type', e.target.value)}
+              onChange={(e) => setData('type', e)}
               placeholder="Selecione um tipo de cupom"
             />
           </GridItem>
-          <GridItem size={12}>
-            <InputLabel htmlFor="code" value="Código" className="mt-4" />
+          <GridItem size={6}>
+            <InputLabel htmlFor="code" value="Código" />
             <TextInput
               id="code"
               type="text"
@@ -71,12 +160,8 @@ export default function CouponFormModal({
               onChange={(e) => setData('code', e.target.value)}
             />
           </GridItem>
-          <GridItem size={8}>
-            <InputLabel
-              htmlFor="pix_discount_value"
-              value="Desconto PIX"
-              className="mt-4"
-            />
+          <GridItem size={7}>
+            <InputLabel htmlFor="discount_value" value="Desconto" />
             <div className="flex gap-3">
               <div className="grow">
                 <TextInput
@@ -101,12 +186,11 @@ export default function CouponFormModal({
                 />
                 <InputError className="mt-2" message={errors.discount_value} />
               </div>
-              <div className="self-end mb-2 ml-3 mt-1">
+              <div className="flex gap-2 w-full">
                 <div className="flex items-center gap-1">
                   <Checkbox
                     onChange={(e) => {
                       setData('discount_type', 'percentage');
-                      setData('discount_value', '');
                     }}
                     checked={data.discount_type === 'percentage'}
                   />
@@ -116,7 +200,6 @@ export default function CouponFormModal({
                   <Checkbox
                     onChange={(e) => {
                       setData('discount_type', 'fixed');
-                      setData('discount_value', '');
                     }}
                     checked={data.discount_type === 'fixed'}
                   />
@@ -125,51 +208,84 @@ export default function CouponFormModal({
               </div>
             </div>
           </GridItem>
-          <GridItem size={6}>
-            <CalendarInput value={startDate} onChange={setStartDate} />
+          <GridItem size={5}>
+            <InputLabel
+              htmlFor="minimum_order_value"
+              value="Valor mínimo da compra"
+            />
             <TextInput
-              mask={'00:00'}
+              id="minimum_order_value"
+              type="number"
+              typeNumber="decimal"
+              value={data.minimum_order_value}
               className="mt-1 block w-full"
-              value={''}
-              onChange={(e) => {
-                const time = e.target.value;
-                setData(
-                  'start_date',
-                  dayjs(`${startDate} ${time}`)
-                    .startOf('minute')
-                    .format('YYYY-MM-DD HH:mm')
-                );
-              }}
-              required
-              icon={<LuClock />}
-              disabled={!startDate}
+              onChange={(e) => setData('minimum_order_value', e.target.value)}
             />
           </GridItem>
           <GridItem size={6}>
-            <CalendarInput value={endDate} onChange={setEndDate} />
-            <TextInput
-              mask={'00:00'}
-              className="mt-1 block w-full"
-              value={''}
-              onChange={(e) => {
-                const time = e.target.value;
-                setData(
-                  'end_date',
-                  dayjs(`${endDate} ${time}`)
-                    .endOf('minute')
-                    .format('YYYY-MM-DD HH:mm')
-                );
-              }}
-              required
-              icon={<LuClock />}
-              disabled={!endDate}
+            <InputLabel
+              htmlFor="start_date"
+              value="Data de início"
+              className="mb-1"
             />
+            <div className="flex items-center gap-3">
+              <CalendarInput
+                value={startDate}
+                onChange={(date) => {
+                  setStartDate(date);
+                }}
+              />
+              <TextInput
+                mask={'00:00'}
+                placeholder="00:00"
+                value={startTime}
+                onChange={(e) => {
+                  const time = e.target.value;
+                  setStartTime(time);
+                }}
+                required
+                icon={<LuClock />}
+                disabled={
+                  !startDate ||
+                  (endDate && dayjs(startDate).isAfter(endDate)) ||
+                  dayjs(startDate).isBefore(dayjs().startOf('day'))
+                }
+              />
+            </div>
+            <InputError className="mt-2 block" message={errors.start_date} />
+          </GridItem>
+          <GridItem size={6}>
+            <InputLabel
+              htmlFor="end_date"
+              value="Data de término"
+              className="mb-1"
+            />
+            <div className="flex items-center gap-3">
+              <CalendarInput
+                value={endDate}
+                onChange={(date) => {
+                  setEndDate(date);
+                }}
+              />
+              <TextInput
+                mask={'00:00'}
+                value={endTime}
+                placeholder="00:00"
+                onChange={(e) => {
+                  const time = e.target.value;
+                  setEndTime(time);
+                }}
+                required
+                icon={<LuClock />}
+                disabled={!endDate || dayjs(endDate).isBefore(startDate)}
+              />
+            </div>
+            <InputError className="mt-2" message={errors.end_date} />
           </GridItem>
           <GridItem size={6}>
             <InputLabel
               htmlFor="available_quantity"
               value="Quantidade disponível"
-              className="mt-4"
             />
             <TextInput
               id="available_quantity"
@@ -183,7 +299,6 @@ export default function CouponFormModal({
             <InputLabel
               htmlFor="available_per_user"
               value="Quantidade disponível por usuário"
-              className="mt-4"
             />
             <TextInput
               id="available_per_user"
@@ -193,23 +308,8 @@ export default function CouponFormModal({
               onChange={(e) => setData('available_per_user', e.target.value)}
             />
           </GridItem>
-          <GridItem size={6}>
-            <InputLabel
-              htmlFor="minimum_order_value"
-              value="Valor mínimo da compra"
-              className="mt-4"
-            />
-            <TextInput
-              id="minimum_order_value"
-              type="number"
-              typeNumber="decimal"
-              value={data.minimum_order_value}
-              className="mt-1 block w-full"
-              onChange={(e) => setData('minimum_order_value', e.target.value)}
-            />
-          </GridItem>
         </GridContainer>
-        <div className="flex gap-2 justify-end">
+        <div className="flex gap-2 justify-end mt-6">
           <PrimaryButton outline onClick={close}>
             Cancelar
           </PrimaryButton>
