@@ -33,7 +33,7 @@ export default function InputLabel({
               id={props.htmlFor}
               place="top"
               content={iconText}
-              className="!p-2 !text-[12px]"
+              className="!p-2 !text-[12px] z-50"
             />
           )}
         </div>

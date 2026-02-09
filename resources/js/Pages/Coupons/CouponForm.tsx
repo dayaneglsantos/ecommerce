@@ -11,6 +11,7 @@ import { Input } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
+import { IoMdInformationCircle } from 'react-icons/io';
 import { LuClock } from 'react-icons/lu';
 
 interface CouponFormModalProps {
@@ -27,21 +28,36 @@ export default function CouponFormModal({
   const [endDate, setEndDate] = useState('');
   const [endTime, setEndTime] = useState('');
 
-  const { data, setData, reset, errors, setError, clearErrors } = useForm({
-    type: '',
-    code: '',
-    discount_type: '',
-    discount_value: '',
-    start_date: '',
-    end_date: '',
-    available_quantity: '',
-    available_per_user: '',
-    minimum_order_value: '',
-  });
+  const { data, setData, reset, errors, setError, clearErrors, post } = useForm(
+    {
+      type: '',
+      code: '',
+      discount_type: '',
+      discount_value: '',
+      start_date: '',
+      end_date: '',
+      available_quantity: '',
+      available_per_user: '',
+      minimum_order_value: '',
+    }
+  );
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    // ajustar
+
+    post(route('coupons.store'), {
+      onSuccess: () => {
+        onClose();
+        reset();
+        setStartDate('');
+        setStartTime('');
+        setEndDate('');
+        setEndTime('');
+      },
+      onError: (errors) => {
+        console.log(errors);
+      },
+    });
   };
 
   console.log('form data:', data);
@@ -149,6 +165,7 @@ export default function CouponFormModal({
               onChange={(e) => setData('type', e)}
               placeholder="Selecione um tipo de cupom"
             />
+            <InputError className="mt-2" message={errors.type} />
           </GridItem>
           <GridItem size={6}>
             <InputLabel htmlFor="code" value="Código" />
@@ -159,6 +176,7 @@ export default function CouponFormModal({
               className="mt-1 block w-full"
               onChange={(e) => setData('code', e.target.value)}
             />
+            <InputError className="mt-2" message={errors.code} />
           </GridItem>
           <GridItem size={7}>
             <InputLabel htmlFor="discount_value" value="Desconto" />
@@ -184,8 +202,8 @@ export default function CouponFormModal({
                     setData('discount_value', e.target.value);
                   }}
                 />
-                <InputError className="mt-2" message={errors.discount_value} />
               </div>
+
               <div className="flex gap-2 w-full">
                 <div className="flex items-center gap-1">
                   <Checkbox
@@ -207,11 +225,19 @@ export default function CouponFormModal({
                 </div>
               </div>
             </div>
+            {(errors.discount_value || errors.discount_type) && (
+              <InputError
+                className="mt-2"
+                message={errors.discount_value || errors.discount_type}
+              />
+            )}
           </GridItem>
           <GridItem size={5}>
             <InputLabel
               htmlFor="minimum_order_value"
               value="Valor mínimo da compra"
+              icon={<IoMdInformationCircle />}
+              iconText="Caso não seja preenchido, este poderá ser usado em compras de qualquer valor"
             />
             <TextInput
               id="minimum_order_value"
@@ -221,6 +247,7 @@ export default function CouponFormModal({
               className="mt-1 block w-full"
               onChange={(e) => setData('minimum_order_value', e.target.value)}
             />
+            <InputError className="mt-2" message={errors.minimum_order_value} />
           </GridItem>
           <GridItem size={6}>
             <InputLabel
@@ -294,6 +321,7 @@ export default function CouponFormModal({
               className="mt-1 block w-full"
               onChange={(e) => setData('available_quantity', e.target.value)}
             />
+            <InputError className="mt-2" message={errors.available_quantity} />
           </GridItem>
           <GridItem size={6}>
             <InputLabel
@@ -307,6 +335,7 @@ export default function CouponFormModal({
               className="mt-1 block w-full"
               onChange={(e) => setData('available_per_user', e.target.value)}
             />
+            <InputError className="mt-2" message={errors.available_per_user} />
           </GridItem>
         </GridContainer>
         <div className="flex gap-2 justify-end mt-6">

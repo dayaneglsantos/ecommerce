@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CouponRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class CouponRequest extends FormRequest
    */
   public function authorize(): bool
   {
-    return false;
+    return Auth::check() && Auth::user()->profile === 'admin';
   }
 
   /**
@@ -22,12 +23,12 @@ class CouponRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'type' => ['required', 'in:percentage,fixed'],
+      'type' => ['required', 'in:product,shipping'],
       'code' => ['required', 'string', 'max:50', 'unique:coupons,code'],
       'discount_type' => ['required', 'in:percentage,fixed'],
       'discount_value' => ['required', 'numeric', 'min:0'],
-      'startDate' => ['required', 'date'],
-      'endDate' => ['required', 'date', 'after_or_equal:startDate'],
+      'start_date' => ['required', 'date'],
+      'end_date' => ['required', 'date', 'after_or_equal:start_date'],
       'available_quantity' => ['required', 'integer', 'min:0'],
       'available_per_user' => ['required', 'integer', 'min:0'],
       'minimum_order_value' => ['nullable', 'numeric', 'min:0'],

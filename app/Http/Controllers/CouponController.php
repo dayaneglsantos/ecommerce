@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CouponRequest;
+use App\Http\Resources\CouponResource;
 use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,7 +15,8 @@ class CouponController extends Controller
    */
   public function index()
   {
-    return Inertia::render('Coupons/index');
+    $coupons = Coupon::all();
+    return Inertia::render('Coupons/index', ['coupons' => CouponResource::collection($coupons)]);
   }
 
   /**
@@ -34,8 +36,10 @@ class CouponController extends Controller
       $validated = $request->validated();
 
       Coupon::create($validated);
+
       return redirect()->route('coupons.index')->with('success', 'Cupom criado com sucesso');
     } catch (\Exception $e) {
+      dd($e->getMessage());
       return redirect()->back()->with('error', 'Erro ao criar cupom');
     }
   }
