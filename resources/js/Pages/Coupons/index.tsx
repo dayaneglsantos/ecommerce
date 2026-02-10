@@ -1,13 +1,10 @@
 import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, usePage } from '@inertiajs/react';
-import { useState } from 'react';
-import CouponFormModal from './CouponForm';
+import { Head, router, usePage } from '@inertiajs/react';
 import Card from '@/Components/Card';
 import Coupon from '@/Components/Coupon';
 
 export default function CouponsPage() {
-  const [openCouponModal, setOpenCouponModal] = useState(false);
   const coupons = usePage().props.coupons;
 
   console.log(coupons);
@@ -19,8 +16,8 @@ export default function CouponsPage() {
         <h3 className="font-bold text-lg text-primary-dark">Cupons</h3>
 
         <div className="flex justify-end">
-          <PrimaryButton onClick={() => setOpenCouponModal(true)}>
-            Novo Cupom
+          <PrimaryButton onClick={() => router.visit(route('coupons.create'))}>
+            Novo cupom
           </PrimaryButton>
         </div>
 
@@ -28,10 +25,6 @@ export default function CouponsPage() {
           <Coupon />
         </Card>
       </div>
-      <CouponFormModal
-        open={openCouponModal}
-        onClose={() => setOpenCouponModal(false)}
-      />
     </AuthenticatedLayout>
   );
 }

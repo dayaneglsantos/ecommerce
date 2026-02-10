@@ -17,11 +17,11 @@ class CouponRuleFactory extends Factory
   public function definition(): array
   {
     return [
-      'description' => fake()->sentence(),
       'coupon_id' => null, // Deve ser definido ao criar a regra
       'ruleable_id' => null, // Deve ser definido ao criar a regra
       'ruleable_type' => null, // Deve ser definido ao criar a regra
-      'exclude' => fake()->boolean(20), // 20% de chance de ser true
+      'condition' => fake()->boolean(10) ? 'exclude' : 'include', // 20% de chance de ser 'exclude'
+      'group_id' => null, // Pode ser definido para associar a um grupo, ou null para regras sem grupo
     ];
   }
 }

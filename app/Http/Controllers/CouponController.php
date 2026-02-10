@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CouponRequest;
+use App\Http\Resources\BrandResource;
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\CouponResource;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,7 +20,12 @@ class CouponController extends Controller
   public function index()
   {
     $coupons = Coupon::all();
-    return Inertia::render('Coupons/index', ['coupons' => CouponResource::collection($coupons)]);
+    return Inertia::render(
+      'Coupons/index',
+      [
+        'coupons' => CouponResource::collection($coupons),
+      ]
+    );
   }
 
   /**
@@ -24,7 +33,18 @@ class CouponController extends Controller
    */
   public function create()
   {
-    //
+    $coupons = Coupon::all();
+    $brands = Brand::all();
+    $categories = Category::all();
+
+    return Inertia::render(
+      'Coupons/CouponForm',
+      [
+        'coupons' => CouponResource::collection($coupons),
+        'brands' => BrandResource::collection($brands),
+        'categories' => CategoryResource::collection($categories)
+      ]
+    );
   }
 
   /**

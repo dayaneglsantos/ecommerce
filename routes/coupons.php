@@ -11,5 +11,6 @@ Route::middleware('auth')
   ->name('coupons.')
   ->group(function () {
     Route::get('/', [CouponController::class, 'index'])->name('index');
+    Route::get('/novo', [CouponController::class, 'create'])->name('create');
     Route::post('/', [CouponController::class, 'store'])->name('store');
   });

@@ -13,6 +13,7 @@ return new class extends Migration
   {
     Schema::create('coupons', function (Blueprint $table) {
       $table->id();
+      $table->string('description')->nullable(); // Descrição da regra
       $table->string('type'); // Produto ou frete
       $table->enum('discount_type', ['percentage', 'fixed'])->default('fixed')->nullable();
       $table->unsignedInteger('discount_value')->default(0)->nullable();

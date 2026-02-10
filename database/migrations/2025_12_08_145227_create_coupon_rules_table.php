@@ -13,10 +13,10 @@ return new class extends Migration
   {
     Schema::create('coupon_rules', function (Blueprint $table) {
       $table->id();
-      $table->string('description')->nullable(); // Descrição da regra
       $table->foreignId('coupon_id')->constrained()->onDelete('cascade');
       $table->nullableMorphs('ruleable'); // Cria os campos ruleable_id e ruleable_type para relacionar a regra a múltiplos modelos. Permite null.
-      $table->boolean('exclude')->default(false); // Indica se a regra é de exclusão
+      $table->enum('condition', ['include', 'exclude'])->default('include'); // Define se a regra é de inclusão ou exclusão
+      $table->foreignId('group_id')->nullable()->constrained('coupon_rule_groups')->onDelete('cascade'); // Relaciona a regra a um grupo, permitindo null para regras sem grupo
       $table->timestamps();
     });
   }

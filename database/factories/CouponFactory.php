@@ -18,6 +18,7 @@ class CouponFactory extends Factory
   {
     return [
       'type' => fake()->randomElement(['product', 'shipping']),
+      'description' => fake()->sentence(),
       'discount_type' => fake()->randomElement(['percentage', 'fixed']),
       'discount_value' => null, // Como devemos escolher entre percentual ou valor fixo, deixamos null aqui
       'code' => strtoupper(fake()->unique()->bothify('????-#####')),
