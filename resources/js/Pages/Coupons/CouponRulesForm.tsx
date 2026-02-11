@@ -77,7 +77,6 @@ export default function CouponRulesFormModal({
   };
 
   console.log('form data:', data);
-  console.log('products:', products);
 
   return (
     <Modal
@@ -105,10 +104,10 @@ export default function CouponRulesFormModal({
                 type="button"
               >
                 <Badge
-                  className="cursor-pointer"
+                  className="cursor-pointer font-bold"
                   type={
                     data.items[0]?.ruleable.type === 'brand'
-                      ? 'info'
+                      ? 'warning'
                       : 'default'
                   }
                 >
@@ -123,10 +122,10 @@ export default function CouponRulesFormModal({
                 type="button"
               >
                 <Badge
-                  className="cursor-pointer"
+                  className="cursor-pointer font-bold"
                   type={
                     data.items[0]?.ruleable.type === 'category'
-                      ? 'info'
+                      ? 'warning'
                       : 'default'
                   }
                 >
@@ -141,14 +140,14 @@ export default function CouponRulesFormModal({
                 type="button"
               >
                 <Badge
-                  className="cursor-pointer"
+                  className="cursor-pointer font-bold"
                   type={
                     data.items[0]?.ruleable.type === 'product'
-                      ? 'info'
+                      ? 'warning'
                       : 'default'
                   }
                 >
-                  Marcas
+                  Produtos
                 </Badge>
               </button>
             </div>

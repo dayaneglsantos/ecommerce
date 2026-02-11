@@ -13,4 +13,5 @@ export default interface ProductType {
   defaultColor: { color: string; id: number } | null;
   variations: ProductVariationType[];
   technicalSpecifications: JSON | null;
+  images: { id: number; url: string }[];
 }
