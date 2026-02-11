@@ -6,9 +6,11 @@ use App\Http\Requests\CouponRequest;
 use App\Http\Resources\BrandResource;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\CouponResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Coupon;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -36,13 +38,15 @@ class CouponController extends Controller
     $coupons = Coupon::all();
     $brands = Brand::all();
     $categories = Category::all();
+    $products = Product::with('images', 'defaultColor')->get();
 
     return Inertia::render(
       'Coupons/CouponForm',
       [
         'coupons' => CouponResource::collection($coupons),
         'brands' => BrandResource::collection($brands),
-        'categories' => CategoryResource::collection($categories)
+        'categories' => CategoryResource::collection($categories),
+        'products' => ProductResource::collection($products),
       ]
     );
   }

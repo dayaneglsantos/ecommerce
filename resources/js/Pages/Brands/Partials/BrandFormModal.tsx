@@ -92,6 +92,9 @@ export default function BrandFormModal({
     reader.readAsDataURL(file);
   };
 
+  console.log('data', data);
+  console.log(errors);
+
   return (
     <Modal
       show={open}

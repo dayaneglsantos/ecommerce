@@ -25,7 +25,7 @@ class CreateBrandRequest extends FormRequest
     return [
       'name' => ['required', 'string', 'max:255'],
       'slug' => ['required', 'string', 'max:255', 'unique:brands,slug'],
-      'logo' => ['required', 'image', 'max:2048'],
+      'logo' => ['required', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
       'website' => ['nullable', 'url', 'max:255'],
     ];
   }
