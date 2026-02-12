@@ -8,7 +8,10 @@ Route::middleware('auth')
   ->prefix('produtos')
   ->name('products.')
   ->group(function () {
-    // Listagem de produtos
+    // Apenas retorna a listagem de produtos em JSON para o frontend, sem renderizar a view
+    Route::get('/list', [ProductController::class, 'list'])->name('list');
+
+    // Renderiza a listagem de produtos
     Route::get('/', [ProductController::class, 'index'])->name('index');
 
     // Formulário de novo produto

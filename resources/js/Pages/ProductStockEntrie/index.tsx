@@ -7,6 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import Table from '@/Components/Table';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { MetaType } from '@/Types/MetaType';
 import ProductStockEntrieType from '@/Types/ProductStockEntrieType';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import dayjs from 'dayjs';
@@ -16,18 +17,7 @@ import { FaFileExcel } from 'react-icons/fa6';
 
 interface ProductStockEntries {
   data: ProductStockEntrieType[];
-  meta: {
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    links: {
-      label: string;
-      page: number | null;
-      url: string | null;
-      active: boolean;
-    }[];
-    total: number;
-  };
+  meta: MetaType;
 }
 
 export default function ProductEntriesList() {

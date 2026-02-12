@@ -33,22 +33,26 @@ class CouponController extends Controller
   /**
    * Show the form for creating a new resource.
    */
-  public function create()
+  public function create(Request $request)
   {
-    $coupons = Coupon::all();
-    $brands = Brand::all();
-    $categories = Category::all();
-    $products = Product::with('images', 'defaultColor')->get();
+    try {
+      $coupons = Coupon::all();
+      $brands = Brand::all();
+      $categories = Category::all();
+      // $products = Product::with('images', 'defaultColor')->get();
 
-    return Inertia::render(
-      'Coupons/CouponForm',
-      [
-        'coupons' => CouponResource::collection($coupons),
-        'brands' => BrandResource::collection($brands),
-        'categories' => CategoryResource::collection($categories),
-        'products' => ProductResource::collection($products),
-      ]
-    );
+      return Inertia::render(
+        'Coupons/CouponForm',
+        [
+          'coupons' => CouponResource::collection($coupons),
+          'brands' => BrandResource::collection($brands),
+          'categories' => CategoryResource::collection($categories),
+        ]
+      );
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return redirect()->back()->with('error', 'Erro ao carregar formulário de criação de cupom');
+    }
   }
 
   /**

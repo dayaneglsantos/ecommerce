@@ -18,7 +18,23 @@ use Inertia\Inertia;
 
 class ProductController extends Controller
 {
-  // Listagem de Produtos
+  // Listagem de Produtos - Apenas retorna os produtos em JSON para o frontend
+  public function list(Request $request)
+  {
+    try {
+      $products = Product::query()->with('images', 'defaultColor')
+        ->when($request->search, function ($query, $search) {
+          $query->where('name', 'like', "%{$search}%");
+        })->latest()
+        ->paginate(5)
+        ->withQueryString();
+
+      return ProductResource::collection($products);
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+    }
+  }
+
   public function index()
   {
     $products = Product::all()->load('defaultColor', 'variations', 'images');

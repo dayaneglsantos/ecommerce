@@ -3,12 +3,15 @@ import Card from '@/Components/Card';
 import Checkbox from '@/Components/Checkbox';
 import { GridContainer, GridItem } from '@/Components/Grid';
 import InputLabel from '@/Components/InputLabel';
+import Pagination from '@/Components/Pagination';
+import TextInput from '@/Components/TextInput';
 import BrandType from '@/Types/BrandType';
 import CategoryType from '@/Types/CategoryType';
+import { MetaType } from '@/Types/MetaType';
 import ProductType from '@/Types/ProductType';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { ca } from 'react-day-picker/locale';
 
 interface BrandRuleableProps {
   setData: (field: string, value: any) => void;
@@ -23,13 +26,35 @@ export default function BrandRuleable({
 }: BrandRuleableProps) {
   const brands = usePage().props.brands as BrandType[];
   const categories = usePage().props.categories as CategoryType[];
-  const products = usePage().props.products as ProductType[];
+
+  const [products, setProducts] = useState<ProductType[]>([]);
+  const [meta, setMeta] = useState<MetaType>({
+    current_page: 1,
+    last_page: 1,
+    per_page: 10,
+    total: 0,
+    links: [],
+  });
 
   const [hasExceptions, setHasExceptions] = useState(false);
   const [exceptionType, setExceptionType] = useState('');
   const [categoryExceptions, setCategoryExceptions] = useState<number[]>([]);
   const [hasCategoryExceptions, setHasCategoryExceptions] = useState(false);
   const [productExceptions, setProductExceptions] = useState<number[]>([]);
+  const [search, setSearch] = useState('');
+  const [debbouncedSearch, setDebouncedSearch] = useState(search);
+
+  const fetchProducts = async (url?: string) => {
+    try {
+      const { data } = await axios.get(url || route('products.list'), {
+        params: { search },
+      });
+      setProducts(data.data);
+      setMeta(data.meta);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
 
   const handleAddCategoryException = (id: number) => {
     const alreadySelected = categoryExceptions.includes(id);
@@ -95,25 +120,40 @@ export default function BrandRuleable({
     }
   };
 
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setSearch(debbouncedSearch);
+    }, 500); // Ajuste o tempo de debounce conforme necessário
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [debbouncedSearch]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [search]);
+
   return (
     <div>
-      <GridContainer className="my-4 max-h-[280px] overflow-y-auto">
-        {brands.map((brand) => (
-          <GridItem size={4}>
-            <Card
-              className={`flex gap-3 items-center w-full cursor-pointer ${data.items[0]?.ruleable.id === brand.id ? 'bg-primary-light' : ''}`}
-              onClick={() => setData(`items.0.ruleable.id`, brand.id)}
-            >
-              <img
-                src={brand.logo}
-                alt={brand.name}
-                className="w-12 h-12 rounded-lg"
-              />
-              <span>{brand.name}</span>
-            </Card>
-          </GridItem>
-        ))}
-      </GridContainer>
+      <Card className="mt-6">
+        <GridContainer className="p-2 max-h-[280px] overflow-y-auto ">
+          {brands.map((brand) => (
+            <GridItem size={4}>
+              <Card
+                className={`flex gap-3 items-center w-full cursor-pointer ${data.items[0]?.ruleable.id === brand.id ? 'bg-primary-light' : ''}`}
+                onClick={() => setData(`items.0.ruleable.id`, brand.id)}
+              >
+                <img
+                  src={brand.logo}
+                  alt={brand.name}
+                  className="w-12 h-12 rounded-lg"
+                />
+                <span>{brand.name}</span>
+              </Card>
+            </GridItem>
+          ))}
+        </GridContainer>
+      </Card>
+
       {/* Selecionado o item de inclusão - pergunta se haverá exceções */}
       {data.items[0]?.ruleable.id && (
         <>
@@ -169,46 +209,51 @@ export default function BrandRuleable({
       )}
 
       {/* ==================== Exclusão de produto ====================*/}
+
       {exceptionType === 'product' && (
-        <GridContainer>
-          {products.map((product) => (
-            <GridItem size={3}>
-              <Card
-                className={`flex items-center w-full text-sm cursor-pointer ${productExceptions.includes(product.id) ? 'bg-primary-light' : ''}`}
-                onClick={() => handleAddProduct(product.id, 'exclude')}
-              >
-                <img
-                  src={product?.images[0]?.url}
-                  alt={product.name}
-                  className="w-12 h-12 rounded-lg"
-                />
-                <span>{product.name}</span>
-              </Card>
-            </GridItem>
-          ))}
-        </GridContainer>
+        <Card>
+          <GridContainer>
+            {products.map((product) => (
+              <GridItem size={3}>
+                <Card
+                  className={`flex items-center w-full text-sm cursor-pointer ${productExceptions.includes(product.id) ? 'bg-primary-light' : ''}`}
+                  onClick={() => handleAddProduct(product.id, 'exclude')}
+                >
+                  <img
+                    src={product?.images[0]?.url}
+                    alt={product.name}
+                    className="w-12 h-12 rounded-lg"
+                  />
+                  <span>{product.name}</span>
+                </Card>
+              </GridItem>
+            ))}
+          </GridContainer>
+        </Card>
       )}
       {/* ==================== FIM - Exclusão de produto ====================*/}
 
       {/* ==================== Exclusão de categorias ====================*/}
       {exceptionType === 'category' && (
-        <GridContainer>
-          {categories.map((category) => (
-            <GridItem size={3}>
-              <Card
-                className={`w-full text-sm cursor-pointer ${categoryExceptions.includes(category.id) ? 'bg-primary-light' : ''}`}
-                onClick={() => handleAddCategoryException(category.id)}
-              >
-                <p
-                  className="whitespace-nowrap overflow-hidden text-ellipsis"
-                  title={category.name}
+        <Card>
+          <GridContainer>
+            {categories.map((category) => (
+              <GridItem size={3}>
+                <Card
+                  className={`w-full text-sm cursor-pointer ${categoryExceptions.includes(category.id) ? 'bg-primary-light' : ''}`}
+                  onClick={() => handleAddCategoryException(category.id)}
                 >
-                  {category.name}
-                </p>
-              </Card>
-            </GridItem>
-          ))}
-        </GridContainer>
+                  <p
+                    className="whitespace-nowrap overflow-hidden text-ellipsis"
+                    title={category.name}
+                  >
+                    {category.name}
+                  </p>
+                </Card>
+              </GridItem>
+            ))}
+          </GridContainer>
+        </Card>
       )}
 
       {categoryExceptions.length > 0 && (
@@ -245,18 +290,36 @@ export default function BrandRuleable({
       {exceptionType === 'category' &&
         hasCategoryExceptions &&
         categoryExceptions.length > 0 && (
-          <GridContainer>
-            {products.map((product) => (
-              <GridItem size={3}>
-                <Card
-                  className={`w-full text-sm cursor-pointer ${productExceptions.includes(product.id) ? 'bg-primary-light' : ''}`}
-                  onClick={() => handleAddProduct(product.id, 'include')}
-                >
-                  <span>{product.name}</span>
-                </Card>
-              </GridItem>
-            ))}
-          </GridContainer>
+          <Card className="w-full">
+            <div className="mb-6 w-6/12">
+              <InputLabel htmlFor="search" value="Buscar produto" />
+              <TextInput
+                id="search"
+                placeholder="Buscar por nome..."
+                type="text"
+                value={debbouncedSearch}
+                onChange={(e) => setDebouncedSearch(e.target.value)}
+                className="mt-1 block w-full"
+              />
+            </div>
+
+            <GridContainer>
+              {products.map((product) => (
+                <GridItem size={3}>
+                  <Card
+                    className={`w-full text-sm cursor-pointer ${productExceptions.includes(product.id) ? 'bg-primary-light' : ''}`}
+                    onClick={() => handleAddProduct(product.id, 'include')}
+                  >
+                    <span>{product.name}</span>
+                  </Card>
+                </GridItem>
+              ))}
+            </GridContainer>
+            <Pagination
+              links={meta.links}
+              onNavigate={(url) => fetchProducts(url)}
+            />
+          </Card>
         )}
       {/* ==================== FIM - Reinclusão de produtos quando houver exceção de categoria ====================*/}
     </div>
