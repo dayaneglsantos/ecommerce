@@ -26,7 +26,7 @@ class ProductController extends Controller
         ->when($request->search, function ($query, $search) {
           $query->where('name', 'like', "%{$search}%");
         })->latest()
-        ->paginate(5)
+        ->paginate($request->pageSize ?? 10)
         ->withQueryString();
 
       return ProductResource::collection($products);

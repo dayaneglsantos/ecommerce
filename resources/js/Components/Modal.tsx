@@ -49,7 +49,7 @@ export default function Modal({
             w-full ${maxWidthClass}
             -translate-x-1/2 -translate-y-1/2
             rounded-lg bg-white p-4 shadow-xl
-            max-h-[90vh] overflow-y-auto
+            max-h-[95vh] overflow-y-auto
             focus:outline-none
           `}
         >

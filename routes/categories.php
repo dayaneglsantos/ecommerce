@@ -8,6 +8,7 @@ Route::middleware('auth')
   ->prefix('categorias')
   ->name('categories.')
   ->group(function () {
+    Route::get('/list', [CategoryController::class, 'list'])->name('list');
     Route::get('/', [CategoryController::class, 'index'])->name('index');
     Route::post('/', [CategoryController::class, 'store'])->name('store');
     Route::patch('/{category}', [CategoryController::class, 'update'])->name('update');

@@ -33,12 +33,12 @@ export default function CouponRulesFormModal({
   const categories = usePage().props.categories as CategoryType[];
   const products = usePage().props.products as ProductType[];
 
-  const brandOptions = brands.map((brand) => ({
+  const brandOptions = brands?.map((brand) => ({
     label: brand.name,
     value: brand.id,
   }));
 
-  const categoryOptions = categories.map((category) => ({
+  const categoryOptions = categories?.map((category) => ({
     label: category.name,
     value: category.id,
   }));
@@ -75,8 +75,6 @@ export default function CouponRulesFormModal({
     //   },
     // });
   };
-
-  console.log('form data:', data);
 
   return (
     <Modal

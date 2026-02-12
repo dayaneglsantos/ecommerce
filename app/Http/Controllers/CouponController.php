@@ -36,19 +36,7 @@ class CouponController extends Controller
   public function create(Request $request)
   {
     try {
-      $coupons = Coupon::all();
-      $brands = Brand::all();
-      $categories = Category::all();
-      // $products = Product::with('images', 'defaultColor')->get();
-
-      return Inertia::render(
-        'Coupons/CouponForm',
-        [
-          'coupons' => CouponResource::collection($coupons),
-          'brands' => BrandResource::collection($brands),
-          'categories' => CategoryResource::collection($categories),
-        ]
-      );
+      return Inertia::render('Coupons/CouponForm');
     } catch (\Exception $e) {
       dd($e->getMessage());
       return redirect()->back()->with('error', 'Erro ao carregar formulário de criação de cupom');
@@ -85,15 +73,27 @@ class CouponController extends Controller
    */
   public function edit(Coupon $coupon)
   {
-    //
+    return Inertia::render(
+      'Coupons/CouponForm',
+      [
+        'coupon' => new CouponResource($coupon),
+      ]
+    );
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, Coupon $coupon)
+  public function update(CouponRequest $request, Coupon $coupon)
   {
-    //
+    try {
+      $validated = $request->validated();
+      $coupon->update($validated);
+      return redirect()->route('coupons.index')->with('success', 'Cupom atualizado com sucesso');
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return redirect()->back()->with('error', 'Erro ao atualizar cupom');
+    }
   }
 
   /**

@@ -11,9 +11,23 @@ use Inertia\Inertia;
 
 class BrandController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   */
+  public function list(Request $request)
+  {
+    try {
+      $brands = Brand::query()
+        ->when($request->search, function ($query, $search) {
+          $query->where('name', 'like', "%{$search}%");
+        })->latest()
+        ->paginate($request->pageSize ?? 10)
+        ->withQueryString();
+
+      return $brands;
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+    }
+  }
+
+
   public function index()
   {
     $brands = Brand::all();

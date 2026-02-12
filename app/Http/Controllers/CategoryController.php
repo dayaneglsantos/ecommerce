@@ -10,9 +10,23 @@ use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   */
+
+  public function list(Request $request)
+  {
+    try {
+      $products = Category::query()
+        ->when($request->search, function ($query, $search) {
+          $query->where('name', 'like', "%{$search}%");
+        })->latest()
+        ->paginate($request->pageSize ?? 10)
+        ->withQueryString();
+
+      return CategoryResource::collection($products);
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+    }
+  }
+
   public function index()
   {
     // Apenas categorias principais com suas subcategorias carregadas recursivamente

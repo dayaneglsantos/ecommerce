@@ -9,6 +9,7 @@ Route::middleware('auth')
   ->prefix('marcas')
   ->name('brands.')
   ->group(function () {
+    Route::get('/list', [BrandController::class, 'list'])->name('list');
     Route::get('/', [BrandController::class, 'index'])->name('index');
     Route::get('/novo', [BrandController::class, 'create'])->name('create');
     Route::post('/', [BrandController::class, 'store'])->name('store');

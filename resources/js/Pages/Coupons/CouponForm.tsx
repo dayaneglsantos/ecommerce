@@ -11,12 +11,13 @@ import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Input } from '@headlessui/react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { IoMdInformationCircle } from 'react-icons/io';
 import { LuClock } from 'react-icons/lu';
 import CouponRulesFormModal from './CouponRulesForm';
+import { CouponType } from '@/Types/CouponType';
 
 interface CouponFormProps {
   open: boolean;
@@ -24,14 +25,18 @@ interface CouponFormProps {
 }
 
 export default function CouponForm({ open, onClose }: CouponFormProps) {
+  const coupon = usePage().props.coupon as CouponType;
+
+  console.log(coupon);
+
   const [startDate, setStartDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endDate, setEndDate] = useState('');
   const [endTime, setEndTime] = useState('');
   const [openRulesModal, setOpenRulesModal] = useState(false);
 
-  const { data, setData, reset, errors, setError, clearErrors, post } = useForm(
-    {
+  const { data, setData, reset, errors, setError, clearErrors, post, patch } =
+    useForm({
       type: '',
       code: '',
       description: '',
@@ -42,28 +47,69 @@ export default function CouponForm({ open, onClose }: CouponFormProps) {
       available_quantity: '',
       available_per_user: '',
       minimum_order_value: '',
-    }
-  );
+    });
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    post(route('coupons.store'), {
-      onSuccess: () => {
-        onClose();
-        reset();
-        setStartDate('');
-        setStartTime('');
-        setEndDate('');
-        setEndTime('');
-      },
-      onError: (errors) => {
-        console.log(errors);
-      },
-    });
+    if (coupon) {
+      patch(route('coupons.update', coupon.id), {
+        onSuccess: () => {
+          onClose();
+        },
+        onError: (errors) => {
+          console.log(errors);
+        },
+      });
+    } else {
+      post(route('coupons.store'), {
+        onSuccess: () => {
+          onClose();
+          reset();
+          setStartDate('');
+          setStartTime('');
+          setEndDate('');
+          setEndTime('');
+        },
+        onError: (errors) => {
+          console.log(errors);
+        },
+      });
+    }
   };
 
-  console.log('form data:', data);
+  useEffect(() => {
+    if (coupon) {
+      setData('type', coupon.type);
+      setData('code', coupon.code);
+      setData('description', coupon.description);
+      setData('discount_type', coupon.discount.type);
+      setData('discount_value', coupon.discount.value || '');
+      setData('available_quantity', coupon.availableQuantity || '');
+      setData('available_per_user', coupon.availablePerUser || '');
+      setData('minimum_order_value', coupon.minimumOrderValue || '');
+      setData(
+        'start_date',
+        coupon.startDate
+          ? dayjs(coupon.startDate).format('YYYY-MM-DD HH:mm')
+          : ''
+      );
+      setData(
+        'end_date',
+        coupon.endDate ? dayjs(coupon.endDate).format('YYYY-MM-DD HH:mm') : ''
+      );
+      setStartDate(
+        coupon.startDate ? dayjs(coupon.startDate).format('YYYY-MM-DD') : ''
+      );
+      setStartTime(
+        coupon.startDate ? dayjs(coupon.startDate).format('HH:mm') : ''
+      );
+      setEndDate(
+        coupon.endDate ? dayjs(coupon.endDate).format('YYYY-MM-DD') : ''
+      );
+      setEndTime(coupon.endDate ? dayjs(coupon.endDate).format('HH:mm') : '');
+    }
+  }, [coupon]);
 
   useEffect(() => {
     if (endDate && dayjs(startDate).isAfter(endDate)) {
@@ -144,13 +190,15 @@ export default function CouponForm({ open, onClose }: CouponFormProps) {
     }
   }, [endTime]);
 
+  console.log(data);
+
   return (
     <AuthenticatedLayout>
       <Head title="Entradas de Produtos" />
 
       <ContentContainer>
         <h3 className="font-bold text-lg text-primary-dark mb-6">Novo cupom</h3>
-        <Card>
+        <Card className="w-full">
           <form>
             <GridContainer gap={3}>
               <GridItem size={6}>

@@ -24,7 +24,7 @@ class CouponRequest extends FormRequest
   {
     return [
       'type' => ['required', 'in:product,shipping'],
-      'code' => ['required', 'string', 'max:50', 'unique:coupons,code'],
+      'code' => ['required', 'string', 'max:50', 'unique:coupons,code,' . ($this->coupon->id ?? 'null')],
       'description' => ['nullable', 'string', 'max:255'],
       'discount_type' => ['required', 'in:percentage,fixed'],
       'discount_value' => ['required', 'numeric', 'min:0'],
