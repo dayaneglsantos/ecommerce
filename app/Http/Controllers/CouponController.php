@@ -101,6 +101,12 @@ class CouponController extends Controller
    */
   public function destroy(Coupon $coupon)
   {
-    //
+    try {
+      $coupon->delete();
+      return redirect()->route('coupons.index')->with('success', 'Cupom excluído com sucesso');
+    } catch (\Exception $e) {
+      dd($e->getMessage());
+      return redirect()->back()->with('error', 'Erro ao excluir cupom');
+    }
   }
 }

@@ -22,10 +22,18 @@ class ProductController extends Controller
   public function list(Request $request)
   {
     try {
+
       $products = Product::query()->with('images', 'defaultColor')
         ->when($request->search, function ($query, $search) {
           $query->where('name', 'like', "%{$search}%");
-        })->latest()
+        })
+        ->when($request->brand, function ($query, $brand) {
+          $query->where('brand_id', $brand);
+        })
+        ->when($request->category, function ($query, $category) {
+          $query->where('category_id', $category);
+        })
+        ->latest()
         ->paginate($request->pageSize ?? 10)
         ->withQueryString();
 

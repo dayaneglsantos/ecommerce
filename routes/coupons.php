@@ -16,4 +16,5 @@ Route::middleware('auth')
     Route::post('/', [CouponController::class, 'store'])->name('store');
     // Formulário de edição de cupom
     Route::get('/editar/{coupon}', [CouponController::class, 'edit'])->name('edit');
+    Route::delete('/{coupon}', [CouponController::class, 'destroy'])->name('destroy');
   });

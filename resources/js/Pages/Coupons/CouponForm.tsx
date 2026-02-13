@@ -55,7 +55,11 @@ export default function CouponForm({ open, onClose }: CouponFormProps) {
     if (coupon) {
       patch(route('coupons.update', coupon.id), {
         onSuccess: () => {
-          onClose();
+          reset();
+          setStartDate('');
+          setStartTime('');
+          setEndDate('');
+          setEndTime('');
         },
         onError: (errors) => {
           console.log(errors);

@@ -27,6 +27,14 @@ export default {
       boxShadow: {
         full: '0 0 20px rgba(0, 0, 0, 0.1)',
       },
+      keyframes: {
+        progress: {
+          '0%': { transform: 'translateX(-100%)' },
+          '50%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+      },
+      animation: { progress: 'progress 1.5s ease-in-out infinite' },
     },
   },
 
