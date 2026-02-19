@@ -17,7 +17,21 @@ import { IoClose } from 'react-icons/io5';
 
 interface CategoryRuleableProps {
   setData: (field: string, value: any) => void;
-  data: any;
+  data: {
+    coupon_id: number | null;
+    brand: {
+      items: any[];
+      rule: string;
+    };
+    category: {
+      items: any[];
+      rule: string;
+    };
+    product: {
+      items: any[];
+      rule: string;
+    };
+  };
   reset: () => void;
 }
 
@@ -28,9 +42,7 @@ export default function CategoryRuleable({
 }: CategoryRuleableProps) {
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [categoriesMeta, setCategoriesMeta] = useState<MetaType | null>(null);
-  const [categoryExceptions, setCategoryExceptions] = useState<CategoryType[]>(
-    []
-  );
+
   const [isLoaded, setLoaded] = useState(false);
 
   // Filtros
@@ -58,39 +70,18 @@ export default function CategoryRuleable({
   };
 
   const handleAddCategoryException = (category: CategoryType) => {
-    const alreadySelected = categoryExceptions.some(
+    const alreadySelected = data.category.items.some(
       (exception) => exception.id === category.id
     );
 
     if (alreadySelected) {
-      setCategoryExceptions(
-        categoryExceptions.filter((exception) => exception.id !== category.id)
+      const filteredExceptions = data.category.items.filter(
+        (item: any) => item.id !== category.id
       );
 
-      // Excluindo no formulário
-      const filteredExceptions = data.items.filter(
-        (item: any) =>
-          !(
-            item.ruleable.type === 'category' &&
-            item.ruleable.id === category.id
-          )
-      );
-
-      setData('items', filteredExceptions);
+      setData('category.items', filteredExceptions);
     } else {
-      setCategoryExceptions([...categoryExceptions, category]);
-
-      // Incluindo no formulário
-      setData('items', [
-        ...data.items,
-        {
-          ruleable: {
-            type: 'category',
-            id: category.id,
-          },
-          condition: 'exclude',
-        },
-      ]);
+      setData('category.items', [...data.category.items, category]);
     }
   };
 
@@ -134,7 +125,7 @@ export default function CategoryRuleable({
           {categories.map((category) => (
             <GridItem size={3}>
               <Card
-                className={`w-full text-sm cursor-pointer ${categoryExceptions.some((exception) => exception.id === category.id) ? 'bg-primary-light' : ''}`}
+                className={`w-full text-sm cursor-pointer ${data.category.items.some((exception) => exception.id === category.id) ? 'bg-primary-light' : ''}`}
                 onClick={() => handleAddCategoryException(category)}
               >
                 <p
@@ -155,11 +146,11 @@ export default function CategoryRuleable({
         />
       )}
 
-      {categoryExceptions.length > 0 && (
+      {data.category.items.length > 0 && (
         <Card className="w-full mt-6">
           <p className="font-bold text-gray-500">Itens Selecionados:</p>
           <div className="flex gap-3">
-            {categoryExceptions.map((item) => (
+            {data.category.items.map((item) => (
               <div
                 className="flex items-center border rounded-lg p-1 px-2 gap-1 mt-2 w-fit text-primary-dark bg-gray-100"
                 key={item.id}

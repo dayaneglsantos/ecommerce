@@ -1,4 +1,6 @@
+import Badge from '@/Components/Badge';
 import Card from '@/Components/Card';
+import Checkbox from '@/Components/Checkbox';
 import { GridContainer, GridItem } from '@/Components/Grid';
 import InputLabel from '@/Components/InputLabel';
 import Pagination from '@/Components/Pagination';
@@ -7,6 +9,8 @@ import BrandType from '@/Types/BrandType';
 import { MetaType } from '@/Types/MetaType';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import CategoryRuleable from './CategoryRuleable';
+import ProductsRuleable from './ProductsRuleable';
 
 interface BrandRuleableProps {
   setData: (field: string, value: any) => void;
@@ -24,6 +28,11 @@ export default function BrandRuleable({
 
   const [brandSearch, setBrandSearch] = useState('');
   const [debouncedBrandSearch, setDebouncedBrandSearch] = useState(brandSearch);
+
+  const [allBrandsItems, setAllBrandsItems] = useState(true);
+  const [selectedContent, setSelectedContent] = useState<
+    'category' | 'product' | null
+  >(null);
 
   const fetchBrands = async (url?: string) => {
     try {
@@ -73,8 +82,10 @@ export default function BrandRuleable({
             {brands.map((brand) => (
               <GridItem size={4}>
                 <Card
-                  className={`flex gap-3 items-center w-full cursor-pointer ${data.items[0]?.ruleable.id === brand.id ? 'bg-primary-light' : ''}`}
-                  onClick={() => setData(`items.0.ruleable.id`, brand.id)}
+                  className={`flex gap-3 items-center w-full cursor-pointer ${data.brand.items.includes(brand.id) ? 'bg-primary-light' : ''}`}
+                  onClick={() =>
+                    setData(`brand.items`, [...data.brand.items, brand])
+                  }
                 >
                   <img
                     src={brand.logo}
@@ -92,6 +103,120 @@ export default function BrandRuleable({
             links={brandsMeta.links}
             onNavigate={(url) => fetchBrands(url)}
           />
+        )}
+
+        {data.brand.items.length > 0 && (
+          <div className="my-6">
+            <p>
+              O cupom será aplicado para todos os itens das marcas selecionadas?
+            </p>
+            <div className="flex gap-2 w-full">
+              <div className="flex items-center gap-1">
+                <Checkbox
+                  onChange={(e) => {
+                    setAllBrandsItems(true);
+                  }}
+                  checked={allBrandsItems}
+                />
+                <InputLabel value="Sim" />
+              </div>
+              <div className="flex items-center gap-1">
+                <Checkbox
+                  onChange={(e) => {
+                    setAllBrandsItems(false);
+                  }}
+                  checked={!allBrandsItems}
+                />
+                <InputLabel value="Não" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {data.brand.items.length > 0 && !allBrandsItems && (
+          <GridContainer gap={3}>
+            <GridItem size={6}>
+              <InputLabel className="mt-2" value="Aplicação para:" />
+              <div className="flex gap-3 mt-2">
+                <button
+                  onClick={() => {
+                    setSelectedContent('category');
+                  }}
+                  type="button"
+                >
+                  <Badge
+                    className="cursor-pointer font-bold"
+                    type={
+                      selectedContent === 'category' ? 'warning' : 'default'
+                    }
+                  >
+                    Categorias
+                  </Badge>
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedContent('product');
+                  }}
+                  type="button"
+                >
+                  <Badge
+                    className="cursor-pointer font-bold"
+                    type={selectedContent === 'product' ? 'warning' : 'default'}
+                  >
+                    Produtos
+                  </Badge>
+                </button>
+              </div>
+            </GridItem>
+            {selectedContent && (
+              <GridItem size={6}>
+                <InputLabel className="mt-2" value="Condição" />
+                <div className="flex gap-3 mt-2">
+                  <button
+                    onClick={() => {
+                      setData(`brand.rule`, 'include');
+                    }}
+                    type="button"
+                  >
+                    <Badge
+                      className="cursor-pointer font-bold"
+                      type={
+                        data[selectedContent]?.rule === 'include'
+                          ? 'warning'
+                          : 'default'
+                      }
+                    >
+                      Inclusão
+                    </Badge>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setData(`${selectedContent}.rule`, 'exclude');
+                    }}
+                    type="button"
+                  >
+                    <Badge
+                      className="cursor-pointer font-bold"
+                      type={
+                        data[selectedContent]?.rule === 'exclude'
+                          ? 'warning'
+                          : 'default'
+                      }
+                    >
+                      Exclusão
+                    </Badge>
+                  </button>
+                </div>
+              </GridItem>
+            )}
+          </GridContainer>
+        )}
+
+        {selectedContent === 'category' && (
+          <CategoryRuleable setData={setData} data={data} reset={reset} />
+        )}
+        {selectedContent === 'product' && (
+          <ProductsRuleable setData={setData} data={data} reset={reset} />
         )}
       </Card>
     </div>

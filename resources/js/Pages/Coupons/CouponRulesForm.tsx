@@ -22,16 +22,25 @@ export default function CouponRulesFormModal({
   open,
   onClose,
 }: CouponRulesFormModalProps) {
+  const [selectedType, setSelectedType] = useState<
+    'brand' | 'category' | 'product' | null
+  >(null);
+
   const { data, setData, reset, errors, setError, clearErrors, post } = useForm(
     {
       coupon_id: null,
-      items: [] as {
-        ruleable: {
-          type: string;
-          id: number;
-        };
-        condition: 'include' | 'exclude';
-      }[],
+      brand: {
+        items: [],
+        rule: 'include',
+      },
+      category: {
+        items: [],
+        rule: 'include',
+      },
+      product: {
+        items: [],
+        rule: 'include',
+      },
     }
   );
 
@@ -48,6 +57,8 @@ export default function CouponRulesFormModal({
     //   },
     // });
   };
+
+  console.log(data);
 
   return (
     <Modal
@@ -71,108 +82,96 @@ export default function CouponRulesFormModal({
             <div className="flex gap-3 mt-2">
               <button
                 onClick={() => {
-                  setData(`items.0.ruleable.type`, 'brand');
-                  setData(`items.0.condition`, 'include');
+                  setSelectedType('brand');
                 }}
                 type="button"
               >
                 <Badge
                   className="cursor-pointer font-bold"
-                  type={
-                    data.items[0]?.ruleable.type === 'brand'
-                      ? 'warning'
-                      : 'default'
-                  }
+                  type={selectedType === 'brand' ? 'warning' : 'default'}
                 >
                   Marcas
                 </Badge>
               </button>
               <button
                 onClick={() => {
-                  setData(`items.0.ruleable.type`, 'category');
-                  setData(`items.0.condition`, 'include');
+                  setSelectedType('category');
                 }}
                 type="button"
               >
                 <Badge
                   className="cursor-pointer font-bold"
-                  type={
-                    data.items[0]?.ruleable.type === 'category'
-                      ? 'warning'
-                      : 'default'
-                  }
+                  type={selectedType === 'category' ? 'warning' : 'default'}
                 >
                   Categorias
                 </Badge>
               </button>
               <button
                 onClick={() => {
-                  setData(`items.0.ruleable.type`, 'product');
-                  setData(`items.0.condition`, 'include');
+                  setSelectedType('product');
                 }}
                 type="button"
               >
                 <Badge
                   className="cursor-pointer font-bold"
-                  type={
-                    data.items[0]?.ruleable.type === 'product'
-                      ? 'warning'
-                      : 'default'
-                  }
+                  type={selectedType === 'product' ? 'warning' : 'default'}
                 >
                   Produtos
                 </Badge>
               </button>
             </div>
           </GridItem>
-          <GridItem size={6}>
-            <InputLabel className="mt-2" value="Condição" />
-            <div className="flex gap-3 mt-2">
-              <button
-                onClick={() => {
-                  setData(`items.0.condition`, 'include');
-                }}
-                type="button"
-              >
-                <Badge
-                  className="cursor-pointer font-bold"
-                  type={
-                    data.items[0]?.condition === 'include'
-                      ? 'warning'
-                      : 'default'
-                  }
+          {selectedType && (
+            <GridItem size={6}>
+              <InputLabel className="mt-2" value="Condição" />
+              <div className="flex gap-3 mt-2">
+                <button
+                  onClick={() => {
+                    setData(`${selectedType}.rule`, 'include');
+                  }}
+                  type="button"
                 >
-                  Inclusão
-                </Badge>
-              </button>
-              <button
-                onClick={() => {
-                  setData(`items.0.condition`, 'exclude');
-                }}
-                type="button"
-              >
-                <Badge
-                  className="cursor-pointer font-bold"
-                  type={
-                    data.items[0]?.condition === 'exclude'
-                      ? 'warning'
-                      : 'default'
-                  }
+                  <Badge
+                    className="cursor-pointer font-bold"
+                    type={
+                      data[selectedType]?.rule === 'include'
+                        ? 'warning'
+                        : 'default'
+                    }
+                  >
+                    Inclusão
+                  </Badge>
+                </button>
+                <button
+                  onClick={() => {
+                    setData(`${selectedType}.rule`, 'exclude');
+                  }}
+                  type="button"
                 >
-                  Exclusão
-                </Badge>
-              </button>
-            </div>
-          </GridItem>
+                  <Badge
+                    className="cursor-pointer font-bold"
+                    type={
+                      data[selectedType as keyof typeof data]?.rule ===
+                      'exclude'
+                        ? 'warning'
+                        : 'default'
+                    }
+                  >
+                    Exclusão
+                  </Badge>
+                </button>
+              </div>
+            </GridItem>
+          )}
         </GridContainer>
 
-        {data.items[0]?.ruleable.type === 'brand' && (
+        {selectedType === 'brand' && (
           <BrandRuleable setData={setData} data={data} reset={reset} />
         )}
-        {data.items[0]?.ruleable.type === 'category' && (
+        {selectedType === 'category' && (
           <CategoryRuleable setData={setData} data={data} reset={reset} />
         )}
-        {data.items[0]?.ruleable.type === 'product' && (
+        {selectedType === 'product' && (
           <ProductsRuleable setData={setData} data={data} reset={reset} />
         )}
 

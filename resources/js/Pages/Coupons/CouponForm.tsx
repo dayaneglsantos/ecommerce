@@ -438,7 +438,7 @@ export default function CouponForm({ open, onClose }: CouponFormProps) {
               `}
                 onClick={() => setOpenRulesModal(true)}
               >
-                Adicionar regra de cupom
+                Adicionar grupo de regras
               </button>
             </div>
 
