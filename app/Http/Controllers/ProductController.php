@@ -27,11 +27,11 @@ class ProductController extends Controller
         ->when($request->search, function ($query, $search) {
           $query->where('name', 'like', "%{$search}%");
         })
-        ->when($request->brand, function ($query, $brand) {
-          $query->where('brand_id', $brand);
+        ->when($request->brand, function ($query, $brands) {
+          $query->whereIn('brand_id', (array) $brands); // (array) para garantir que seja um array, mesmo se for um único valor como "1"
         })
-        ->when($request->category, function ($query, $category) {
-          $query->where('category_id', $category);
+        ->when($request->category, function ($query, $categories) {
+          $query->whereIn('category_id', (array) $categories);
         })
         ->latest()
         ->paginate($request->pageSize ?? 10)

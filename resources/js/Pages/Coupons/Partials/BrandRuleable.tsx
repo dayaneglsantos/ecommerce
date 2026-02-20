@@ -11,10 +11,12 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import CategoryRuleable from './CategoryRuleable';
 import ProductsRuleable from './ProductsRuleable';
+import { IoClose } from 'react-icons/io5';
+import { CouponRulesFormType } from '../CouponRulesForm';
 
 interface BrandRuleableProps {
   setData: (field: string, value: any) => void;
-  data: any;
+  data: CouponRulesFormType;
   reset: () => void;
 }
 
@@ -43,6 +45,17 @@ export default function BrandRuleable({
       setBrandsMeta(data.meta);
     } catch (error) {
       console.error('Error fetching brands:', error);
+    }
+  };
+
+  const handleAddBrand = (brand: BrandType) => {
+    if (!data.brand.items.some((item) => item.id === brand.id)) {
+      setData(`brand.items`, [...data.brand.items, brand]);
+    } else {
+      setData(
+        `brand.items`,
+        data.brand.items.filter((b: BrandType) => b.id !== brand.id)
+      );
     }
   };
 
@@ -82,10 +95,8 @@ export default function BrandRuleable({
             {brands.map((brand) => (
               <GridItem size={4}>
                 <Card
-                  className={`flex gap-3 items-center w-full cursor-pointer ${data.brand.items.includes(brand.id) ? 'bg-primary-light' : ''}`}
-                  onClick={() =>
-                    setData(`brand.items`, [...data.brand.items, brand])
-                  }
+                  className={`flex gap-3 items-center w-full cursor-pointer ${data?.brand?.items?.some((item) => item.id === brand.id) ? 'bg-primary-light' : ''}`}
+                  onClick={() => handleAddBrand(brand)}
                 >
                   <img
                     src={brand.logo}
@@ -103,6 +114,27 @@ export default function BrandRuleable({
             links={brandsMeta.links}
             onNavigate={(url) => fetchBrands(url)}
           />
+        )}
+        {data.brand.items.length > 0 && (
+          <Card className="w-full mt-6">
+            <p className="font-bold text-gray-500">Itens Selecionados:</p>
+            <div className="flex gap-3">
+              {data.brand.items.map((item) => (
+                <div
+                  className="flex items-center border rounded-lg p-1 px-2 gap-1 mt-2 w-fit text-primary-dark bg-gray-100"
+                  key={item.id}
+                >
+                  <span>{item.name}</span>
+                  <button
+                    className="ml-2 text-gray-500 hover:text-gray-700"
+                    onClick={() => handleAddBrand(item)}
+                  >
+                    <IoClose />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </Card>
         )}
 
         {data.brand.items.length > 0 && (

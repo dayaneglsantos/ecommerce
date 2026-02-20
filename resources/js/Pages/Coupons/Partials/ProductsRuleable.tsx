@@ -38,16 +38,12 @@ export default function ProductsRuleable({
 
   const firstRender = useRef(true);
 
+  // Filtros
   const [filters, setFilters] = useState({
-    brand: '',
-    category: '',
+    brand: [],
+    category: [],
     search: '',
   });
-
-  const [selectedProducts, setSelectedProducts] = useState<ProductType[]>([]);
-
-  // Filtros
-
   const [categorySearch, setCategorySearch] = useState('');
   const [brandSearch, setBrandSearch] = useState('');
   const [debouncedProductSearch, setDebouncedProductSearch] = useState(
@@ -111,40 +107,18 @@ export default function ProductsRuleable({
     }
   };
 
-  const handleAddProduct = (
-    product: ProductType,
-    condition: 'include' | 'exclude'
-  ) => {
-    const alreadySelected = selectedProducts.some(
-      (selected) => selected.id === product.id
+  const handleAddProduct = (product: ProductType) => {
+    const alreadySelected = data.product.items.some(
+      (item: any) => item.id === product.id
     );
 
     if (alreadySelected) {
-      setSelectedProducts(
-        selectedProducts.filter((selected) => selected.id !== product.id)
+      setData(
+        'product.items',
+        data.product.items.filter((item: any) => item.id !== product.id)
       );
-
-      // Excluindo no formulário
-      const filteredExceptions = data.items.filter(
-        (item: any) =>
-          !(item.ruleable.type === 'product' && item.ruleable.id === product.id)
-      );
-
-      setData('items', filteredExceptions);
     } else {
-      setSelectedProducts([...selectedProducts, product]);
-
-      // Incluindo no formulário
-      setData('items', [
-        ...data.items,
-        {
-          ruleable: {
-            type: 'product',
-            id: product.id,
-          },
-          condition: condition,
-        },
-      ]);
+      setData('product.items', [...data.product.items, product]);
     }
   };
 
@@ -219,8 +193,8 @@ export default function ProductsRuleable({
             {products.map((product) => (
               <GridItem size={4}>
                 <Card
-                  className={`w-full text-sm cursor-pointer ${selectedProducts.some((selected) => selected.id === product.id) ? 'bg-primary-light' : ''}`}
-                  onClick={() => handleAddProduct(product, 'include')}
+                  className={`w-full text-sm cursor-pointer ${data.product.items.some((item: any) => item.id === product.id) ? 'bg-primary-light' : ''}`}
+                  onClick={() => handleAddProduct(product)}
                 >
                   <div className="flex items-center gap-2">
                     {product.images.length > 0 ? (
@@ -257,11 +231,11 @@ export default function ProductsRuleable({
             onNavigate={(url) => fetchProducts(url)}
           />
         )}
-        {selectedProducts.length > 0 && (
+        {data.product.items.length > 0 && (
           <Card className="w-full mt-6">
             <p className="font-bold text-gray-500">Itens Selecionados:</p>
             <div className="flex gap-3 flex-wrap">
-              {selectedProducts.map((item) => (
+              {data.product.items.map((item: any) => (
                 <div
                   className="flex items-center border rounded-lg p-2  gap-2 mt-2 w-fit text-primary-dark bg-gray-100"
                   key={item.id}
@@ -282,7 +256,7 @@ export default function ProductsRuleable({
                   </span>
                   <button
                     className="ml-2 text-gray-500 hover:text-gray-700 self-start"
-                    onClick={() => handleAddProduct(item, 'include')}
+                    onClick={() => handleAddProduct(item)}
                   >
                     <IoClose />
                   </button>

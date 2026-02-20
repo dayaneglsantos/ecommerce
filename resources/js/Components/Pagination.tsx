@@ -22,7 +22,7 @@ export default function Pagination({ links, onNavigate }: PaginationProps) {
           className={
             link.active
               ? 'font-bold text-primary-dark text-md border border-primary p-0.5 px-2.5 rounded-full'
-              : 'text-primary-dark p-1 hover:font-bold hover:underline'
+              : `text-primary-dark p-1  ${link.url && 'hover:underline hover:font-bold'}`
           }
           dangerouslySetInnerHTML={{ __html: link.label }}
         />

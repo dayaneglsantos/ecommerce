@@ -13,6 +13,22 @@ import BrandRuleable from './Partials/BrandRuleable';
 import { useState } from 'react';
 import ProductsRuleable from './Partials/ProductsRuleable';
 import CategoryRuleable from './Partials/CategoryRuleable';
+
+export interface CouponRulesFormType {
+  coupon_id: number | null;
+  brand: {
+    items: any[];
+    rule: string;
+  };
+  category: {
+    items: any[];
+    rule: string;
+  };
+  product: {
+    items: any[];
+    rule: string;
+  };
+}
 interface CouponRulesFormModalProps {
   open: boolean;
   onClose: () => void;

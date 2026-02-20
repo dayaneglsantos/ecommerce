@@ -14,24 +14,12 @@ import { router, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
+import { CouponRulesFormType } from '../CouponRulesForm';
+import ProductsRuleable from './ProductsRuleable';
 
 interface CategoryRuleableProps {
   setData: (field: string, value: any) => void;
-  data: {
-    coupon_id: number | null;
-    brand: {
-      items: any[];
-      rule: string;
-    };
-    category: {
-      items: any[];
-      rule: string;
-    };
-    product: {
-      items: any[];
-      rule: string;
-    };
-  };
+  data: CouponRulesFormType;
   reset: () => void;
 }
 
@@ -44,6 +32,8 @@ export default function CategoryRuleable({
   const [categoriesMeta, setCategoriesMeta] = useState<MetaType | null>(null);
 
   const [isLoaded, setLoaded] = useState(false);
+
+  const [allCategoriesItems, setAllCategoriesItems] = useState(true);
 
   // Filtros
   const [productSearch, setProductSearch] = useState('');
@@ -166,6 +156,86 @@ export default function CategoryRuleable({
             ))}
           </div>
         </Card>
+      )}
+
+      {data.category.items.length > 0 && (
+        <div className="my-6">
+          <p>
+            O cupom será aplicado para todos os itens das categorias
+            selecionadas?
+          </p>
+          <div className="flex gap-2 w-full">
+            <div className="flex items-center gap-1">
+              <Checkbox
+                onChange={(e) => {
+                  setAllCategoriesItems(true);
+                }}
+                checked={allCategoriesItems}
+              />
+              <InputLabel value="Sim" />
+            </div>
+            <div className="flex items-center gap-1">
+              <Checkbox
+                onChange={(e) => {
+                  setAllCategoriesItems(false);
+                }}
+                checked={!allCategoriesItems}
+              />
+              <InputLabel value="Não" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {data.category.items.length > 0 && !allCategoriesItems && (
+        <>
+          <GridContainer gap={3}>
+            <GridItem size={6}>
+              <InputLabel className="mt-2" value="Aplicação para:" />
+              <div className="flex gap-3 mt-2">
+                <Badge className="cursor-pointer font-bold" type={'warning'}>
+                  Produtos
+                </Badge>
+              </div>
+            </GridItem>
+            <GridItem size={6}>
+              <InputLabel className="mt-2" value="Condição" />
+              <div className="flex gap-3 mt-2">
+                <button
+                  onClick={() => {
+                    setData(`product.rule`, 'include');
+                  }}
+                  type="button"
+                >
+                  <Badge
+                    className="cursor-pointer font-bold"
+                    type={
+                      data.product?.rule === 'include' ? 'warning' : 'default'
+                    }
+                  >
+                    Inclusão
+                  </Badge>
+                </button>
+                <button
+                  onClick={() => {
+                    setData(`product.rule`, 'exclude');
+                  }}
+                  type="button"
+                >
+                  <Badge
+                    className="cursor-pointer font-bold"
+                    type={
+                      data.product?.rule === 'exclude' ? 'warning' : 'default'
+                    }
+                  >
+                    Exclusão
+                  </Badge>
+                </button>
+              </div>
+            </GridItem>
+          </GridContainer>
+          <ProductsRuleable setData={setData} data={data} reset={reset} />
+        </>
       )}
     </Card>
   );
