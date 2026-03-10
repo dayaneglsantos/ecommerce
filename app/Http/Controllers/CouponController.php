@@ -65,7 +65,12 @@ class CouponController extends Controller
    */
   public function show(Coupon $coupon)
   {
-    //
+    return Inertia::render(
+      'Coupons/CouponDetails',
+      [
+        'coupon' => new CouponResource($coupon),
+      ]
+    );
   }
 
   /**

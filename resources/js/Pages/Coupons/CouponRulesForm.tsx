@@ -47,15 +47,15 @@ export default function CouponRulesFormModal({
       coupon_id: null,
       brand: {
         items: [],
-        rule: 'include',
+        rule: '',
       },
       category: {
         items: [],
-        rule: 'include',
+        rule: '',
       },
       product: {
         items: [],
-        rule: 'include',
+        rule: '',
       },
     }
   );
@@ -74,7 +74,7 @@ export default function CouponRulesFormModal({
     // });
   };
 
-  console.log(data);
+  console.log('formData:', data);
 
   return (
     <Modal

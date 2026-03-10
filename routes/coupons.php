@@ -12,6 +12,7 @@ Route::middleware('auth')
   ->group(function () {
     Route::get('/', [CouponController::class, 'index'])->name('index');
     Route::get('/novo', [CouponController::class, 'create'])->name('create');
+    Route::get('/{coupon}', [CouponController::class, 'show'])->name('show');
     Route::patch('/{coupon}', [CouponController::class, 'update'])->name('update');
     Route::post('/', [CouponController::class, 'store'])->name('store');
     // Formulário de edição de cupom

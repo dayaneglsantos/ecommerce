@@ -206,7 +206,7 @@ export default function BrandRuleable({
                 <div className="flex gap-3 mt-2">
                   <button
                     onClick={() => {
-                      setData(`brand.rule`, 'include');
+                      setData(`${selectedContent}.rule`, 'include');
                     }}
                     type="button"
                   >

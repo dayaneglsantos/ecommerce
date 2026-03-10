@@ -21,11 +21,11 @@ class CouponResource extends JsonResource
       'description' => $this->description,
       'discount' => [
         'type' => $this->discount_type,
-        'value' => $this->discount_value,
+        'value' => $this->discount_value_formatted,
       ],
       'startDate' => $this->start_date,
       'endDate' => $this->end_date,
-      "minimumOrderValue" => $this->minimum_order_value,
+      "minimumOrderValue" => $this->minimum_order_value_formatted,
       "availableQuantity" => $this->available_quantity,
       "availablePerUser" => $this->available_per_user,
       'createdAt' => $this->created_at,

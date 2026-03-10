@@ -27,4 +27,18 @@ class Coupon extends Model
   {
     return $this->hasMany(CouponRule::class);
   }
+
+  public function getMinimumOrderValueFormattedAttribute(): string
+  {
+    return number_format($this->minimum_order_value / 100, 2, ',', '.');
+  }
+
+  public function getDiscountValueFormattedAttribute(): string
+  {
+    if ($this->discount_type !== 'fixed') {
+      return $this->discount_value;
+    }
+
+    return number_format($this->discount_value / 100, 2, ',', '.');
+  }
 }
