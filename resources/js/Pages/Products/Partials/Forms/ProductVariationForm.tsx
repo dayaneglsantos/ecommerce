@@ -200,7 +200,16 @@ export default function ProductVariationForm({
                 ))}
               </div>
             </div>
-            <PrimaryButton outline onClick={() => setNewSize(true)}>
+            <PrimaryButton
+              outline
+              onClick={() => {
+                if (selectedSize) {
+                  setSelectedSize(null);
+                  reset();
+                }
+                setNewSize(true);
+              }}
+            >
               Novo tamanho
             </PrimaryButton>
           </div>

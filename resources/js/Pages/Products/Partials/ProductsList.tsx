@@ -6,7 +6,7 @@ import SelectInput from '@/Components/SelectInput';
 import BrandType from '@/Types/BrandType';
 import CategoryType from '@/Types/CategoryType';
 import ProductType from '@/Types/ProductType';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import ProductEntrieModal from '../../ProductStockEntrie/ProductEntrieFormModal';
 import { Tooltip } from 'react-tooltip';
@@ -76,10 +76,14 @@ export default function ProductsList() {
                 Variações cadastradas: <b>{product?.variations.length}</b>
               </p>
               <div className="flex justify-between gap-2 items-center">
-                <PrimaryButton outline className="mt-2 w-full justify-center">
-                  <Link href={route('products.show', product.id)}>
-                    Ver detalhes
-                  </Link>
+                <PrimaryButton
+                  outline
+                  className="mt-2 w-full justify-center"
+                  onClick={() => {
+                    router.visit(route('products.show', product.id));
+                  }}
+                >
+                  Ver detalhes
                 </PrimaryButton>
                 <button
                   onClick={() => {

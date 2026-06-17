@@ -82,7 +82,11 @@ export default forwardRef<HTMLInputElement | null, TextInputProps>(
             }}
             type={type}
             ref={localRef}
-            value={value}
+            value={
+              type === 'number' && typeof value === 'string'
+                ? value.replace(',', '.')
+                : value
+            }
             className={
               'w-full px-4 py-2 bg-transparent border-none focus:ring-0 focus:border-0 outline-none no-spinner' +
               (icon ? 'pr-10' : '')
