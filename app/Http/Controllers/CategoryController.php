@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CategoryRequest;
 use App\Http\Resources\CategoryResource;
+use App\Http\Resources\SizeGroupResource;
 use App\Models\Category;
+use App\Models\SizeGroup;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -31,14 +33,15 @@ class CategoryController extends Controller
   {
     // Apenas categorias principais com suas subcategorias carregadas recursivamente
     $categories = Category::whereNull('parent_id')
-      ->with('childrenRecursive')
+      ->with('childrenRecursive', 'sizeGroup')
       ->get();
 
-    $allCategories = Category::all();
+    $allCategories = Category::with('sizeGroup')->get();
 
     return Inertia::render('Categories/index', [
       'categories' => CategoryResource::collection($categories),
       'allCategories' => CategoryResource::collection($allCategories),
+      'sizeGroups' => SizeGroupResource::collection(SizeGroup::all()),
     ]);
   }
 

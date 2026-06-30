@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
+import ColorType from '@/Types/ColorType';
 import { router, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { IoClose } from 'react-icons/io5';
@@ -15,21 +16,20 @@ interface ColorFormProps {
 }
 
 export default function ColorForm({ open, onClose }: ColorFormProps) {
-  const colors = usePage().props?.colors as any[];
-  const colorAttributeId = usePage().props?.colorAttributeId as number;
+  const colors = usePage().props?.colors as ColorType[];
 
   const [openDeleteColorDialog, setOpenDeleteColorDialog] = useState(false);
-  const [selectedColor, setSelectedColor] = useState<any>(null);
+  const [selectedColor, setSelectedColor] = useState<ColorType | null>(null);
 
   const { data, setData, errors, post, reset } = useForm({
-    value: '',
-    attribute_id: colorAttributeId,
+    name: '',
+    hex_code: '#000000',
   });
 
   const createNewColor = (e: React.FormEvent) => {
     e.preventDefault();
 
-    post(route('attributeValue.store'), {
+    post(route('color.store'), {
       onSuccess: () => {
         onClose();
         reset();
@@ -38,7 +38,7 @@ export default function ColorForm({ open, onClose }: ColorFormProps) {
   };
 
   const handleDeleteColor = (colorId: number) => {
-    router.delete(route('attributeValue.destroy', colorId), {
+    router.delete(route('color.destroy', colorId), {
       onSuccess: () => {
         setOpenDeleteColorDialog(false);
         setSelectedColor(null);
@@ -52,15 +52,27 @@ export default function ColorForm({ open, onClose }: ColorFormProps) {
         Adicionar nova cor
       </h3>
       <form>
-        <InputLabel htmlFor="color" value="Cor" className="mt-4" />
-        <TextInput
-          id="color"
-          type="text"
-          className="mt-1 block w-full"
-          value={data.value}
-          onChange={(e) => setData('value', e.target.value)}
-        />
-        <InputError className="mt-2" message={errors.value} />
+        <InputLabel htmlFor="color" value="Nome da cor" className="mt-4" />
+        <div className="flex gap-3 items-center">
+          <div className="grow">
+            <TextInput
+              id="color"
+              type="text"
+              className="mt-1 block w-full"
+              value={data.name}
+              onChange={(e) => setData('name', e.target.value)}
+            />
+          </div>
+          <input
+            type="color"
+            value={data.hex_code}
+            onChange={(e) => setData('hex_code', e.target.value)}
+            className="mt-1 h-10 w-12 rounded-md border border-gray-300 shrink-0 cursor-pointer"
+            title="Selecionar cor"
+          />
+        </div>
+        <InputError className="mt-2" message={errors.name} />
+        <InputError className="mt-2" message={errors.hex_code} />
         <div className="flex justify-end my-3 mt-6 gap-3">
           <PrimaryButton outline onClick={onClose} type="button">
             Cancelar
@@ -74,8 +86,15 @@ export default function ColorForm({ open, onClose }: ColorFormProps) {
       <h5 className="mt-12">Cores disponíveis:</h5>
       <div className="flex gap-2 flex-wrap mt-2">
         {colors?.map((color) => (
-          <div className="p-1 bg-gray-200 rounded-full w-fit flex items-center gap-2">
-            <span>{color.value}</span>
+          <div
+            key={color.id}
+            className="p-1 bg-gray-200 rounded-full w-fit flex items-center gap-2"
+          >
+            <span
+              className="inline-block w-3 h-3 rounded-full border border-gray-300"
+              style={{ backgroundColor: color.hexCode || undefined }}
+            />
+            <span>{color.name}</span>
 
             <button
               type="button"

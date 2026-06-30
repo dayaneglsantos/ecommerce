@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\CategoryResource;
+use App\Http\Resources\ColorResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\SizeResource;
 use App\Http\Resources\SupplierResource;
-use App\Models\Attribute;
-use App\Models\AttributeValue;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Color;
 use App\Models\Product;
+use App\Models\Size;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -45,7 +46,7 @@ class ProductController extends Controller
 
   public function index()
   {
-    $products = Product::all()->load('defaultColor', 'variations', 'images');
+    $products = Product::all()->load('defaultColor', 'variations.color', 'variations.size', 'images');
     $brands = Brand::all();
     $categories = Category::all();
     $suppliers = Supplier::all();
@@ -63,18 +64,14 @@ class ProductController extends Controller
   {
     $brands = Brand::all();
     $categories = Category::all();
-    $colorAttributeId = Attribute::where('name', Str::lower('cor'))->first()->id;
-    $colors = AttributeValue::all()->where('attribute_id', $colorAttributeId)->values();
-    $sizeAttributeId = Attribute::where('name', Str::lower('tamanho'))->first()->id;
-    $sizes = AttributeValue::all()->where('attribute_id', $sizeAttributeId)->values();
+    $colors = Color::all();
+    $sizes = Size::all();
 
     return Inertia::render('Products/index', [
       'brands' => $brands,
       'categories' => $categories,
-      'colors' => $colors,
-      'colorAttributeId' => $colorAttributeId,
-      'sizes' => $sizes,
-      'sizeAttributeId' => $sizeAttributeId,
+      'colors' => ColorResource::collection($colors),
+      'sizes' => SizeResource::collection($sizes),
     ]);
   }
 
@@ -98,7 +95,7 @@ class ProductController extends Controller
   public function show(Product $product)
   {
     return Inertia::render('Products/index', [
-      'product' => new ProductResource($product->load('variations', 'defaultColor', 'images')),
+      'product' => new ProductResource($product->load('variations.color', 'variations.size', 'defaultColor', 'images')),
     ]);
   }
 
@@ -107,20 +104,20 @@ class ProductController extends Controller
   {
     $brands = Brand::all();
     $categories = Category::all();
-    $product->load('images');
-    $colorAttributeId = Attribute::where('name', Str::lower('cor'))->first()->id;
-    $colors = AttributeValue::all()->where('attribute_id', $colorAttributeId)->values();
-    $sizeAttributeId = Attribute::where('name', Str::lower('tamanho'))->first()->id;
-    $sizes = AttributeValue::all()->where('attribute_id', $sizeAttributeId)->values();
+    $product->load('images', 'category.sizeGroup');
+    $colors = Color::all();
+
+    // Restringe os tamanhos disponíveis ao grupo vinculado à categoria do produto (quando houver)
+    $sizes = $product->category?->size_group_id
+      ? Size::where('size_group_id', $product->category->size_group_id)->orderBy('order')->get()
+      : Size::orderBy('order')->get();
 
     return Inertia::render('Products/index', [
       'brands' => $brands,
       'categories' => $categories,
-      'product' => new ProductResource($product->load('variations', 'defaultColor')),
-      'colors' => $colors,
-      'colorAttributeId' => $colorAttributeId,
-      'sizes' => $sizes,
-      'sizeAttributeId' => $sizeAttributeId,
+      'product' => new ProductResource($product->load('variations.color', 'variations.size', 'defaultColor')),
+      'colors' => ColorResource::collection($colors),
+      'sizes' => SizeResource::collection($sizes),
     ]);
   }
 
@@ -142,7 +139,7 @@ class ProductController extends Controller
   {
     try {
       $validatedData = $request->validate([
-        'default_color_id' => 'required|exists:product_variations,id',
+        'default_color_id' => 'required|exists:colors,id',
       ]);
       $product->default_color_id = $validatedData['default_color_id'];
       $product->save();

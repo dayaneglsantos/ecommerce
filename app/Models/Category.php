@@ -21,11 +21,17 @@ class Category extends Model
     'description',
     'active',
     'parent_id',
+    'size_group_id',
   ];
 
   protected $casts = [
     'active' => 'boolean',
   ];
+
+  public function sizeGroup()
+  {
+    return $this->belongsTo(SizeGroup::class, 'size_group_id');
+  }
 
   public function subCategories()
   {

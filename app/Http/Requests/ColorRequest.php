@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class AttributeValueRequest extends FormRequest
+class ColorRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -23,8 +23,8 @@ class AttributeValueRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'value' => ['required', 'string', 'max:255'],
-      'attribute_id' => ['required', 'exists:attributes,id'],
+      'name' => ['required', 'string', 'max:255'],
+      'hex_code' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
     ];
   }
 }

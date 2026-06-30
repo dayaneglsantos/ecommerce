@@ -26,8 +26,8 @@ class CreateVariationRequest extends FormRequest
   {
     return [
       'product_id' => ['required', 'exists:products,id'],
-      'color' => ['required', 'exists:attribute_values,id'],
-      'size' => ['required', 'exists:attribute_values,id'],
+      'color' => ['required', 'exists:colors,id'],
+      'size' => ['required', 'exists:sizes,id'],
       'price' => ['required', 'numeric', 'min:0'],
       'old_price' => ['nullable', 'numeric', 'min:0'],
       'pix_discount_type' => ['nullable', 'string', 'in:percentage,fixed'],

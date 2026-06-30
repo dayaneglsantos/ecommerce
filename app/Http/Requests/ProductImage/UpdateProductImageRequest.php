@@ -23,7 +23,7 @@ class UpdateProductImageRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'attribute_id' => ['required', 'exists:attribute_values,id'],
+      'color_id' => ['required', 'exists:colors,id'],
       'images' => ['required', 'array'],
       'images.*.file' => ['nullable', 'image', 'max:5120'], // cada imagem deve ser um arquivo de imagem com tamanho máximo de 5MB
       'images.*.position' => ['required', 'integer', 'min:1'], // posição da imagem na ordem

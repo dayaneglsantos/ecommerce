@@ -52,7 +52,7 @@ class Product extends Model
 
   public function defaultColor()
   {
-    return $this->belongsTo(AttributeValue::class, 'default_color_id');
+    return $this->belongsTo(Color::class, 'default_color_id');
   }
 
   public function images()

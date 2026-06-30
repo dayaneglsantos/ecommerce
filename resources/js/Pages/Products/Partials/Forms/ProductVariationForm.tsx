@@ -16,6 +16,7 @@ import { IoClose } from 'react-icons/io5';
 import { GridContainer, GridItem } from '@/Components/Grid';
 import Modal from '@/Components/Modal';
 import ColorForm from './ColorForm';
+import SizeForm from './SizeForm';
 import { FaCircleInfo } from 'react-icons/fa6';
 import ImagesFormModal from './ImagesFormModal';
 
@@ -35,6 +36,7 @@ export default function ProductVariationForm({
 }: ProductVariationFormProps) {
   const [selectedSize, setSelectedSize] = useState(variation?.sizes[0] || null);
   const [openColorForm, setOpenColorForm] = useState(false);
+  const [openSizeForm, setOpenSizeForm] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [openImagesModal, setOpenImagesModal] = useState(false);
   const [newSize, setNewSize] = useState(false);
@@ -54,13 +56,18 @@ export default function ProductVariationForm({
     })
     .map((color) => ({
       value: color.id,
-      label: color.value,
+      label: color.name,
     }));
 
-  const sizeOptions = sizes?.map((size) => ({
-    value: size.id,
-    label: size.value,
-  }));
+  // Opção de tamanhos excluindo os tamanhos já cadastrados nessa cor
+  const usedSizeIds = variation?.sizes.map((size) => size.sizeId) || [];
+
+  const sizeOptions = sizes
+    ?.filter((size) => !usedSizeIds.includes(size.id))
+    .map((size) => ({
+      value: size.id,
+      label: size.value,
+    }));
 
   // ==================== Configuração do formulário ====================
   const { data, setData, reset, post, errors, patch, setError } = useForm({
@@ -224,7 +231,7 @@ export default function ProductVariationForm({
               <GridContainer gap={3}>
                 {!selectedSize && (
                   <>
-                    {!newSize && (
+                    {!variation && (
                       <GridItem size={6}>
                         <InputLabel
                           htmlFor="color"
@@ -272,14 +279,14 @@ export default function ProductVariationForm({
                         </p>
                         <button
                           type="button"
-                          // onClick={() => setOpenColorForm(true)}
+                          onClick={() => setOpenSizeForm(true)}
                           className="text-primary cursor-pointer text-md"
                         >
                           <FaPlusCircle />
                         </button>
                       </div>
                     </GridItem>
-                    {newSize && (
+                    {variation && (
                       <GridItem size={6}>
                         <div></div>
                       </GridItem>
@@ -445,6 +452,12 @@ export default function ProductVariationForm({
       </Modal>
 
       <ColorForm open={openColorForm} onClose={() => setOpenColorForm(false)} />
+
+      <SizeForm
+        open={openSizeForm}
+        onClose={() => setOpenSizeForm(false)}
+        defaultSizeGroupId={product?.category?.sizeGroupId || undefined}
+      />
 
       <ConfirmDialog
         open={openConfirmDialog}

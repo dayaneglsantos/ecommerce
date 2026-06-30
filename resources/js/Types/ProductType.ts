@@ -1,5 +1,6 @@
 import BrandType from './BrandType';
 import CategoryType from './CategoryType';
+import ColorType from './ColorType';
 import ProductVariationType from './ProductVariationType';
 
 export default interface ProductType {
@@ -10,7 +11,7 @@ export default interface ProductType {
   fullDescription: string;
   brand: BrandType;
   category: CategoryType;
-  defaultColor: { color: string; id: number } | null;
+  defaultColor: ColorType | null;
   variations: ProductVariationType[];
   technicalSpecifications: JSON | null;
   images: { id: number; url: string }[];

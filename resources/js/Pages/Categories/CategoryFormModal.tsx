@@ -7,10 +7,12 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SelectInput from '@/Components/SelectInput';
 import TextInput from '@/Components/TextInput';
 import CategoryType from '@/Types/CategoryType';
+import SizeGroupType from '@/Types/SizeGroupType';
 import { Switch } from '@headlessui/react';
 import { useForm, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import { Grid } from 'swiper/modules';
+import { FaPlusCircle } from 'react-icons/fa';
+import SizeGroupForm from '@/Pages/Products/Partials/Forms/SizeGroupForm';
 
 interface CategoryFormModalProps {
   open: boolean;
@@ -26,12 +28,19 @@ export default function CategoryFormModal({
   parentId,
 }: CategoryFormModalProps) {
   const [isSubcategory, setIsSubcategory] = useState(false);
+  const [openSizeGroupForm, setOpenSizeGroupForm] = useState(false);
 
   const allCategories = usePage().props.allCategories as CategoryType[];
+  const sizeGroups = usePage().props.sizeGroups as SizeGroupType[];
 
   const categoriesOptions = allCategories.map((category: CategoryType) => ({
     value: category.id,
     label: category.name,
+  }));
+
+  const sizeGroupOptions = sizeGroups?.map((sizeGroup) => ({
+    value: sizeGroup.id,
+    label: sizeGroup.name,
   }));
 
   const { data, setData, errors, post, patch, reset } = useForm({
@@ -39,6 +48,7 @@ export default function CategoryFormModal({
     slug: '',
     description: '',
     parent_id: null as number | null,
+    size_group_id: null as number | null,
     active: true,
   });
 
@@ -48,6 +58,7 @@ export default function CategoryFormModal({
       setData('slug', category.slug || '');
       setData('description', category.description || '');
       setData('parent_id', category.parent?.id || null);
+      setData('size_group_id', category.sizeGroupId || null);
       setData('active', category.active || false);
 
       setIsSubcategory(!!category.parent);
@@ -166,6 +177,28 @@ export default function CategoryFormModal({
             />
             <InputError className="mt-2" message={errors.slug} />
           </GridItem>
+          <GridItem size={12}>
+            <InputLabel htmlFor="size_group_id" value="Grupo de tamanho" />
+            <SelectInput
+              options={sizeGroupOptions || []}
+              value={data.size_group_id}
+              onChange={(e) => setData('size_group_id', e)}
+              placeholder="Selecione um grupo de tamanho"
+            />
+            <InputError className="mt-2" message={errors.size_group_id} />
+            <div className="flex gap-1 items-center mt-1">
+              <p className="text-sm text-gray-600">
+                Não encontrou o grupo? Adicionar novo{' '}
+              </p>
+              <button
+                type="button"
+                onClick={() => setOpenSizeGroupForm(true)}
+                className="text-primary cursor-pointer text-md"
+              >
+                <FaPlusCircle />
+              </button>
+            </div>
+          </GridItem>
         </GridContainer>
         <div className="flex justify-end gap-3 mt-4">
           <PrimaryButton type="button" outline>
@@ -176,6 +209,11 @@ export default function CategoryFormModal({
           </PrimaryButton>
         </div>
       </form>
+
+      <SizeGroupForm
+        open={openSizeGroupForm}
+        onClose={() => setOpenSizeGroupForm(false)}
+      />
     </Modal>
   );
 }

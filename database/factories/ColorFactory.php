@@ -2,14 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\AttributeValue;
-use App\Models\ProductVariation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ProductVariationAttribute>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Color>
  */
-class ProductVariationAttributeFactory extends Factory
+class ColorFactory extends Factory
 {
   /**
    * Define the model's default state.
@@ -19,7 +17,8 @@ class ProductVariationAttributeFactory extends Factory
   public function definition(): array
   {
     return [
-      //
+      'name' => $this->faker->unique()->colorName(),
+      'hex_code' => $this->faker->hexColor(),
     ];
   }
 }

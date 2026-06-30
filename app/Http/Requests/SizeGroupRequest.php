@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class CategoryRequest extends FormRequest
+class SizeGroupRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -23,12 +23,7 @@ class CategoryRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'name' => 'required|string|max:255',
-      'parent_id' => 'nullable|exists:categories,id',
-      'slug' => 'required|string|max:255|unique:categories,slug,' . $this->route('category')?->id, // Ignora o slug da categoria atual ao atualizar
-      'description' => 'required|string',
-      'active' => 'required|boolean',
-      'size_group_id' => 'nullable|exists:size_groups,id',
+      'name' => ['required', 'string', 'max:255'],
     ];
   }
 }

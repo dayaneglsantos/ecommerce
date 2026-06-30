@@ -5,10 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductVariation\CreateVariationRequest;
 use App\Http\Requests\ProductVariation\UpdateVariationRequest;
-use App\Models\AttributeValue;
 use App\Models\ProductVariation;
-use App\Models\ProductVariationAttribute;
-use Attribute;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -41,22 +38,12 @@ class ProductVariationController extends Controller
       DB::transaction(function () use ($request) {
         $validated = $request->validated();
 
-
+        $validated['color_id'] = $validated['color'];
+        $validated['size_id'] = $validated['size'];
         unset($validated['color']); // Remover o campo 'color' do array validado
         unset($validated['size']); // Remover o campo 'size' do array validado
 
         $variation = ProductVariation::create($validated);
-
-        // Cria a relação com o atributo de cor
-        ProductVariationAttribute::create([
-          'product_variation_id' => $variation->id,
-          'attribute_value_id' => $request->input('color'),
-        ]);
-        // Cria a relação com o atributo de tamanho
-        ProductVariationAttribute::create([
-          'product_variation_id' => $variation->id,
-          'attribute_value_id' => $request->input('size'),
-        ]);
 
         // Se for a primeira variação criada para o produto, define a cor padrão do produto
         $productVariations = $variation->product->variations;

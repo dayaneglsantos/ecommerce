@@ -1,3 +1,5 @@
+import SizeGroupType from './SizeGroupType';
+
 export default interface CategoryType {
   id: number;
   name: string;
@@ -6,4 +8,6 @@ export default interface CategoryType {
   description: string;
   subCategories?: CategoryType[];
   parent?: CategoryType | null;
+  sizeGroupId: number | null;
+  sizeGroup?: SizeGroupType | null;
 }

@@ -19,43 +19,30 @@ class ProductResource extends JsonResource
     $images = $this->whenLoaded('images'); // Carrega as imagens do produto passadas pelo controller
 
     $productImages = $images?->filter(function ($img) {
-      return $img->attribute_id === $this->defaultColor?->attribute_id; // Filtra as imagens que possuem o atributo_id igual ao id do valor do atributo de cor padrão do produto
+      return $img->color_id === $this->default_color_id; // Filtra as imagens que possuem a cor igual à cor padrão do produto
     })->values();
 
     $groupedVariations = [];
 
     // ======= Agrupamento das variações por cor =======
     if ($this->relationLoaded('variations')) {
-      $groupedVariations = $variations?->groupBy(function ($variation) {
-
-        $colorAttribute = $variation->attributes->first(function ($attrValue) {
-          return strtolower($attrValue?->attribute?->name) === 'cor';
-        }); // Obtém o valor do atributo de cor
-
-
-        return $colorAttribute?->id;
-      }) // Agrupa as variações pelo ID do atributo de cor
+      $groupedVariations = $variations?->groupBy('color_id') // Agrupa as variações pelo ID da cor
         ->map(function ($item) use ($images) { // O item aqui é uma coleção de variações que possuem a mesma cor
 
           $firstItem = $item->first(); // Pega a primeira variação para obter os dados da cor (que são os mesmos para todas as variações do grupo, por isso pegamos apenas a primeira)
-
-          $colorData = $firstItem->attributes->first(function ($attrValue) {
-            return strtolower($attrValue?->attribute?->name) === 'cor';
-          }); // Obtém o valor do atributo de cor (nome e id)
-          // dd($colorData);
+          $colorData = $firstItem->color;
 
           return [
             'color' => [
               'id' => $colorData?->id,
-              'value' => $colorData?->value,
+              'value' => $colorData?->name,
+              'hexCode' => $colorData?->hex_code,
             ],
             'sizes' => $item->map(function ($variation) {
-              $sizeData = $variation->attributes->first(function ($attrValue) {
-                return strtolower($attrValue?->attribute?->name) === 'tamanho';
-              }); // pega o valor do atributo de tamanho
               return [
                 'id' => $variation->id,
-                'size' => $sizeData?->value,
+                'sizeId' => $variation->size_id,
+                'size' => $variation->size?->value,
                 'price' => $variation->price_formatted,
                 'oldPrice' => $variation->old_price_formatted,
                 'stockQuantity' => $variation->stock_quantity,
@@ -67,7 +54,7 @@ class ProductResource extends JsonResource
               ];
             }),
             'images' => $images?->filter(function ($img) use ($colorData) {
-              return $colorData?->id === $img->attribute_id; // Filtra as imagens que possuem o atributo_id igual ao id do valor do atributo de cor
+              return $colorData?->id === $img->color_id; // Filtra as imagens que possuem a cor igual à cor do grupo
             })->values(),
           ];
         })->values();
@@ -93,7 +80,7 @@ class ProductResource extends JsonResource
       'description' => $this->description,
       'fullDescription' => $this->full_description,
       'slug' => $this->slug,
-      'defaultColor' => $this->whenLoaded('defaultColor'),
+      'defaultColor' => new ColorResource($this->whenLoaded('defaultColor')),
       'images' => $productImages,
       'brand' => new BrandResource($this->whenLoaded('brand')),
       'category' => new CategoryResource($this->whenLoaded('category')),

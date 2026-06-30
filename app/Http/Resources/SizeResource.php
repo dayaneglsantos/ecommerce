@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AttributeValueResource extends JsonResource
+class SizeResource extends JsonResource
 {
   /**
    * Transform the resource into an array.
@@ -17,7 +17,8 @@ class AttributeValueResource extends JsonResource
     return [
       'id' => $this->id,
       'value' => $this->value,
-      'name' => $this->whenLoaded('attribute')->name,
+      'order' => $this->order,
+      'sizeGroupId' => $this->size_group_id,
     ];
   }
 }

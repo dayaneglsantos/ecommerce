@@ -36,7 +36,7 @@ class ProductImagesController extends Controller
       foreach ($validated['images'] as $imageData) {
         if (isset($imageData['file'])) {
           $path = $imageData['file']->store('product-images', 'public');
-          $product->images()->create(['path' => $path, 'position' => $imageData['position'], 'attribute_id' => $validated['attribute_id']]);
+          $product->images()->create(['path' => $path, 'position' => $imageData['position'], 'color_id' => $validated['color_id']]);
         }
       }
       return redirect()->back()->with('success', 'Imagem do produto adicionada com sucesso!');
@@ -84,7 +84,7 @@ class ProductImagesController extends Controller
       foreach ($validated['images'] as $imageData) {
         if (isset($imageData['file'])) { // Nova imagem para upload
           $path = $imageData['file']->store('product-images', 'public');
-          $product->images()->create(['path' => $path, 'position' => $imageData['position'], 'attribute_id' => $validated['attribute_id']]);
+          $product->images()->create(['path' => $path, 'position' => $imageData['position'], 'color_id' => $validated['color_id']]);
         } else if (isset($imageData['id'])) { // Atualizar a posição da imagem existente
           $image = $product->images()->find($imageData['id']);
           if ($image) {

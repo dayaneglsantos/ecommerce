@@ -22,7 +22,8 @@ class ProductVariationResource extends JsonResource
       'stockQuantity' => $this->stock_quantity,
       'pixDiscountType' => $this->pix_discount_type,
       'pixDiscountValue' => $this->pix_discount_formatted,
-      'attributes' => AttributeValueResource::collection($this->whenLoaded('attributes')),
+      'color' => new ColorResource($this->whenLoaded('color')),
+      'size' => new SizeResource($this->whenLoaded('size')),
     ];
   }
 }

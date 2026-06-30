@@ -8,10 +8,12 @@ export default interface ProductVariationType {
   color: {
     id: number;
     value: string;
+    hexCode: string | null;
   };
   images: ProductImagesType[];
   sizes: {
     id: number;
+    sizeId: number;
     size: string;
     oldPrice: string | null;
     price: string;

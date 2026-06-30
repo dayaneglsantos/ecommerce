@@ -15,8 +15,9 @@ class DatabaseSeeder extends Seeder
     $this->call([
       UserSeeder::class,
       BrandSeeder::class,
-      AttributeSeeder::class,
-      AttributeValueSeeder::class,
+      ColorSeeder::class,
+      SizeGroupSeeder::class,
+      SizeSeeder::class,
       CategorySeeder::class,
       ProductSeeder::class,
       CommentSeeder::class,
@@ -27,7 +28,6 @@ class DatabaseSeeder extends Seeder
       CartSeeder::class,
       OrderSeeder::class,
       SupplierSeeder::class,
-      ProductVariationAttributeSeeder::class,
     ]);
   }
 }

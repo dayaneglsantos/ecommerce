@@ -35,14 +35,14 @@ export default function ImagesFormModal({
       uid?: string;
     }[],
     images_to_delete: [] as number[],
-    attribute_id: 0,
+    color_id: 0,
   });
 
   useEffect(() => {
     if (!color) {
       reset();
     } else {
-      setData('attribute_id', color.id);
+      setData('color_id', color.id);
       setData(
         'images',
         images?.map((img) => ({
